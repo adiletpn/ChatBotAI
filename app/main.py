@@ -59,9 +59,8 @@ def public(doc: dict) -> dict:
 
 
 @app.get("/")
-async def index(request: Request):
-    if not current_user(request):
-        return RedirectResponse("/login")
+async def index():
+    # главную видно и без входа; любые данные и действия требуют аккаунта (API отвечает 401)
     return FileResponse(settings.web_dir / "index.html")
 
 
