@@ -52,6 +52,7 @@
     .row-between { display: flex; justify-content: flex-end; margin: -4px 0 14px; }
     .or { display: flex; align-items: center; gap: 12px; color: var(--faint); font-size: 12.5px; margin: 20px 0; }
     .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    .guest { display: block; width: 100%; padding: 11px; text-align: center; text-decoration: none; }
     .google { width: 100%; padding: 11px; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4px; }
     .google svg { width: 18px; height: 18px; }
     .fine { color: var(--faint); font-size: 12px; text-align: center; margin-top: 18px; }
@@ -124,6 +125,8 @@
           <div class="msg-box err" id="mainErr" hidden></div>
           <button class="btn primary" id="mainSubmit" type="submit"></button>
         </form>
+        <div class="or" data-t="or"></div>
+        <a class="btn ghost guest" id="guestLink" href="/" data-t="guest"></a>
         <p class="fine" data-t="fine"></p>
       </div>
 
