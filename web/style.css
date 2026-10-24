@@ -506,3 +506,14 @@ textarea:focus-visible, .input:focus-visible, .code-boxes input:focus-visible { 
 .welcome-mark .logo-text { gap: 10px; }
 .welcome-mark .logo-ai { font-size: 30px; padding: 3px 10px; border-radius: 11px; }
 .brand-sub { margin-top: 2px; }
+.brand .logo-text .wordmark { height: 26px; }
+.brand .logo-ai { font-size: 13px; padding: 1px 5px; border-radius: 6px; }
+/* «AI» — лёгкая подпись рядом с рукописным «mind», без рамки */
+.logo-text { align-items: flex-end; gap: 5px; }
+.logo-ai, .brand .logo-ai, .welcome-mark .logo-ai { border: 0; padding: 0; border-radius: 0; font-family: var(--display); font-weight: 500; letter-spacing: .02em; color: var(--accent); line-height: 1; }
+.logo-ai { font-size: 15px; margin-bottom: 4px; }
+.brand .logo-ai { font-size: 13px; margin-bottom: 4px; }
+.welcome-mark .logo-ai { font-size: 26px; margin-bottom: 9px; }
+.logo-text .wordmark { flex: none; aspect-ratio: 2001 / 771; width: auto; }
+.brand .logo-text .wordmark { height: 30px; }
+.auth-brand .logo-text .wordmark { height: 34px; }
