@@ -517,3 +517,44 @@ textarea:focus-visible, .input:focus-visible, .code-boxes input:focus-visible { 
 .logo-text .wordmark { flex: none; aspect-ratio: 2001 / 771; width: auto; }
 .brand .logo-text .wordmark { height: 30px; }
 .auth-brand .logo-text .wordmark { height: 34px; }
+
+/* ================= мягкие светлые темы: меньше белого и меньше контраста ================= */
+:root {
+  --bg: #ecece8;
+  --glass: rgba(246, 246, 242, .72);
+  --glass-strong: rgba(244, 244, 240, .95);
+  --solid: #f6f6f2;
+  --panel-2: rgba(30, 30, 25, .045);
+  --hover: rgba(30, 30, 25, .06);
+  --text: #2a2a2f;
+  --muted: #696970;
+  --faint: #9d9da4;
+  --border: rgba(30, 30, 25, .09);
+  --border-strong: rgba(30, 30, 25, .15);
+  --mark: rgba(240, 196, 40, .3);
+  --shadow: 0 1px 2px rgba(30, 30, 25, .04), 0 4px 14px rgba(30, 30, 25, .04);
+}
+:root[data-theme="sepia"] {
+  --bg: #ebe4d6;
+  --glass: rgba(243, 237, 225, .74);
+  --glass-strong: rgba(243, 237, 225, .95);
+  --solid: #f4eee2;
+  --panel-2: rgba(70, 45, 10, .05);
+  --hover: rgba(70, 45, 10, .07);
+  --text: #3a332a;
+  --muted: #6f665a;
+  --faint: #a2988a;
+  --border: rgba(70, 45, 10, .1);
+  --border-strong: rgba(70, 45, 10, .16);
+}
+/* страница документа в светлых темах — чуть приглушена, чтобы не «слепила» */
+:root:not([data-theme="dark"]):not([data-theme="midnight"]) .ev-page img { filter: brightness(.96) sepia(.04); }
+.pv.light { background: #ecece8; }
+.pv.sepia { background: #ebe4d6; }
+.pv.system { background: linear-gradient(110deg, #ecece8 50%, #121214 50%); }
+
+/* «AI» крупнее — примерно половина высоты рукописного «mind» */
+.logo-ai, .brand .logo-ai, .welcome-mark .logo-ai { font-weight: 600; letter-spacing: 0; }
+.brand .logo-ai { font-size: 17px; margin-bottom: 3px; }
+.auth-brand .logo-ai { font-size: 19px; margin-bottom: 4px; }
+.welcome-mark .logo-ai { font-size: 36px; margin-bottom: 6px; }
