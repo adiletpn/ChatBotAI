@@ -8,8 +8,8 @@ const I18N = {
     documents: "Құжаттар",
     no_docs_hint: "Файлды осында сүйреңіз немесе жоғарыдағы аймақты басыңыз",
     clear_chat: "Чатты тазалау",
-    welcome_title: "Құжатыңызбен сөйлесіңіз",
-    welcome_text: "PDF, DOCX немесе басқа құжатты жүктеңіз — DocMind AI оның мазмұны бойынша сұрақтарға нақты жауап беріп, дереккөзін көрсетеді.",
+    welcome_title: "Құжатыңызбен <span class=\"grad\">сөйлесіңіз</span>",
+    welcome_text: "Кез келген құжатты жүктеңіз — Mind AI оның мазмұны бойынша сұрақтарға нақты жауап беріп, дереккөзін көрсетеді.",
     f1_t: "Кез келген формат", f1_d: "PDF, DOCX, PPTX, XLSX, TXT, HTML, суреттер",
     f2_t: "Дереккөзді көрсету", f2_d: "Әр жауапта құжат пен бет нөмірі",
     f3_t: "Үш тіл", f3_d: "Қазақша, орысша, ағылшынша сұрақ қойыңыз",
@@ -44,8 +44,8 @@ const I18N = {
     documents: "Документы",
     no_docs_hint: "Перетащите файл сюда или нажмите на область выше",
     clear_chat: "Очистить чат",
-    welcome_title: "Поговорите со своим документом",
-    welcome_text: "Загрузите PDF, DOCX или другой документ — DocMind AI ответит на вопросы по его содержанию и покажет точный источник.",
+    welcome_title: "Поговорите со своим <span class=\"grad\">документом</span>",
+    welcome_text: "Загрузите любой документ — Mind AI ответит на вопросы по его содержанию и покажет точный источник.",
     f1_t: "Любой формат", f1_d: "PDF, DOCX, PPTX, XLSX, TXT, HTML, изображения",
     f2_t: "Указание источника", f2_d: "В каждом ответе — документ и номер страницы",
     f3_t: "Три языка", f3_d: "Спрашивайте на казахском, русском, английском",
@@ -80,8 +80,8 @@ const I18N = {
     documents: "Documents",
     no_docs_hint: "Drop a file here or click the area above",
     clear_chat: "Clear chat",
-    welcome_title: "Chat with your documents",
-    welcome_text: "Upload a PDF, DOCX or any other document — DocMind AI answers questions about its content and shows the exact source.",
+    welcome_title: "Chat with your <span class=\"grad\">documents</span>",
+    welcome_text: "Upload any document — Mind AI answers questions about its content and shows the exact source.",
     f1_t: "Any format", f1_d: "PDF, DOCX, PPTX, XLSX, TXT, HTML, images",
     f2_t: "Source citations", f2_d: "Every answer shows the document and page",
     f3_t: "Three languages", f3_d: "Ask in Kazakh, Russian or English",
@@ -117,9 +117,9 @@ Object.assign(I18N.kk, {
   map_h: "Құжат картасы",
   map_sub: "AI құжатты өзі талдайды: мерзімдер, негізгі сандар, талаптар және терминдер — әрқайсысы бетке сілтемесімен.",
   quiz_h: "Білімді тексеру",
-  quiz_sub: "Құжат бойынша тест: нұсқаулықты, ережені немесе оқу материалын қаншалықты меңгергеніңізді тексеріңіз.",
+  quiz_sub: "Құжат бойынша тест: оқу материалын, нұсқаулықты немесе кез келген құжатты қаншалықты меңгергеніңізді тексеріңіз.",
   timeline: "Хронология және мерзімдер", numbers: "Негізгі сандар", requirements: "Талаптар чек-парағы", terms: "Терминдер мен атаулар",
-  nothing: "Табылмады", done_of: "орындалды", need_doc: "Алдымен сол жақтан құжат жүктеңіз",
+  nothing: "Табылмады", done_of: "орындалды", need_doc: "Құжатты жүктеу үшін басыңыз немесе файлды осында сүйреңіз", need_doc_t: "Құжат әлі жоқ",
   analyzing: "AI құжатты талдап жатыр…", generating: "Сұрақтар құрастырылуда…",
   quiz_intro: "Сұрақтар саны", quiz_start: "Тестті бастау", question: "Сұрақ", next: "Келесі →", finish: "Нәтижені көру",
   retry: "Қайта тапсыру", new_quiz: "Жаңа сұрақтар", correct: "Дұрыс!", wrong: "Қате",
@@ -134,9 +134,9 @@ Object.assign(I18N.ru, {
   map_h: "Карта документа",
   map_sub: "AI сам разбирает документ: сроки, ключевые цифры, требования и термины — каждый пункт со ссылкой на страницу.",
   quiz_h: "Проверка знаний",
-  quiz_sub: "Тест по документу: проверьте, насколько хорошо усвоены инструкция, регламент или учебный материал.",
+  quiz_sub: "Тест по документу: проверьте, насколько хорошо усвоен учебный материал, инструкция или любой другой документ.",
   timeline: "Хронология и сроки", numbers: "Ключевые цифры", requirements: "Чек-лист требований", terms: "Термины и понятия",
-  nothing: "Не найдено", done_of: "выполнено", need_doc: "Сначала загрузите документ слева",
+  nothing: "Не найдено", done_of: "выполнено", need_doc: "Нажмите, чтобы загрузить документ, или перетащите файл сюда", need_doc_t: "Пока нет документов",
   analyzing: "AI анализирует документ…", generating: "Составляю вопросы…",
   quiz_intro: "Количество вопросов", quiz_start: "Начать тест", question: "Вопрос", next: "Далее →", finish: "Показать результат",
   retry: "Пройти заново", new_quiz: "Новые вопросы", correct: "Верно!", wrong: "Неверно",
@@ -151,9 +151,9 @@ Object.assign(I18N.en, {
   map_h: "Document map",
   map_sub: "AI breaks the document down for you: deadlines, key numbers, requirements and terms — each linked to its page.",
   quiz_h: "Knowledge check",
-  quiz_sub: "A test based on the document: check how well an instruction, regulation or study material has been learned.",
+  quiz_sub: "A test based on the document: check how well study material, an instruction or any other document has been learned.",
   timeline: "Timeline & deadlines", numbers: "Key numbers", requirements: "Requirements checklist", terms: "Terms & names",
-  nothing: "Nothing found", done_of: "done", need_doc: "Upload a document on the left first",
+  nothing: "Nothing found", done_of: "done", need_doc: "Click to upload a document or drop a file here", need_doc_t: "No documents yet",
   analyzing: "AI is analyzing the document…", generating: "Generating questions…",
   quiz_intro: "Number of questions", quiz_start: "Start the test", question: "Question", next: "Next →", finish: "See result",
   retry: "Try again", new_quiz: "New questions", correct: "Correct!", wrong: "Wrong",
@@ -163,6 +163,10 @@ Object.assign(I18N.en, {
   stat_pages: "pages", stat_dates: "dates", stat_numbers: "numbers", stat_req: "requirements", map_btn: "Map",
   logout: "Log out", llm_fail: "unreachable", guest: "Guest mode",
 });
+
+Object.assign(I18N.kk, {"dz_hint": "PDF, DOCX, PPTX, XLSX, сурет", "settings": "Баптаулар", "set_profile": "Профиль", "set_appearance": "Сыртқы түрі", "set_language": "Тіл", "set_ai": "AI жауаптары", "set_data": "Деректер", "set_system": "Жүйе туралы", "set_account": "Аккаунт", "profile_sub": "Сіз туралы ақпарат", "name": "Аты", "email": "Email", "save": "Сақтау", "saved": "Сақталды", "guest_note": "Сіз қонақ режиміндесіз. Деректерді сақтау үшін тіркеліңіз.", "appearance_sub": "Интерфейсті өзіңізге ыңғайлы етіңіз", "theme": "Тақырып", "theme_system": "Жүйелік", "theme_light": "Жарық", "theme_dark": "Қараңғы", "font_size": "Мәтін өлшемі", "font_size_d": "Барлық интерфейс үшін", "f_s": "Кіші", "f_m": "Орташа", "f_l": "Үлкен", "width": "Чат ені", "width_d": "Кең экрандар үшін", "w_normal": "Қалыпты", "w_wide": "Кең", "language_sub": "Интерфейс пен жауаптар тілі", "ui_lang": "Интерфейс тілі", "ui_lang_d": "Мәзір, батырмалар, хабарламалар", "answer_lang": "Жауап тілі", "answer_lang_d": "«Авто» — сұрақ қойылған тілде", "auto": "Авто", "ai_sub": "Mind AI қалай жауап береді", "style": "Жауап стилі", "style_d": "Жауап ұзындығы мен толықтығы", "st_concise": "Қысқа", "st_balanced": "Теңгерімді", "st_detailed": "Толық", "show_sources": "Дереккөздерді көрсету", "show_sources_d": "Жауап астындағы құжат пен бет сілтемелері", "show_trust": "Сенімділік белгісі", "show_trust_d": "«N дереккөзбен расталған»", "suggestions": "Сұрақ ұсыныстары", "suggestions_d": "Құжат жүктелгеннен кейін", "data_sub": "Құжаттар мен чат тарихы", "docs_count": "Жүктелген құжаттар", "export": "Чатты жүктеп алу", "export_d": "Бүкіл диалог .md файлына", "clear_hist": "Чат тарихын тазалау", "clear_hist_d": "Құжаттар сақталады", "delete_docs": "Барлық құжатты өшіру", "delete_docs_d": "Қайтару мүмкін емес", "confirm_all": "Барлық құжатты өшіру керек пе?", "done": "Дайын", "do_it": "Орындау", "system_sub": "Mind AI жұмысының техникалық күйі", "model": "AI моделі", "connected": "Қосулы", "disconnected": "Байланыс жоқ", "offline": "Офлайн режим", "check": "Тексеру", "checking": "Тексерілуде…", "ocr_card": "Сканерлерді тану", "ocr_none": "Қолжетімсіз", "telegram": "Telegram-бот", "tg_on": "Қосулы", "tg_off": "Қосылмаған", "formats": "Пішімдер", "version": "Нұсқа", "account_sub": "Қауіпсіздік және кіру", "change_pw": "Құпиясөзді өзгерту", "old_pw": "Ағымдағы құпиясөз", "new_pw": "Жаңа құпиясөз", "pw_rule": "Кемінде 8 таңба, әріптер мен сандар", "pw_changed": "Құпиясөз өзгертілді", "logout_d": "Осы құрылғыдан шығу", "danger": "Қауіпті аймақ", "delete_acc": "Аккаунтты өшіру", "delete_acc_d": "Барлық құжаттар мен деректер өшіріледі", "confirm_pw": "Растау үшін құпиясөзді енгізіңіз", "confirm_del": "Аккаунтты біржола өшіру керек пе?", "you": "Сіз", "llm_down": "AI моделімен байланыс жоқ — жауаптар офлайн режимде", "err_password_short": "Құпиясөз кемінде 8 таңба болуы керек", "err_password_weak": "Құпиясөзде әріптер мен сандар болуы керек", "err_invalid": "Құпиясөз қате", "err_name_invalid": "Атыңызды енгізіңіз"});
+Object.assign(I18N.ru, {"dz_hint": "PDF, DOCX, PPTX, XLSX, фото", "settings": "Настройки", "set_profile": "Профиль", "set_appearance": "Внешний вид", "set_language": "Язык", "set_ai": "Ответы ИИ", "set_data": "Данные", "set_system": "О системе", "set_account": "Аккаунт", "profile_sub": "Информация о вас", "name": "Имя", "email": "Email", "save": "Сохранить", "saved": "Сохранено", "guest_note": "Вы в гостевом режиме. Зарегистрируйтесь, чтобы сохранить данные.", "appearance_sub": "Настройте интерфейс под себя", "theme": "Тема", "theme_system": "Системная", "theme_light": "Светлая", "theme_dark": "Тёмная", "font_size": "Размер текста", "font_size_d": "Для всего интерфейса", "f_s": "Мелкий", "f_m": "Средний", "f_l": "Крупный", "width": "Ширина чата", "width_d": "Для широких экранов", "w_normal": "Обычная", "w_wide": "Широкая", "language_sub": "Язык интерфейса и ответов", "ui_lang": "Язык интерфейса", "ui_lang_d": "Меню, кнопки, уведомления", "answer_lang": "Язык ответов", "answer_lang_d": "«Авто» — на языке вопроса", "auto": "Авто", "ai_sub": "Как отвечает Mind AI", "style": "Стиль ответа", "style_d": "Длина и подробность ответов", "st_concise": "Кратко", "st_balanced": "Сбалансированно", "st_detailed": "Подробно", "show_sources": "Показывать источники", "show_sources_d": "Ссылки на документ и страницу под ответом", "show_trust": "Индикатор доверия", "show_trust_d": "«Подтверждено N источниками»", "suggestions": "Подсказки вопросов", "suggestions_d": "После загрузки документа", "data_sub": "Документы и история чата", "docs_count": "Загружено документов", "export": "Скачать чат", "export_d": "Весь диалог в файл .md", "clear_hist": "Очистить историю чата", "clear_hist_d": "Документы останутся", "delete_docs": "Удалить все документы", "delete_docs_d": "Действие нельзя отменить", "confirm_all": "Удалить все документы?", "done": "Готово", "do_it": "Выполнить", "system_sub": "Техническое состояние Mind AI", "model": "Модель ИИ", "connected": "Подключено", "disconnected": "Нет связи", "offline": "Офлайн-режим", "check": "Проверить", "checking": "Проверяю…", "ocr_card": "Распознавание сканов", "ocr_none": "Недоступно", "telegram": "Telegram-бот", "tg_on": "Подключён", "tg_off": "Не подключён", "formats": "Форматы", "version": "Версия", "account_sub": "Безопасность и вход", "change_pw": "Смена пароля", "old_pw": "Текущий пароль", "new_pw": "Новый пароль", "pw_rule": "Минимум 8 символов, буквы и цифры", "pw_changed": "Пароль изменён", "logout_d": "Выйти на этом устройстве", "danger": "Опасная зона", "delete_acc": "Удалить аккаунт", "delete_acc_d": "Все документы и данные будут удалены", "confirm_pw": "Введите пароль для подтверждения", "confirm_del": "Удалить аккаунт навсегда?", "you": "Вы", "llm_down": "Нет связи с моделью ИИ — ответы в офлайн-режиме", "err_password_short": "Пароль должен быть не короче 8 символов", "err_password_weak": "В пароле должны быть буквы и цифры", "err_invalid": "Неверный пароль", "err_name_invalid": "Введите имя"});
+Object.assign(I18N.en, {"dz_hint": "PDF, DOCX, PPTX, XLSX, photo", "settings": "Settings", "set_profile": "Profile", "set_appearance": "Appearance", "set_language": "Language", "set_ai": "AI answers", "set_data": "Data", "set_system": "System", "set_account": "Account", "profile_sub": "Information about you", "name": "Name", "email": "Email", "save": "Save", "saved": "Saved", "guest_note": "You are in guest mode. Sign up to keep your data.", "appearance_sub": "Make the interface yours", "theme": "Theme", "theme_system": "System", "theme_light": "Light", "theme_dark": "Dark", "font_size": "Text size", "font_size_d": "For the whole interface", "f_s": "Small", "f_m": "Medium", "f_l": "Large", "width": "Chat width", "width_d": "For wide screens", "w_normal": "Normal", "w_wide": "Wide", "language_sub": "Interface and answer language", "ui_lang": "Interface language", "ui_lang_d": "Menus, buttons, notifications", "answer_lang": "Answer language", "answer_lang_d": "“Auto” — same as the question", "auto": "Auto", "ai_sub": "How Mind AI answers", "style": "Answer style", "style_d": "Length and level of detail", "st_concise": "Concise", "st_balanced": "Balanced", "st_detailed": "Detailed", "show_sources": "Show sources", "show_sources_d": "Document and page links under answers", "show_trust": "Trust indicator", "show_trust_d": "“Backed by N sources”", "suggestions": "Question suggestions", "suggestions_d": "After a document is uploaded", "data_sub": "Documents and chat history", "docs_count": "Documents uploaded", "export": "Download chat", "export_d": "The whole conversation as .md", "clear_hist": "Clear chat history", "clear_hist_d": "Documents are kept", "delete_docs": "Delete all documents", "delete_docs_d": "This cannot be undone", "confirm_all": "Delete all documents?", "done": "Done", "do_it": "Run", "system_sub": "Technical status of Mind AI", "model": "AI model", "connected": "Connected", "disconnected": "Unreachable", "offline": "Offline mode", "check": "Check", "checking": "Checking…", "ocr_card": "Scan recognition", "ocr_none": "Unavailable", "telegram": "Telegram bot", "tg_on": "Connected", "tg_off": "Not connected", "formats": "Formats", "version": "Version", "account_sub": "Security and sign-in", "change_pw": "Change password", "old_pw": "Current password", "new_pw": "New password", "pw_rule": "At least 8 characters, letters and digits", "pw_changed": "Password changed", "logout_d": "Sign out on this device", "danger": "Danger zone", "delete_acc": "Delete account", "delete_acc_d": "All documents and data will be deleted", "confirm_pw": "Enter your password to confirm", "confirm_del": "Delete your account forever?", "you": "You", "llm_down": "AI model unreachable — answers in offline mode", "err_password_short": "Password must be at least 8 characters", "err_password_weak": "Password must contain letters and digits", "err_invalid": "Wrong password", "err_name_invalid": "Enter your name"});
 
 const $ = (s) => document.querySelector(s);
 const state = {
@@ -178,11 +182,13 @@ const state = {
   quiz: null,
   quizN: 5,
   user: null,
+  log: [],
+  setTab: "profile",
 };
 
 function pickLang() {
   try {
-    const saved = localStorage.getItem("docmind_lang");
+    const saved = localStorage.getItem("mind_lang");
     if (saved && I18N[saved]) return saved;
   } catch (_) {}
   const nav = (navigator.language || "kk").slice(0, 2);
@@ -195,15 +201,15 @@ const L = (key) => I18N[state.lang][key] ?? I18N.ru[key] ?? key;
 function applyI18n() {
   document.documentElement.lang = state.lang;
   document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = L(el.dataset.i18n)));
+  document.querySelectorAll("[data-i18n-html]").forEach((el) => (el.innerHTML = L(el.dataset.i18nHtml)));
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => (el.placeholder = L(el.dataset.i18nPlaceholder)));
   document.querySelectorAll("[data-i18n-title]").forEach((el) => (el.title = L(el.dataset.i18nTitle)));
-  document.querySelectorAll("#langSwitch button").forEach((b) => b.classList.toggle("active", b.dataset.lang === state.lang));
   renderDocs();
-  renderStatus();
   renderScope();
   renderUser();
   if (state.view === "map") renderMap();
   if (state.view === "quiz") renderQuiz();
+  if (!$("#settings").hidden) renderSettings();
 }
 
 /* ================= API ================= */
@@ -394,8 +400,10 @@ async function showSummary(doc, justUploaded = false) {
       wrap.innerHTML = `<p style="margin-top:10px"><b>${L("ask_these")}</b></p><div class="summary-q"></div>`;
       const qs = wrap.querySelector(".summary-q");
       for (const q of s.questions) qs.appendChild(chip(q));
-      bubble.appendChild(wrap);
-      setSuggestions(s.questions.slice(0, 3));
+      if (prefs().suggestions) {
+        bubble.appendChild(wrap);
+        setSuggestions(s.questions.slice(0, 3));
+      }
     }
   } catch (e) {
     bubble.textContent = `${L("error")}: ${e.message}`;
@@ -435,7 +443,7 @@ function addUserMessage(text) {
   scrollDown();
 }
 
-const BOT_AVATAR = `<div class="avatar"><svg><use href="#i-logo"/></svg></div>`;
+const BOT_AVATAR = `<div class="avatar"><img src="/static/favicon.svg" alt=""></div>`;
 
 function addBotMessage() {
   const el = document.createElement("div");
@@ -448,11 +456,14 @@ function addBotMessage() {
 function renderSources(body, sources, cited, evidenceQuery) {
   const byN = Object.fromEntries(sources.map((s) => [s.n, s]));
   const shown = cited.map((n) => byN[n]).filter(Boolean);
+  const p = prefs();
+  if (p.show_trust) {
   const trust = document.createElement("div");
   trust.className = "trust " + (shown.length ? "ok" : "warn");
   trust.textContent = shown.length ? "✔ " + L("trust_ok").replace("{n}", shown.length) : "⚠ " + L("trust_none");
   body.appendChild(trust);
-  if (!shown.length) return;
+  }
+  if (!shown.length || !p.show_sources) return;
   const chips = document.createElement("div");
   chips.className = "sources";
   const open = (n) => {
@@ -547,6 +558,7 @@ async function ask(question) {
   hideWelcome();
   $("#suggestions").innerHTML = "";
   addUserMessage(question);
+  state.log.push({ role: "user", text: question });
   const { body } = addBotMessage();
   const bubble = body.querySelector(".bubble");
   bubble.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
@@ -585,6 +597,8 @@ async function ask(question) {
     if (frame) cancelAnimationFrame(frame);
     paint();
     renderSources(body, sources, cited, question + " " + text.slice(0, 300));
+    const byN = Object.fromEntries(sources.map((x) => [x.n, x]));
+    state.log.push({ role: "bot", text, sources: cited.map((n) => byN[n]).filter(Boolean) });
     addTools(body, () => text);
   } catch (e) {
     bubble.textContent = `${L("error")}: ${e.message}`;
@@ -631,7 +645,8 @@ function renderPicker(selector, key, onChange) {
   }
 }
 
-const emptyState = () => `<div class="empty-state"><div class="big">${icon("folder")}</div>${L("need_doc")}</div>`;
+// пустое состояние — это и есть кнопка загрузки (клик или перетаскивание файла)
+const emptyState = () => `<button type="button" class="empty-state" data-upload><div class="big">${icon("upload")}</div><b>${L("need_doc_t")}</b>${L("need_doc")}</button>`;
 const loadingState = (text) => `<div class="loading"><span class="spinner"></span>${text}</div>`;
 const locLink = (item) => (item.chunk_id
   ? ` <button class="loc-link" data-chunk="${esc(item.chunk_id)}" data-q="${esc(item.quote || "")}">${esc(item.loc_label || L("evidence"))}</button>`
@@ -805,8 +820,8 @@ function paintQuizResult(doc, qz) {
 function renderUser() {
   const u = state.user;
   if (!u) return;
-  $("#userAvatar").textContent = (u.name || u.username || "?").trim()[0] || "?";
-  $("#userName").innerHTML = u.guest ? `${L("guest")}<small>${esc(u.username)}</small>` : `${esc(u.name)}<small>@${esc(u.username)}</small>`;
+  $("#userAvatar").textContent = (u.guest ? "G" : (u.name || "?").trim()[0]) || "?";
+  $("#userName").innerHTML = u.guest ? `${L("guest")}<small>${L("settings")}</small>` : `${esc(u.name)}<small>${esc(u.email)}</small>`;
 }
 
 async function logout() {
@@ -814,15 +829,232 @@ async function logout() {
   location.href = "/login";
 }
 
-/* ================= status ================= */
-function renderStatus() {
-  const s = state.status;
-  if (!s) return;
-  const ocrOk = s.ocr && s.ocr !== "none";
-  $("#status").innerHTML = `
-    <div><span class="dot ${s.llm_enabled && s.llm_ok !== false ? "ok" : "warn"}"></span>${s.llm_enabled ? `${L("llm_on")}: ${esc(s.llm_model || "")}${s.llm_ok === false ? " — " + L("llm_fail") : ""}` : L("llm_off")}</div>
-    <div><span class="dot ${ocrOk ? "ok" : ""}"></span>${ocrOk ? `${L("ocr_on")}: ${esc(s.ocr)}` : L("ocr_off")}</div>
-    ${s.telegram ? `<div><span class="dot ok"></span>${L("tg")}</div>` : ""}`;
+/* ================= настройки ================= */
+const DEFAULT_PREFS = {
+  theme: "system", font: "m", width: "normal", ui_lang: "auto", answer_lang: "auto",
+  answer_style: "balanced", show_sources: true, show_trust: true, suggestions: true,
+};
+const prefs = () => ({ ...DEFAULT_PREFS, ...((state.user && state.user.settings) || {}) });
+const jsonPost = (path, body, method = "POST") =>
+  api(path, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+
+function setLang(lang) {
+  state.lang = lang === "auto" ? navLang() : lang;
+  try { localStorage.setItem("mind_lang", state.lang); } catch (_) {}
+  applyI18n();
+}
+
+function navLang() {
+  const nav = (navigator.language || "kk").slice(0, 2);
+  return nav === "ru" ? "ru" : nav === "en" ? "en" : "kk";
+}
+
+function applyPrefs() {
+  const p = prefs(), root = document.documentElement;
+  if (p.theme === "system") delete root.dataset.theme; else root.dataset.theme = p.theme;
+  root.dataset.font = p.font;
+  root.dataset.width = p.width;
+  try { localStorage.setItem("mind_prefs", JSON.stringify({ theme: p.theme, font: p.font, width: p.width })); } catch (_) {}
+  if (p.ui_lang !== "auto" && p.ui_lang !== state.lang) setLang(p.ui_lang);
+}
+
+async function savePrefs(patch) {
+  if (!state.user) return;
+  state.user.settings = { ...prefs(), ...patch };
+  applyPrefs();
+  if ("ui_lang" in patch) setLang(patch.ui_lang);
+  renderSettings();
+  try { state.user.settings = await jsonPost("/api/settings", patch, "PUT"); } catch (_) { toast(L("error"), true); }
+}
+
+function openSettings(tab) {
+  if (tab) state.setTab = tab;
+  $("#settings").hidden = false;
+  renderSettings();
+}
+
+function closeSettings() { $("#settings").hidden = true; }
+
+function errText(e) {
+  let code = "";
+  try { code = JSON.parse(e.message).detail; } catch (_) {}
+  return L("err_" + code) !== "err_" + code ? L("err_" + code) : L("error");
+}
+
+// ---- строительные блоки разметки
+const segRow = (key, title, desc, options) => `
+  <div class="set-row"><div class="lbl"><b>${title}</b>${desc ? `<span>${desc}</span>` : ""}</div>
+    <div class="seg">${options.map(([v, label]) => `<button type="button" data-pref="${key}" data-val="${v}" class="${prefs()[key] === v ? "active" : ""}">${label}</button>`).join("")}</div></div>`;
+const toggleRow = (key, title, desc) => `
+  <div class="set-row"><div class="lbl"><b>${title}</b><span>${desc}</span></div>
+    <label class="switch"><input type="checkbox" data-toggle="${key}" ${prefs()[key] ? "checked" : ""}><i></i></label></div>`;
+const actionRow = (act, title, desc, label, cls = "ghost") => `
+  <div class="set-row"><div class="lbl"><b>${title}</b><span>${desc}</span></div>
+    <button type="button" class="btn ${cls}" data-act="${act}">${label}</button></div>`;
+const head = (tab) => `<h2>${L("set_" + tab)}</h2><p class="sub">${L(tab + "_sub")}</p>`;
+
+const TABS = {
+  profile() {
+    const u = state.user || {};
+    return head("profile") + `
+      <div class="set-group"><div class="set-row">
+        <span class="avatar-u" style="width:52px;height:52px;font-size:20px">${esc(u.guest ? "G" : (u.name || "?")[0])}</span>
+        <div class="lbl"><b>${esc(u.guest ? L("guest") : u.name || "")}</b><span>${esc(u.email || "")}</span></div></div></div>
+      ${u.guest ? `<div class="set-group"><div class="set-row"><div class="lbl"><span>${L("guest_note")}</span></div>
+        <button type="button" class="btn" data-act="logout">${L("logout")}</button></div></div>` : `
+      <div class="set-group" style="padding:16px">
+        <div class="field"><label>${L("name")}</label><input class="input" id="pfName" maxlength="60" value="${esc(u.name || "")}"></div>
+        <div class="field"><label>${L("email")}</label><input class="input" value="${esc(u.email || "")}" disabled></div>
+        <button type="button" class="btn" data-act="save-name">${L("save")}</button></div>`}`;
+  },
+  appearance() {
+    const p = prefs();
+    return head("appearance") + `
+      <div class="set-group"><div class="set-row" style="padding-bottom:0"><div class="lbl"><b>${L("theme")}</b></div></div>
+        <div class="theme-cards">${["system", "light", "dark"].map((t) => `
+          <button type="button" class="theme-card ${p.theme === t ? "active" : ""}" data-pref="theme" data-val="${t}"><div class="pv ${t}"></div>${L("theme_" + t)}</button>`).join("")}</div></div>
+      <div class="set-group">
+        ${segRow("font", L("font_size"), L("font_size_d"), [["s", L("f_s")], ["m", L("f_m")], ["l", L("f_l")]])}
+        ${segRow("width", L("width"), L("width_d"), [["normal", L("w_normal")], ["wide", L("w_wide")]])}</div>`;
+  },
+  language() {
+    const opts = [["auto", L("auto")], ["kk", "Қазақша"], ["ru", "Русский"], ["en", "English"]];
+    return head("language") + `<div class="set-group">
+      ${segRow("ui_lang", L("ui_lang"), L("ui_lang_d"), opts)}
+      ${segRow("answer_lang", L("answer_lang"), L("answer_lang_d"), opts)}</div>`;
+  },
+  ai() {
+    return head("ai") + `<div class="set-group">
+      ${segRow("answer_style", L("style"), L("style_d"), [["concise", L("st_concise")], ["balanced", L("st_balanced")], ["detailed", L("st_detailed")]])}</div>
+      <div class="set-group">
+      ${toggleRow("show_sources", L("show_sources"), L("show_sources_d"))}
+      ${toggleRow("show_trust", L("show_trust"), L("show_trust_d"))}
+      ${toggleRow("suggestions", L("suggestions"), L("suggestions_d"))}</div>`;
+  },
+  data() {
+    return head("data") + `
+      <div class="set-group"><div class="set-row"><div class="lbl"><b>${L("docs_count")}</b></div>
+        <span style="font-family:var(--display);font-size:22px;font-weight:700">${state.docs.length}</span></div></div>
+      <div class="set-group">
+        ${actionRow("export", L("export"), L("export_d"), icon("download") + " " + L("export"))}
+        ${actionRow("clear-history", L("clear_hist"), L("clear_hist_d"), L("do_it"))}</div>
+      <div class="set-group danger-zone">${actionRow("delete-docs", L("delete_docs"), L("delete_docs_d"), L("delete"), "danger")}</div>`;
+  },
+  system() {
+    const s = state.status || {};
+    const ocrLangs = (s.ocr || "").startsWith("tesseract:") ? s.ocr.split(":")[1].split("+") : [];
+    const langName = { kaz: "ҚАЗ", rus: "РУС", eng: "ENG" };
+    const llm = !s.llm_enabled ? `<span class="pill">${L("offline")}</span>`
+      : s.llm_ok === false ? `<span class="pill bad"><i></i>${L("disconnected")}</span>`
+      : s.llm_ok ? `<span class="pill ok"><i></i>${L("connected")}</span>` : `<span class="pill">…</span>`;
+    return head("system") + `<div class="sys-grid">
+      <div class="sys-card"><div class="k">${icon("spark")}${L("model")}</div>
+        <div class="v">${esc(s.llm_model || "—")}</div>${llm}
+        <div style="margin-top:12px"><button type="button" class="btn ghost" data-act="check-llm">${L("check")}</button></div></div>
+      <div class="sys-card"><div class="k">${icon("scan")}${L("ocr_card")}</div>
+        <div class="v">${ocrLangs.length ? "Tesseract" : L("ocr_none")}</div>
+        ${ocrLangs.map((x) => `<span class="pill ok"><i></i>${langName[x] || x}</span>`).join("")}</div>
+      <div class="sys-card"><div class="k">${icon("chat")}${L("telegram")}</div>
+        <div class="v">${s.telegram ? L("tg_on") : L("tg_off")}</div>
+        <span class="pill ${s.telegram ? "ok" : ""}"><i></i>Telegram</span></div>
+      <div class="sys-card"><div class="k">${icon("file")}${L("formats")}</div>
+        <div class="v">Mind AI ${esc(s.version || "")}</div>
+        <div>${(s.formats || []).filter((f) => [".pdf", ".docx", ".pptx", ".xlsx", ".csv", ".txt", ".html", ".jpg", ".png", ".doc", ".rtf"].includes(f))
+          .map((f) => `<span class="pill">${f.slice(1).toUpperCase()}</span>`).join("")}</div></div></div>`;
+  },
+  account() {
+    const u = state.user || {};
+    return head("account") + (u.guest ? "" : `
+      <div class="set-group" style="padding:16px"><b style="display:block;margin-bottom:12px">${L("change_pw")}</b>
+        <div class="field"><label>${L("old_pw")}</label><input class="input" type="password" id="pwOld" autocomplete="current-password"></div>
+        <div class="field"><label>${L("new_pw")}</label><input class="input" type="password" id="pwNew" autocomplete="new-password">
+          <span style="font-size:12px;color:var(--muted)">${L("pw_rule")}</span></div>
+        <button type="button" class="btn" data-act="change-pw">${L("save")}</button></div>`) + `
+      <div class="set-group">${actionRow("logout", L("logout"), L("logout_d"), icon("logout") + " " + L("logout"))}</div>
+      <div class="set-group danger-zone">${actionRow("delete-account", L("delete_acc"), L("delete_acc_d"), L("delete"), "danger")}</div>`;
+  },
+};
+
+function renderSettings() {
+  if (!state.user || $("#settings").hidden) return;
+  document.querySelectorAll("#setNav button").forEach((b) => b.classList.toggle("active", b.dataset.tab === state.setTab));
+  $("#setBody").innerHTML = TABS[state.setTab]();
+}
+
+function exportChat() {
+  const lines = [`# Mind AI — ${new Date().toLocaleString()}`, ""];
+  for (const m of state.log) {
+    lines.push(m.role === "user" ? `**${L("you")}:** ${m.text}` : `**Mind AI:** ${m.text}`);
+    if (m.sources && m.sources.length) lines.push("", ...m.sources.map((x) => `> [${x.n}] ${x.doc_name}${x.loc_label ? ", " + x.loc_label : ""}`));
+    lines.push("");
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/markdown" }));
+  a.download = `mind-ai-chat-${new Date().toISOString().slice(0, 10)}.md`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+const ACTIONS = {
+  async "save-name"() {
+    try { state.user = await jsonPost("/api/profile", { name: $("#pfName").value }, "PUT"); renderUser(); renderSettings(); toast(L("saved")); }
+    catch (e) { toast(errText(e), true); }
+  },
+  export: exportChat,
+  async "clear-history"() { await clearChat(); toast(L("done")); },
+  async "delete-docs"() {
+    if (!confirm(L("confirm_all"))) return;
+    await api("/api/documents", { method: "DELETE" });
+    state.selected.clear();
+    state.mapCache = {};
+    state.quiz = null;
+    await loadDocs();
+    renderSettings();
+    toast(L("done"));
+  },
+  async "check-llm"(btn) {
+    btn.textContent = L("checking");
+    const c = await api("/api/llm-check").catch(() => ({ ok: false }));
+    state.status.llm_ok = c.ok;
+    renderSettings();
+  },
+  async "change-pw"() {
+    try {
+      await jsonPost("/api/profile/password", { old: $("#pwOld").value, new: $("#pwNew").value });
+      toast(L("pw_changed"));
+      renderSettings();
+    } catch (e) { toast(errText(e), true); }
+  },
+  logout,
+  async "delete-account"() {
+    if (!confirm(L("confirm_del"))) return;
+    const password = state.user.guest ? "" : prompt(L("confirm_pw")) || "";
+    if (!state.user.guest && !password) return;
+    try { await jsonPost("/api/profile/delete", { password }); location.href = "/login"; }
+    catch (e) { toast(errText(e), true); }
+  },
+};
+
+function bindSettings() {
+  const body = $("#setBody");
+  body.addEventListener("click", (e) => {
+    const pref = e.target.closest("[data-pref]");
+    if (pref) return savePrefs({ [pref.dataset.pref]: pref.dataset.val });
+    const act = e.target.closest("[data-act]");
+    if (act && ACTIONS[act.dataset.act]) ACTIONS[act.dataset.act](act);
+  });
+  body.addEventListener("change", (e) => {
+    const t = e.target.closest("[data-toggle]");
+    if (t) savePrefs({ [t.dataset.toggle]: t.checked });
+  });
+}
+
+async function clearChat() {
+  await api("/api/clear", { method: "POST" });
+  $("#messages").innerHTML = "";
+  $("#suggestions").innerHTML = "";
+  $("#welcome").style.display = "";
+  state.log = [];
 }
 
 /* ================= voice ================= */
@@ -859,14 +1091,6 @@ function init() {
   applyI18n();
   setupVoice();
 
-  $("#langSwitch").onclick = (e) => {
-    const lang = e.target.dataset.lang;
-    if (!lang) return;
-    state.lang = lang;
-    try { localStorage.setItem("docmind_lang", lang); } catch (_) {}
-    applyI18n();
-  };
-
   const fileInput = $("#fileInput");
   fileInput.onchange = () => uploadFiles(fileInput.files);
   $("#attachBtn").onclick = () => fileInput.click();
@@ -890,35 +1114,33 @@ function init() {
     ask(q);
   };
 
-  $("#clearChat").onclick = async () => {
-    await api("/api/clear", { method: "POST" });
-    $("#messages").innerHTML = "";
-    $("#suggestions").innerHTML = "";
-    $("#welcome").style.display = "";
-    toast(L("cleared"));
-  };
+  $("#clearChat").onclick = async () => { await clearChat(); toast(L("cleared")); };
 
   $("#tabs").onclick = (e) => { const b = e.target.closest("button"); if (b) setView(b.dataset.view); };
   $("#evClose").onclick = closeEvidence;
   $("#scrim").onclick = closeEvidence;
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeEvidence(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeEvidence(); closeSettings(); } });
   // ссылки «стр. N» в карте документа и в тесте
   document.addEventListener("click", (e) => {
     const link = e.target.closest(".loc-link");
     if (link) openEvidence(link.dataset.chunk, link.dataset.q);
+    if (e.target.closest("[data-upload]")) $("#fileInput").click();
   });
 
-  $("#logoutBtn").onclick = logout;
-  api("/api/auth/me").then((u) => { state.user = u; renderUser(); }).catch(() => {});
+  $("#userCard").onclick = () => openSettings();
+  $("#setClose").onclick = closeSettings;
+  $("#settings").onclick = (e) => { if (e.target.id === "settings") closeSettings(); };
+  $("#setNav").onclick = (e) => { const b = e.target.closest("button"); if (b) { state.setTab = b.dataset.tab; renderSettings(); } };
+  bindSettings();
+  api("/api/auth/me").then((u) => { state.user = u; renderUser(); applyPrefs(); }).catch(() => {});
 
   $("#openSidebar").onclick = () => $("#sidebar").classList.add("open");
   $("#closeSidebar").onclick = () => $("#sidebar").classList.remove("open");
 
   api("/api/status").then((s) => {
     state.status = s;
-    renderStatus();
-    // реально проверяем, отвечает ли модель, чтобы статус не вводил в заблуждение
-    if (s.llm_enabled) api("/api/llm-check").then((c) => { s.llm_ok = c.ok; renderStatus(); }).catch(() => {});
+    // реально проверяем модель; если связи нет — одно уведомление вместо постоянной строки
+    if (s.llm_enabled) api("/api/llm-check").then((c) => { s.llm_ok = c.ok; if (!c.ok) toast(L("llm_down"), true); }).catch(() => {});
   }).catch(() => {});
   loadDocs().catch((e) => toast(e.message, true));
 }
