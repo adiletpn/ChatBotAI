@@ -187,6 +187,9 @@ Object.assign(I18N.en, {"gate_profile": "Your profile is available after you sig
 Object.assign(I18N.kk, {"mm_model": "Модель", "mm_style": "Жауап стилі", "lite": "Mind Lite", "lite_d": "Құжаттар бойынша жылдам әрі нақты жауаптар", "free": "Тегін", "pro": "Mind Pro", "pro_d": "Үлкен құжаттар мен кестелерді терең талдау", "soon": "Жақында", "pro_toast": "Mind Pro әзірленуде — жақында қолжетімді болады", "concise_d": "1–3 сөйлем", "balanced_d": "Негізгі мәліметтері бар жауап", "detailed_d": "Барлық тармақтарымен толық"});
 Object.assign(I18N.ru, {"mm_model": "Модель", "mm_style": "Стиль ответа", "lite": "Mind Lite", "lite_d": "Быстрые и точные ответы по документам", "free": "Бесплатно", "pro": "Mind Pro", "pro_d": "Глубокий анализ больших документов и таблиц", "soon": "Скоро", "pro_toast": "Mind Pro в разработке — скоро будет доступна", "concise_d": "1–3 предложения", "balanced_d": "Ответ с ключевыми деталями", "detailed_d": "Подробно, со всеми пунктами"});
 Object.assign(I18N.en, {"mm_model": "Model", "mm_style": "Answer style", "lite": "Mind Lite", "lite_d": "Fast, accurate answers from your documents", "free": "Free", "pro": "Mind Pro", "pro_d": "Deep analysis of large documents and tables", "soon": "Soon", "pro_toast": "Mind Pro is in development — coming soon", "concise_d": "1–3 sentences", "balanced_d": "Answer with the key details", "detailed_d": "Thorough, covering every point"});
+Object.assign(I18N.kk, {"pro_d": "Беттерді «көреді»: PDF-тағы кестелер, графиктер мен сызбалар", "vision_seen": "Mind Pro беттерді қарады", "tab_cmp": "Салыстыру", "cmp_h": "Нұсқаларды салыстыру", "cmp_sub": "Келісімшарттың, ереженің немесе нұсқаулықтың екі нұсқасын жүктеңіз — не қосылғанын, өшірілгенін және өзгергенін көресіз.", "cmp_old": "Бұрынғы", "cmp_new": "Жаңа", "cmp_go": "Салыстыру", "cmp_need": "Салыстыру үшін құжаттың екі нұсқасын жүктеңіз", "cmp_added": "қосылды", "cmp_removed": "өшірілді", "cmp_changed": "өзгерді", "cmp_similar": "сәйкестік", "cmp_same": "Құжаттардың мәтіні бірдей", "cmp_points": "Негізгі өзгерістер", "cmp_attention": "Назар аударыңыз", "cmp_all": "Барлық өзгерістер", "comparing": "Нұсқаларды салыстырып жатырмын…", "cmp_pick2": "Екі түрлі құжатты таңдаңыз", "cmp_trunc": "Алғашқы 300 өзгеріс көрсетілген"});
+Object.assign(I18N.ru, {"pro_d": "«Видит» страницы: таблицы, графики и схемы в PDF", "vision_seen": "Mind Pro посмотрел страницы", "tab_cmp": "Сравнение", "cmp_h": "Сравнение версий", "cmp_sub": "Загрузите две версии договора, регламента или инструкции — и увидите, что добавили, удалили и изменили.", "cmp_old": "Было", "cmp_new": "Стало", "cmp_go": "Сравнить", "cmp_need": "Загрузите две версии документа, чтобы сравнить их", "cmp_added": "добавлено", "cmp_removed": "удалено", "cmp_changed": "изменено", "cmp_similar": "совпадение", "cmp_same": "Тексты документов совпадают", "cmp_points": "Главные изменения", "cmp_attention": "Обратите внимание", "cmp_all": "Все изменения", "comparing": "Сравниваю версии…", "cmp_pick2": "Выберите два разных документа", "cmp_trunc": "Показаны первые 300 изменений"});
+Object.assign(I18N.en, {"pro_d": "“Sees” the pages: tables, charts and diagrams in PDFs", "vision_seen": "Mind Pro looked at the pages", "tab_cmp": "Compare", "cmp_h": "Compare versions", "cmp_sub": "Upload two versions of a contract, policy or instruction — and see what was added, removed and changed.", "cmp_old": "Before", "cmp_new": "After", "cmp_go": "Compare", "cmp_need": "Upload two versions of a document to compare them", "cmp_added": "added", "cmp_removed": "removed", "cmp_changed": "changed", "cmp_similar": "match", "cmp_same": "The documents have the same text", "cmp_points": "Key changes", "cmp_attention": "Pay attention", "cmp_all": "All changes", "comparing": "Comparing versions…", "cmp_pick2": "Choose two different documents", "cmp_trunc": "Showing the first 300 changes"});
 
 const $ = (s) => document.querySelector(s);
 const state = {
@@ -198,6 +201,7 @@ const state = {
   view: "chat",
   mapDoc: null,
   mapCache: {},
+  cmpA: null, cmpB: null, cmp: null,  // сравнение версий: выбранные документы и последний результат
   quizDoc: null,
   quiz: null,
   quizN: 5,
@@ -232,6 +236,7 @@ function applyI18n() {
   if ($("#modelLabel")) renderModelPicker();
   if (state.view === "map") renderMap();
   if (state.view === "quiz") renderQuiz();
+  if (state.view === "compare") renderCompare();
   if (!$("#settings").hidden) renderSettings();
 }
 
@@ -373,6 +378,7 @@ async function loadDocs() {
   renderScope();
   if (state.view === "map") renderMap();
   if (state.view === "quiz") renderQuiz();
+  if (state.view === "compare") renderCompare();
 }
 
 async function uploadFiles(files) {
@@ -574,6 +580,15 @@ function addTools(body, getText) {
   body.appendChild(tools);
 }
 
+// Mind Pro: какие страницы модель «посмотрела» глазами (кнопки открывают PDF на этой странице)
+function addVisionNote(body, pages) {
+  const note = document.createElement("div");
+  note.className = "vision-note";
+  note.innerHTML = `${icon("eye")}<span>${L("vision_seen")}:</span>` + pages.map((p) =>
+    `<a href="${fileUrl(p.doc_id, p.loc)}" target="_blank" rel="noopener">${esc(p.loc_label || p.doc_name)}</a>`).join("");
+  body.insertBefore(note, body.querySelector(".bubble"));
+}
+
 async function ask(question) {
   question = question.trim();
   if (!question || state.busy) return;
@@ -615,6 +630,7 @@ async function ask(question) {
         const ev = JSON.parse(line.slice(5));
         if (ev.type === "chat") { state.chatId = ev.id; }
         else if (ev.type === "sources") sources = ev.sources;
+        else if (ev.type === "vision") addVisionNote(body, ev.pages);
         else if (ev.type === "delta") { text += ev.text; if (!frame) frame = requestAnimationFrame(paint); }
         else if (ev.type === "done") cited = ev.cited || [];
         else if (ev.type === "error") toast(`${L("error")}: ${ev.message}`, true);
@@ -642,10 +658,12 @@ function setView(view) {
   $("#viewChat").hidden = view !== "chat";
   $("#viewMap").hidden = view !== "map";
   $("#viewQuiz").hidden = view !== "quiz";
+  $("#viewCompare").hidden = view !== "compare";
   document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("active", b.dataset.view === view));
   $("#sidebar").classList.remove("open");
   if (view === "map") renderMap();
   if (view === "quiz") renderQuiz();
+  if (view === "compare") renderCompare();
 }
 
 function currentDoc(key) {
@@ -742,6 +760,82 @@ function paintMap(doc, m) {
       $("#reqBar").style.width = `${(count / m.requirements.length) * 100}%`;
     };
   });
+}
+
+/* ---------- сравнение версий ---------- */
+function renderCompare() {
+  const pick = $("#cmpPick"), body = $("#cmpBody");
+  if (state.docs.length < 2) {
+    pick.innerHTML = "";
+    body.innerHTML = `<button type="button" class="empty-state" data-upload><div class="big">${icon("compare")}</div><b>${L("cmp_need")}</b></button>`;
+    return;
+  }
+  const has = (id) => state.docs.some((d) => d.id === id);
+  if (!has(state.cmpB)) state.cmpB = state.docs[state.docs.length - 1].id;
+  if (!has(state.cmpA) || state.cmpA === state.cmpB) state.cmpA = state.docs.find((d) => d.id !== state.cmpB).id;
+  const options = (sel) => state.docs.map((d) => `<option value="${d.id}" ${d.id === sel ? "selected" : ""}>${esc(d.name)}</option>`).join("");
+  pick.innerHTML = `
+    <label><span>${L("cmp_old")}</span><select id="cmpA">${options(state.cmpA)}</select></label>
+    <button type="button" class="icon-btn" id="cmpSwap" aria-label="swap">${icon("swap")}</button>
+    <label><span>${L("cmp_new")}</span><select id="cmpB">${options(state.cmpB)}</select></label>
+    <button type="button" class="btn" id="cmpGo">${L("cmp_go")}</button>`;
+  $("#cmpA").onchange = (e) => { state.cmpA = e.target.value; };
+  $("#cmpB").onchange = (e) => { state.cmpB = e.target.value; };
+  $("#cmpSwap").onclick = () => { [state.cmpA, state.cmpB] = [state.cmpB, state.cmpA]; renderCompare(); };
+  $("#cmpGo").onclick = runCompare;
+  const r = state.cmp;
+  if (r && r.a.id === state.cmpA && r.b.id === state.cmpB && r.lang === state.lang) paintCompare(r);
+  else if (!r || !r.loading) body.innerHTML = "";
+}
+
+async function runCompare() {
+  if (state.cmpA === state.cmpB) return toast(L("cmp_pick2"), true);
+  const a = state.cmpA, b = state.cmpB, lang = state.lang;
+  state.cmp = { loading: true, a: { id: a }, b: { id: b }, lang };
+  $("#cmpBody").innerHTML = loadingState(L("comparing"));
+  try {
+    const data = await api(`/api/compare?a=${a}&b=${b}&lang=${lang}`);
+    state.cmp = { ...data, lang };
+  } catch (e) {
+    state.cmp = null;
+    $("#cmpBody").innerHTML = `<div class="empty-state">${L("error")}: ${esc(e.message)}</div>`;
+    return;
+  }
+  if (state.view === "compare") renderCompare();
+}
+
+function paintCompare(r) {
+  const st = r.stats;
+  const list = (items, cls) => items.length ? `<ul class="${cls}">${items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+  const sm = r.summary;
+  const words = (parts) => parts.map(([op, t]) => op === "eq" ? esc(t) : `<${op}>${esc(t)}</${op}>`).join("");
+  const change = (c) => {
+    const loc = esc(c.loc_new || c.loc_old || "");
+    const text = c.kind === "changed" ? words(c.words) : c.kind === "added" ? `<ins>${esc(c.new)}</ins>` : `<del>${esc(c.old)}</del>`;
+    return `<div class="cmp-item ${c.kind}"><div class="cmp-tag"><b>${L("cmp_" + c.kind)}</b>${loc ? `<span>${loc}</span>` : ""}</div><div class="cmp-text">${text}</div></div>`;
+  };
+  if (!r.changes.length) {
+    $("#cmpBody").innerHTML = `<div class="map-hero"><h3>${icon("check")} ${L("cmp_same")}</h3><p>${esc(r.a.name)} · ${esc(r.b.name)}</p></div>`;
+    return;
+  }
+  $("#cmpBody").innerHTML = `
+    <div class="map-hero">
+      <h3>${esc(r.a.name)} → ${esc(r.b.name)}</h3>
+      ${sm ? `<p>${esc(sm.verdict)}</p>` : ""}
+      <div class="map-stats cmp-stats">
+        <div class="add"><b>+${st.added}</b>${L("cmp_added")}</div>
+        <div class="del"><b>−${st.removed}</b>${L("cmp_removed")}</div>
+        <div class="chg"><b>${st.changed}</b>${L("cmp_changed")}</div>
+        <div><b>${st.similarity}%</b>${L("cmp_similar")}</div>
+      </div>
+    </div>
+    ${sm && (sm.points.length || sm.attention.length) ? `<div class="cmp-summary">
+      ${sm.points.length ? `<div class="panel"><h4>${icon("spark")}${L("cmp_points")}</h4>${list(sm.points, "cmp-points")}</div>` : ""}
+      ${sm.attention.length ? `<div class="panel warn"><h4>${icon("pin")}${L("cmp_attention")}</h4>${list(sm.attention, "cmp-points")}</div>` : ""}
+    </div>` : ""}
+    <h4 class="cmp-h">${L("cmp_all")} · ${st.total}</h4>
+    <div class="cmp-list">${r.changes.map(change).join("")}</div>
+    ${r.truncated ? `<p class="muted">${L("cmp_trunc")}</p>` : ""}`;
 }
 
 /* ---------- проверка знаний ---------- */
@@ -885,7 +979,7 @@ async function logout() {
 /* ================= настройки ================= */
 const DEFAULT_PREFS = {
   theme: "system", accent: "indigo", font: "m", width: "normal", ui_lang: "auto", answer_lang: "auto",
-  answer_style: "balanced", show_sources: true, show_trust: true, suggestions: true,
+  answer_style: "balanced", answer_model: "lite", show_sources: true, show_trust: true, suggestions: true,
 };
 function guestPrefs() {
   try { return JSON.parse(localStorage.getItem("mind_guest_prefs") || "{}"); } catch (_) { return {}; }
@@ -1239,14 +1333,15 @@ const STYLE_KEYS = { concise: "st_concise", balanced: "st_balanced", detailed: "
 
 function renderModelPicker() {
   const style = prefs().answer_style;
-  $("#modelLabel").innerHTML = `${L("lite")}<span class="mb-style"> · ${L(STYLE_KEYS[style] || "st_balanced")}</span>`;
+  const model = prefs().answer_model === "pro" ? "pro" : "lite";
+  $("#modelLabel").innerHTML = `${L(model)}<span class="mb-style"> · ${L(STYLE_KEYS[style] || "st_balanced")}</span>`;
   const item = (attrs, title, desc, right, cls = "") =>
     `<button type="button" class="mm-item ${cls}" ${attrs}><span class="mm-t"><b>${title}</b><span class="d">${desc}</span></span>${right}</button>`;
   const check = `<svg class="ok"><use href="#i-check"/></svg>`;
   $("#modelMenu").innerHTML =
     `<div class="mm-head">${L("mm_model")}</div>` +
-    item('data-model="lite"', `${L("lite")} <span class="mm-badge">${L("free")}</span>`, L("lite_d"), check) +
-    item('data-model="pro"', `${L("pro")} <span class="mm-badge pro">PRO · ${L("soon")}</span>`, L("pro_d"), "", "soon") +
+    item('data-model="lite"', `${L("lite")} <span class="mm-badge">${L("free")}</span>`, L("lite_d"), model === "lite" ? check : "") +
+    item('data-model="pro"', `${L("pro")} <span class="mm-badge pro">PRO</span>`, L("pro_d"), model === "pro" ? check : "") +
     `<div class="mm-sep"></div><div class="mm-head">${L("mm_style")}</div>` +
     Object.entries(STYLE_KEYS).map(([k, label]) =>
       item(`data-style="${k}"`, L(label), L(k + "_d"), k === style ? check : "")).join("");
@@ -1267,7 +1362,7 @@ function setupModelPicker() {
     e.stopPropagation();
     const b = e.target.closest(".mm-item");
     if (!b) return;
-    if (b.dataset.model === "pro") { toast(L("pro_toast")); return; }
+    if (b.dataset.model) savePrefs({ answer_model: b.dataset.model });
     if (b.dataset.style) savePrefs({ answer_style: b.dataset.style });
     toggleModelMenu(false);
     renderModelPicker();

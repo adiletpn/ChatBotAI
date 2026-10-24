@@ -9,7 +9,7 @@ from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Resp
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import insights, llm, rag
+from . import compare, insights, llm, rag
 from . import firebase_auth, mailer
 from .chats import chats
 from .auth import COOKIE, SESSION_DAYS, AuthError, limiter, public_user, users
@@ -17,6 +17,7 @@ from .config import settings
 from .lang import format_loc
 from .ocr import ocr_engine
 from .parsers import SUPPORTED_EXT, UnsupportedFormat
+from .semantic import semantic
 from .store import store
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -33,6 +34,7 @@ async def lifespan(app: FastAPI):
     log.info("LLM: %s (%s, %s)", "включена" if settings.llm_enabled else "ОФЛАЙН-РЕЖИМ",
              settings.llm_model, settings.llm_base_url)
     log.info("OCR: %s", ocr_engine())
+    semantic.start(lambda: list(store.chunks))
     yield
     if bot_task:
         bot_task.cancel()
@@ -320,6 +322,8 @@ async def status():
         "ocr": ocr_engine(),
         "telegram": bool(settings.telegram_token),
         "mail": mailer.mode(),
+        "semantic": semantic.status(),
+        "vision_model": settings.vision_model if settings.llm_enabled else None,
         "version": "1.0",
         "formats": sorted(SUPPORTED_EXT),
         "max_upload_mb": settings.max_upload_mb,
@@ -400,6 +404,18 @@ async def document_quiz(doc_id: str, request: Request, lang: str = "ru", n: int 
     if not doc:
         raise HTTPException(404, "Документ не найден")
     return await insights.quiz(doc, _lang(lang), max(3, min(n, 10)))
+
+
+@app.get("/api/compare")
+async def compare_documents(a: str, b: str, request: Request, lang: str = "ru"):
+    """Сравнение двух версий документа: a — старая, b — новая."""
+    owner = owner_of(request)
+    doc_a, doc_b = store.get(a, owner), store.get(b, owner)
+    if not (doc_a and doc_b):
+        raise HTTPException(404, "Документ не найден")
+    if a == b:
+        raise HTTPException(400, "Выберите два разных документа")
+    return await compare.compare(doc_a, doc_b, _lang(lang))
 
 
 @app.get("/api/chunk")

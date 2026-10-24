@@ -16,6 +16,7 @@ os.environ["TELEGRAM_BOT_TOKEN"] = ""
 os.environ["SMTP_HOST"] = ""  # коды — в консоль, настоящие письма в тестах не шлём
 os.environ["SMTP_USER"] = ""
 os.environ["BREVO_API_KEY"] = ""
+os.environ["MODELS_DIR"] = str(Path.home() / ".cache" / "mind-ai-models")  # модель эмбеддингов качаем один раз
 
 from fastapi.testclient import TestClient  # noqa: E402
 
@@ -81,6 +82,46 @@ async def main() -> None:
         loc = result["sources"][0]["loc_label"] if result["sources"] else "-"
         check(question, ok, f"источник: {result['sources'][0]['doc_name'] if result['sources'] else '-'} {loc}")
 
+    print("Смысловой поиск (эмбеддинги):")
+    import time
+    from app.semantic import semantic
+    semantic.start(lambda: list(store.chunks))
+    for _ in range(600):
+        if semantic.ready or semantic.error:
+            break
+        time.sleep(0.5)
+    if semantic.ready:
+        allowed = {pdf["id"], docx["id"]}
+        for question, expected in [("Как часто заново учат технике безопасности?", "6 месяцев"),
+                                   ("What should I do if a fire starts?", "пожар")]:
+            hits = rag._search([question], allowed, 3)
+            check(f"«{question}» → «{expected}»",
+                  any(expected in c["text"] for c, _ in hits), str([c["text"][:50] for c, _ in hits]))
+    else:
+        print(f"  ⚠️  модель недоступна ({semantic.error}) — пропуск")
+
+    print("Сравнение версий:")
+    import io
+    import docx as docx_lib
+    from app import compare
+    d = docx_lib.Document(io.BytesIO((SAMPLES / "Instrukciya_po_ohrane_truda.docx").read_bytes()))
+    for p in d.paragraphs:
+        if "6 месяцев" in p.text:
+            for r in p.runs:
+                r.text = r.text.replace("6 месяцев", "3 месяца")
+    d.add_paragraph("6. Новый раздел: ежегодная аттестация обязательна.")
+    buf = io.BytesIO()
+    d.save(buf)
+    docx2 = rag.ingest(owner, "Instr_v2.docx", buf.getvalue())
+    diff = compare.diff_docs(docx, docx2, "ru")
+    words = [w for c in diff["changes"] if c["kind"] == "changed" for w in c["words"] if w[0] != "eq"]
+    check("изменение найдено по словам (6 → 3)", ["del", "6"] in words and ["ins", "3"] in words, str(words))
+    check("добавленный пункт", any(c["kind"] == "added" and "аттестация" in c["new"] for c in diff["changes"]))
+    check("остальное совпадает", diff["stats"]["similarity"] >= 85 and diff["stats"]["removed"] == 0, str(diff["stats"]))
+    same = compare.diff_docs(docx, docx, "ru")
+    check("одинаковые версии → нет изменений", same["changes"] == [])
+    store.delete(docx2["id"])
+
     result = await ask("Финал қашан?", "nobody")
     check("нет документов → подсказка", "құжат" in result["text"].lower())
 
@@ -88,6 +129,7 @@ async def main() -> None:
     client = TestClient(app)
     headers = {}
     check("без входа — 401", client.get("/api/documents").status_code == 401)
+    check("сравнение без входа — 401", client.get(f"/api/compare?a={pdf['id']}&b={docx['id']}").status_code == 401)
     check("без входа — главная видна, данные закрыты",
           client.get("/", follow_redirects=False).status_code == 200 and client.get("/api/chats").status_code == 401)
     from app import mailer

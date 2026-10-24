@@ -10,6 +10,7 @@ from pathlib import Path
 from .config import settings
 from .lang import detect_lang
 from .retriever import BM25Index
+from .semantic import semantic
 
 
 class DocumentStore:
@@ -59,6 +60,7 @@ class DocumentStore:
             self.chunks.extend(chunks)
             self.index.build(self.chunks)
             self._save()
+        semantic.add(chunks)
         return doc
 
     def list(self, owner: str) -> list[dict]:
@@ -101,6 +103,7 @@ class DocumentStore:
             doc = self.documents.pop(doc_id, None)
             if not doc:
                 return
+            semantic.remove(c["id"] for c in self.chunks if c["doc_id"] == doc_id)
             self.chunks = [c for c in self.chunks if c["doc_id"] != doc_id]
             self.index.build(self.chunks)
             self._save()

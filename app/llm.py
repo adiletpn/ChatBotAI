@@ -34,12 +34,14 @@ def _url() -> str:
     return settings.llm_base_url + path
 
 
-def _payload(system: str, messages: list[dict], stream: bool, max_tokens: int | None, temperature: float | None) -> dict:
+def _payload(system: str, messages: list[dict], stream: bool, max_tokens: int | None, temperature: float | None,
+             model: str | None = None) -> dict:
+    model = model or settings.llm_model
     max_tokens = max_tokens or settings.llm_max_tokens
     temperature = settings.llm_temperature if temperature is None else temperature
     if settings.llm_provider == "anthropic":
         return {
-            "model": settings.llm_model,
+            "model": model,
             "system": system,
             "messages": messages,
             "max_tokens": max_tokens,
@@ -47,7 +49,7 @@ def _payload(system: str, messages: list[dict], stream: bool, max_tokens: int | 
             "stream": stream,
         }
     return {
-        "model": settings.llm_model,
+        "model": model,
         "messages": [{"role": "system", "content": system}, *messages],
         "max_tokens": max_tokens,
         "temperature": temperature,
@@ -76,9 +78,9 @@ def _extract_delta(event: dict) -> str:
 
 
 async def stream_chat(system: str, messages: list[dict], max_tokens: int | None = None,
-                      temperature: float | None = None) -> AsyncIterator[str]:
+                      temperature: float | None = None, model: str | None = None) -> AsyncIterator[str]:
     """Отдаёт ответ модели по кусочкам. Если сервер не умеет stream — отдаёт ответ целиком."""
-    payload = _payload(system, messages, True, max_tokens, temperature)
+    payload = _payload(system, messages, True, max_tokens, temperature, model)
     timeout = httpx.Timeout(settings.llm_timeout, connect=15)
     async with httpx.AsyncClient(timeout=timeout) as client:
         try:
@@ -134,6 +136,14 @@ VISION_PROMPT = (
     "keeping the original language (Kazakh, Russian or English) and line structure. "
     "Output only the transcribed text, nothing else."
 )
+
+
+def image_part(data: bytes, mime: str = "image/png") -> dict:
+    """Изображение как часть сообщения — в формате нужного протокола."""
+    b64 = base64.b64encode(data).decode()
+    if settings.llm_provider == "anthropic":
+        return {"type": "image", "source": {"type": "base64", "media_type": mime, "data": b64}}
+    return {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}}
 
 
 def vision_transcribe(png_bytes: bytes) -> str:

@@ -49,6 +49,7 @@ DEFAULT_SETTINGS = {
     "ui_lang": "auto",          # auto | kk | ru | en
     "answer_lang": "auto",      # auto | kk | ru | en
     "answer_style": "balanced",  # concise | balanced | detailed
+    "answer_model": "lite",      # lite | pro (Mind Pro смотрит на страницы PDF)
     "show_sources": True,
     "show_trust": True,
     "suggestions": True,
@@ -58,6 +59,7 @@ SETTING_CHOICES = {
     "accent": {"graphite", "indigo", "emerald", "ocean", "amber", "rose"}, "font": {"s", "m", "l"}, "width": {"normal", "wide"},
     "ui_lang": {"auto", "kk", "ru", "en"},
     "answer_lang": {"auto", "kk", "ru", "en"}, "answer_style": {"concise", "balanced", "detailed"},
+    "answer_model": {"lite", "pro"},
 }
 LIMITS = {  # действие: (максимум, окно в секундах) — на один IP (с запасом для общего Wi-Fi на площадке)
     "register": (15, 3600),

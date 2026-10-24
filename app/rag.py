@@ -3,8 +3,11 @@
 Схема ответа на вопрос:
   1. определяем язык вопроса (kk / ru / en);
   2. LLM переводит запрос на три языка — так находим ответ, даже если документ на другом языке;
-  3. BM25 находит самые релевантные фрагменты (короткие документы модель получает целиком);
+  3. гибридный поиск: BM25 (совпадение слов) + эмбеддинги (совпадение смысла), результаты
+     объединяются методом RRF; короткие документы модель получает целиком;
   4. LLM формирует ответ строго по фрагментам и ставит ссылки [1], [2] на источники;
+     в режиме Mind Pro модель со «зрением» дополнительно видит сами страницы PDF —
+     таблицы, графики и схемы, которые теряются при извлечении текста;
   5. без LLM работает офлайн-режим — извлекаются самые подходящие предложения.
 """
 import asyncio
@@ -20,8 +23,9 @@ from . import llm
 from .chunker import chunk_pages, split_sentences
 from .config import settings
 from .lang import LANG_NAMES, detect_lang, format_loc, t
-from .parsers import parse_file
+from .parsers import IMAGE_EXT, parse_file
 from .retriever import tokenize
+from .semantic import semantic
 from .store import store
 
 log = logging.getLogger(__name__)
@@ -110,8 +114,12 @@ async def _expand_query(question: str) -> str:
         return ""
 
 
+RRF_K = 60  # константа Reciprocal Rank Fusion: важен ранг в каждом списке, а не «сырые» баллы
+
+
 def _search(queries: list[str], doc_ids: set[str], top_k: int) -> list[tuple[dict, float]]:
-    """Объединяет результаты нескольких запросов (оригинал + перевод), берёт максимальный балл."""
+    """Гибридный поиск: BM25 по словам + эмбеддинги по смыслу, оба по всем вариантам запроса
+    (оригинал + переводы). Списки объединяются по RRF: фрагмент, найденный обоими способами, — выше."""
     best: dict[str, tuple[dict, float]] = {}
     for query in queries:
         if not query.strip():
@@ -119,7 +127,15 @@ def _search(queries: list[str], doc_ids: set[str], top_k: int) -> list[tuple[dic
         for chunk, score in store.index.search(query, top_k=top_k * 2, allowed_docs=doc_ids):
             if chunk["id"] not in best or best[chunk["id"]][1] < score:
                 best[chunk["id"]] = (chunk, score)
-    return sorted(best.values(), key=lambda item: item[1], reverse=True)[:top_k]
+    keyword = sorted(best.values(), key=lambda item: item[1], reverse=True)[:top_k * 2]
+    meaning = semantic.search(queries, store.doc_chunks(doc_ids), top_k * 2)
+
+    fused: dict[str, tuple[dict, float]] = {}
+    for ranked in (keyword, meaning):
+        for rank, (chunk, _) in enumerate(ranked):
+            prev = fused.get(chunk["id"], (chunk, 0.0))[1]
+            fused[chunk["id"]] = (chunk, prev + 1 / (RRF_K + rank + 1))
+    return sorted(fused.values(), key=lambda item: item[1], reverse=True)[:top_k]
 
 
 def _with_neighbors(hits: list[tuple[dict, float]], all_chunks: list[dict], limit: int) -> list[dict]:
@@ -221,15 +237,18 @@ async def answer_stream(question: str, owner: str, session_key: str,
     if past and len(tokenize(question)) <= 2:
         search_query = past[-2]["content"] + " " + question
     expanded = await _expand_query(search_query)
-    hits = _search([search_query, expanded], allowed, settings.top_k)
+    pro = prefs.get("answer_model") == "pro" and settings.llm_enabled
+    top_k = settings.top_k * 2 if pro else settings.top_k  # Mind Pro читает вдвое больше фрагментов
+    # каждый перевод — отдельный запрос: эмбеддинг смешанной строки на трёх языках теряет смысл
+    hits = _search([search_query, *expanded.splitlines()], allowed, top_k)
     total_chars = sum(d["chars"] for d in docs)
 
     if total_chars <= settings.full_context_chars:
         context = all_chunks  # документ небольшой — модель видит его целиком
     elif hits:
-        context = _with_neighbors(hits, all_chunks, settings.top_k + 3)
+        context = _with_neighbors(hits, all_chunks, top_k + 3)
     else:
-        context = all_chunks[: settings.top_k]  # ничего не нашли — даём начало документов
+        context = all_chunks[:top_k]  # ничего не нашли — даём начало документов
     context = _order(context, [d["id"] for d in docs])
 
     scores = {c["id"]: s for c, s in hits}
@@ -255,10 +274,28 @@ async def answer_stream(question: str, owner: str, session_key: str,
     messages = [*past, {"role": "user", "content": user_message}]
 
     parts: list[str] = []
+    if pro:
+        pages = await asyncio.to_thread(_page_images, [c for c, _ in hits] + context, sources, lang)
+        if pages:
+            yield {"type": "vision", "pages": [p["info"] for p in pages]}
+            content = [{"type": "text", "text": user_message}]
+            for page in pages:
+                content += [{"type": "text", "text": page["label"]}, llm.image_part(page["data"], "image/jpeg")]
+            try:
+                async for delta in llm.stream_chat(system + VISION_RULE, [*past, {"role": "user", "content": content}],
+                                                   model=settings.vision_model):
+                    parts.append(delta)
+                    yield {"type": "delta", "text": delta}
+            except llm.LLMError as exc:  # модель со зрением недоступна — отвечаем обычной по тексту
+                log.warning("Mind Pro (зрение) не ответила: %s", exc)
+                if parts:
+                    yield {"type": "error", "message": str(exc)[:300]}
+
     try:
-        async for delta in llm.stream_chat(system, messages):
-            parts.append(delta)
-            yield {"type": "delta", "text": delta}
+        if not parts:
+            async for delta in llm.stream_chat(system, messages):
+                parts.append(delta)
+                yield {"type": "delta", "text": delta}
     except llm.LLMError as exc:
         log.error("Ошибка LLM: %s", exc)
         if not parts:
@@ -276,6 +313,59 @@ async def answer_stream(question: str, owner: str, session_key: str,
     if not cited:
         cited = ranked_ns[:3]
     yield {"type": "done", "cited": cited, "lang": lang}
+
+
+# ---------------------------------------------------------------- Mind Pro: страницы как изображения
+
+VISION_RULE = """
+8. You also receive IMAGES of the most relevant document pages. Use them to read tables, charts, diagrams,
+stamps and layout precisely — the extracted text may have lost this structure. When you use a page image,
+cite the fragment numbers listed in its label."""
+
+
+def _page_images(ranked: list[dict], sources: list[dict], lang: str) -> list[dict]:
+    """Рендерит до PRO_PAGES страниц PDF (и загруженные фото), на которых лежат лучшие фрагменты."""
+    import pymupdf
+
+    ns_by_page: dict[tuple, list[int]] = {}
+    for s in sources:
+        ns_by_page.setdefault((s["doc_id"], s["loc"].get("type"), s["loc"].get("value")), []).append(s["n"])
+    picked, out = [], []
+    for chunk in ranked:
+        key = (chunk["doc_id"], chunk["loc"].get("type"), chunk["loc"].get("value"))
+        doc = store.get(chunk["doc_id"])
+        visual = doc and ((doc["ext"] == ".pdf" and key[1] == "page") or (doc["ext"] in IMAGE_EXT and key[1] == "image"))
+        if visual and key not in picked:
+            picked.append(key)
+        if len(picked) >= settings.pro_pages:
+            break
+    for doc_id, kind, value in picked:
+        doc = store.get(doc_id)
+        try:
+            if kind == "page":
+                with pymupdf.open(store.file_path(doc)) as pdf:
+                    data = pdf[int(value) - 1].get_pixmap(dpi=130).tobytes("jpeg", jpg_quality=82)
+            else:
+                from PIL import Image
+                import io
+
+                img = Image.open(store.file_path(doc)).convert("RGB")
+                img.thumbnail((1600, 1600))
+                buf = io.BytesIO()
+                img.save(buf, "JPEG", quality=85)
+                data = buf.getvalue()
+        except Exception as exc:  # noqa: BLE001 — страницу не удалось отрисовать, обходимся текстом
+            log.warning("Не удалось отрисовать %s %s: %s", doc["name"], value, exc)
+            continue
+        ns = ns_by_page.get((doc_id, kind, value), [])
+        refs = "".join(f"[{n}]" for n in ns)
+        loc = {"type": kind, "value": value}
+        out.append({
+            "data": data,
+            "label": f"PAGE IMAGE — {doc['name']}, {format_loc(loc, 'en')}" + (f" (fragments {refs})" if refs else ""),
+            "info": {"doc_id": doc_id, "doc_name": doc["name"], "loc": loc, "loc_label": format_loc(loc, lang)},
+        })
+    return out
 
 
 async def answer(question: str, owner: str, session_key: str, doc_ids: list[str] | None = None) -> dict:

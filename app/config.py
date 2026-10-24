@@ -42,6 +42,11 @@ class Settings:
     llm_timeout = _float("LLM_TIMEOUT", 120)
     query_expansion = _bool("QUERY_EXPANSION", True)
     vision_ocr = _bool("VISION_OCR", False)
+    # Mind Pro: модель со «зрением» смотрит на страницы PDF (таблицы, графики, схемы)
+    vision_model = os.getenv("VISION_MODEL", "qwen/qwen3-vl-plus:free").strip()
+    pro_pages = _int("PRO_PAGES", 3)
+    # Семантический поиск: локальная модель эмбеддингов в дополнение к BM25
+    semantic_search = _bool("SEMANTIC_SEARCH", True)
 
     # Telegram
     telegram_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
@@ -79,6 +84,7 @@ class Settings:
     data_dir = Path(os.getenv("DATA_DIR") or BASE_DIR / "data")
     upload_dir = data_dir / "uploads"
     store_file = data_dir / "store.json"
+    models_dir = Path(os.getenv("MODELS_DIR") or data_dir / "models")  # модель эмбеддингов (~220 МБ, скачивается один раз)
     tessdata_dir = BASE_DIR / "tessdata"
     web_dir = BASE_DIR / "web"
 
