@@ -193,6 +193,15 @@ Object.assign(I18N.en, {"pro_d": "“Sees” the pages: tables, charts and diagr
 Object.assign(I18N.kk, {"exporting": "Файл дайындалуда…", "export_as": "Жүктеп алу", "mode_quiz": "Тест", "mode_cards": "Карточкалар", "cards_intro": "Карточкалар саны", "cards_start": "Карточкаларды бастау", "cards_gen": "Карточкалар жасалуда…", "flip": "Жауапты көру үшін басыңыз", "again": "Қайталау", "know": "Білемін", "card_n": "Карточка", "left": "қалды", "cards_done": "Барлық карточка меңгерілді!", "cards_stat": "Бірден білдіңіз: {k} / {n}", "cards_again": "Қайтадан", "new_cards": "Жаңа карточкалар", "quiz_new_note": "Әр жолы — жаңа сұрақтар"});
 Object.assign(I18N.ru, {"exporting": "Готовлю файл…", "export_as": "Скачать", "mode_quiz": "Тест", "mode_cards": "Карточки", "cards_intro": "Количество карточек", "cards_start": "Начать карточки", "cards_gen": "Создаю карточки…", "flip": "Нажмите, чтобы увидеть ответ", "again": "Повторить", "know": "Знаю", "card_n": "Карточка", "left": "осталось", "cards_done": "Все карточки выучены!", "cards_stat": "Знали сразу: {k} из {n}", "cards_again": "Пройти снова", "new_cards": "Новые карточки", "quiz_new_note": "Каждый раз — новые вопросы"});
 Object.assign(I18N.en, {"exporting": "Preparing the file…", "export_as": "Download", "mode_quiz": "Quiz", "mode_cards": "Flashcards", "cards_intro": "Number of cards", "cards_start": "Start flashcards", "cards_gen": "Creating flashcards…", "flip": "Tap to see the answer", "again": "Again", "know": "I know it", "card_n": "Card", "left": "left", "cards_done": "All cards learned!", "cards_stat": "Known at once: {k} of {n}", "cards_again": "Go again", "new_cards": "New cards", "quiz_new_note": "New questions every time"});
+Object.assign(I18N.kk, {"set_plan": "Тариф", "plan_sub": "Тегін нұсқада не бар және Mind Pro-да не бар", "plan_current": "Сіздің тарифіңіз", "plan_free_price": "Тегін", "plan_pro_price": "Жазылым бойынша", "plan_soon": "Жақында", "plan_plus": "Lite-тағы барлығы, сонымен қатар:", "pro_toast": "Mind Pro — жазылым бойынша, жақында қолжетімді болады",
+  "lite_f": ["Құжаттар бойынша жауаптар — бетке сілтемемен", "PDF, DOCX, PPTX, XLSX, фото және сканерлер (OCR)", "Қазақ, орыс және ағылшын тілдері", "Сөздер бойынша ғана емес, мағына бойынша іздеу", "Құжат картасы, тест және карточкалар", "Құжат нұсқаларын салыстыру", "Жауаптарды PDF және Word-қа жүктеу"],
+  "pro_f": ["«Көру»: PDF беттеріндегі кестелерді, графиктер мен сызбаларды оқиды", "Екі есе көп контекст — үлкен құжаттарды терең талдау", "Қай беттерді қарағанын көрсетеді", "Жаңа мүмкіндіктерге ерте қолжетімділік"]});
+Object.assign(I18N.ru, {"set_plan": "Тариф", "plan_sub": "Что входит в бесплатную версию и что — в Mind Pro", "plan_current": "Ваш тариф", "plan_free_price": "Бесплатно", "plan_pro_price": "По подписке", "plan_soon": "Скоро", "plan_plus": "Всё из Lite, а также:", "pro_toast": "Mind Pro — по подписке, скоро будет доступна",
+  "lite_f": ["Ответы по документам — со ссылкой на страницу", "PDF, DOCX, PPTX, XLSX, фото и сканы (OCR)", "Казахский, русский и английский", "Поиск по смыслу, а не только по словам", "Карта документа, тест и карточки", "Сравнение версий документа", "Экспорт ответов в PDF и Word"],
+  "pro_f": ["«Зрение»: читает таблицы, графики и схемы прямо со страниц PDF", "Вдвое больше контекста — глубокий анализ больших документов", "Показывает, какие страницы просмотрел", "Ранний доступ к новым функциям"]});
+Object.assign(I18N.en, {"set_plan": "Plan", "plan_sub": "What the free version includes and what Mind Pro adds", "plan_current": "Your plan", "plan_free_price": "Free", "plan_pro_price": "Subscription", "plan_soon": "Coming soon", "plan_plus": "Everything in Lite, plus:", "pro_toast": "Mind Pro is a subscription — coming soon",
+  "lite_f": ["Answers from your documents — with page references", "PDF, DOCX, PPTX, XLSX, photos and scans (OCR)", "Kazakh, Russian and English", "Search by meaning, not just by words", "Document map, quiz and flashcards", "Compare document versions", "Export answers to PDF and Word"],
+  "pro_f": ["“Vision”: reads tables, charts and diagrams right from PDF pages", "Twice the context — deep analysis of large documents", "Shows which pages it looked at", "Early access to new features"]});
 
 const $ = (s) => document.querySelector(s);
 const state = {
@@ -1274,6 +1283,23 @@ const TABS = {
       ${toggleRow("show_trust", L("show_trust"), L("show_trust_d"))}
       ${toggleRow("suggestions", L("suggestions"), L("suggestions_d"))}</div>`;
   },
+  plan() {
+    const pro = hasPro();
+    const list = (key) => `<ul>${L(key).map((f) => `<li>${icon("tick")}<span>${esc(f)}</span></li>`).join("")}</ul>`;
+    return head("plan") + `<div class="plans">
+      <div class="plan ${pro ? "" : "current"}">
+        <div class="plan-top"><b>${L("lite")}</b>${pro ? "" : `<span class="mm-badge">${L("plan_current")}</span>`}</div>
+        <div class="plan-price">${L("plan_free_price")}</div>
+        ${list("lite_f")}
+      </div>
+      <div class="plan pro ${pro ? "current" : ""}">
+        <div class="plan-top"><b>${L("pro")}</b><span class="mm-badge pro">${pro ? L("plan_current") : "PRO · " + L("soon")}</span></div>
+        <div class="plan-price">${L("plan_pro_price")}</div>
+        <div class="plan-plus">${L("plan_plus")}</div>
+        ${list("pro_f")}
+        ${pro ? "" : `<button type="button" class="btn" disabled>${L("plan_soon")}</button>`}
+      </div></div>`;
+  },
   data() {
     if (state.anon) return head("data") + gateBlock("gate_data");
     return head("data") + `
@@ -1514,9 +1540,11 @@ async function clearChat() {
 /* ================= выбор модели и стиля ответа ================= */
 const STYLE_KEYS = { concise: "st_concise", balanced: "st_balanced", detailed: "st_detailed" };
 
+const hasPro = () => !!(state.user && state.user.plan === "pro");
+
 function renderModelPicker() {
   const style = prefs().answer_style;
-  const model = prefs().answer_model === "pro" ? "pro" : "lite";
+  const model = hasPro() && prefs().answer_model === "pro" ? "pro" : "lite";
   $("#modelLabel").innerHTML = `${L(model)}<span class="mb-style"> · ${L(STYLE_KEYS[style] || "st_balanced")}</span>`;
   const item = (attrs, title, desc, right, cls = "") =>
     `<button type="button" class="mm-item ${cls}" ${attrs}><span class="mm-t"><b>${title}</b><span class="d">${desc}</span></span>${right}</button>`;
@@ -1524,7 +1552,8 @@ function renderModelPicker() {
   $("#modelMenu").innerHTML =
     `<div class="mm-head">${L("mm_model")}</div>` +
     item('data-model="lite"', `${L("lite")} <span class="mm-badge">${L("free")}</span>`, L("lite_d"), model === "lite" ? check : "") +
-    item('data-model="pro"', `${L("pro")} <span class="mm-badge pro">PRO</span>`, L("pro_d"), model === "pro" ? check : "") +
+    item('data-model="pro"', `${L("pro")} <span class="mm-badge pro">PRO${hasPro() ? "" : " · " + L("soon")}</span>`, L("pro_d"),
+      model === "pro" ? check : "", hasPro() ? "" : "soon") +
     `<div class="mm-sep"></div><div class="mm-head">${L("mm_style")}</div>` +
     Object.entries(STYLE_KEYS).map(([k, label]) =>
       item(`data-style="${k}"`, L(label), L(k + "_d"), k === style ? check : "")).join("");
@@ -1545,6 +1574,12 @@ function setupModelPicker() {
     e.stopPropagation();
     const b = e.target.closest(".mm-item");
     if (!b) return;
+    if (b.dataset.model === "pro" && !hasPro()) {  // по подписке, пока недоступна — показываем, что в неё входит
+      toggleModelMenu(false);
+      toast(L("pro_toast"));
+      openSettings("plan");
+      return;
+    }
     if (b.dataset.model) savePrefs({ answer_model: b.dataset.model });
     if (b.dataset.style) savePrefs({ answer_style: b.dataset.style });
     toggleModelMenu(false);

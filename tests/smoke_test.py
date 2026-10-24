@@ -147,6 +147,7 @@ async def main() -> None:
     code = [m["code"] for m in mailer.outbox if m["to"] == reg["email"] and m["kind"] == "verify"][-1]
     r = client.post("/api/auth/verify", json={"email": reg["email"], "code": code})
     check("подтверждение email кодом", r.status_code == 200 and client.get("/api/auth/me").status_code == 200)
+    check("новый аккаунт — бесплатный тариф", client.get("/api/auth/me").json().get("plan") == "free")
     check("повторная регистрация того же email",
           client.post("/api/auth/register", json={**reg, "email": "AIGERIM@example.com"}).status_code == 400)
     stranger = TestClient(app)

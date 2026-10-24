@@ -353,6 +353,7 @@ def public_user(user: dict) -> dict:
     return {
         "id": user["id"], "name": user["name"], "email": user.get("email", ""), "guest": user.get("guest", False),
         "provider": "firebase" if user.get("firebase_uid") and not user.get("hash") else "password",
+        "plan": user.get("plan", "free"),  # free | pro — Mind Pro будет по подписке
         "settings": {**DEFAULT_SETTINGS, **user.get("settings", {})},
     }
 

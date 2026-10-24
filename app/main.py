@@ -498,7 +498,10 @@ class AskRequest(BaseModel):
 @app.post("/api/ask")
 async def ask(body: AskRequest, request: Request):
     owner = owner_of(request)
-    prefs = (current_user(request) or {}).get("settings", {})
+    user = current_user(request) or {}
+    prefs = dict(user.get("settings", {}))
+    if user.get("plan") != "pro":  # Mind Pro — по подписке (пока не продаётся): остальным всегда Lite
+        prefs["answer_model"] = "lite"
 
     def sse(event: dict) -> str:
         return f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
