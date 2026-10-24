@@ -564,6 +564,7 @@ $("#modeSwitch").onclick = (e) => {
   $("#mainErr").hidden = true;
   render();
 };
+if (new URLSearchParams(location.search).get("mode") === "register") mode = "register";
 render();
 show("paneMain");
 initFirebase();
