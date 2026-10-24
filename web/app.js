@@ -172,6 +172,10 @@ Object.assign(I18N.kk, {"theme_sepia": "Қағаз", "theme_midnight": "Түнг
 Object.assign(I18N.ru, {"theme_sepia": "Бумага", "theme_midnight": "Полночь", "accent": "Акцентный цвет", "accent_d": "Кнопки и ссылки", "ac_graphite": "Графит", "ac_indigo": "Индиго", "ac_emerald": "Изумруд", "ac_ocean": "Океан", "ac_amber": "Янтарь", "ac_rose": "Роза"});
 Object.assign(I18N.en, {"theme_sepia": "Paper", "theme_midnight": "Midnight", "accent": "Accent color", "accent_d": "Buttons and links", "ac_graphite": "Graphite", "ac_indigo": "Indigo", "ac_emerald": "Emerald", "ac_ocean": "Ocean", "ac_amber": "Amber", "ac_rose": "Rose"});
 
+Object.assign(I18N.kk, {"chats": "Чаттар", "new_chat": "Жаңа чат", "no_chats": "Чаттар әлі жоқ — сұрақ қойыңыз", "cancel": "Болдырмау", "del_chat_t": "Чатты өшіру керек пе?", "del_chat_d": "«{t}» чаты біржола өшіріледі.", "del_doc_t": "Құжатты өшіру керек пе?", "del_doc_d": "«{t}» және оның барлық фрагменттері өшіріледі.", "del_all_docs_t": "Барлық құжатты өшіру керек пе?", "del_all_chats_t": "Барлық чатты өшіру керек пе?", "irreversible": "Бұл әрекетті қайтару мүмкін емес.", "del_acc_t": "Аккаунтты өшіру керек пе?", "clear_hist": "Барлық чатты өшіру", "clear_hist_d": "Құжаттар сақталады", "chat_deleted": "Чат өшірілді", "untitled": "Жаңа чат"});
+Object.assign(I18N.ru, {"chats": "Чаты", "new_chat": "Новый чат", "no_chats": "Чатов пока нет — задайте вопрос", "cancel": "Отмена", "del_chat_t": "Удалить этот чат?", "del_chat_d": "Чат «{t}» будет удалён без возможности восстановления.", "del_doc_t": "Удалить документ?", "del_doc_d": "«{t}» и все его фрагменты будут удалены.", "del_all_docs_t": "Удалить все документы?", "del_all_chats_t": "Удалить все чаты?", "irreversible": "Это действие нельзя отменить.", "del_acc_t": "Удалить аккаунт?", "clear_hist": "Удалить все чаты", "clear_hist_d": "Документы останутся", "chat_deleted": "Чат удалён", "untitled": "Новый чат"});
+Object.assign(I18N.en, {"chats": "Chats", "new_chat": "New chat", "no_chats": "No chats yet — ask a question", "cancel": "Cancel", "del_chat_t": "Delete this chat?", "del_chat_d": "The chat “{t}” will be permanently deleted.", "del_doc_t": "Delete the document?", "del_doc_d": "“{t}” and all its fragments will be deleted.", "del_all_docs_t": "Delete all documents?", "del_all_chats_t": "Delete all chats?", "irreversible": "This cannot be undone.", "del_acc_t": "Delete your account?", "clear_hist": "Delete all chats", "clear_hist_d": "Documents are kept", "chat_deleted": "Chat deleted", "untitled": "New chat"});
+
 const $ = (s) => document.querySelector(s);
 const state = {
   lang: pickLang(),
@@ -188,6 +192,8 @@ const state = {
   user: null,
   log: [],
   setTab: "profile",
+  chatId: null,
+  chats: [],
 };
 
 function pickLang() {
@@ -384,7 +390,7 @@ async function uploadFiles(files) {
 }
 
 async function deleteDoc(d) {
-  if (!confirm(`${L("confirm_delete")}\n${d.name}`)) return;
+  if (!(await confirmDialog(L("del_doc_t"), L("del_doc_d").replace("{t}", d.name)))) return;
   await api(`/api/documents/${d.id}`, { method: "DELETE" });
   state.selected.delete(d.id);
   await loadDocs();
@@ -575,7 +581,7 @@ async function ask(question) {
     const res = await fetch("/api/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, doc_ids: state.selected.size ? [...state.selected] : null }),
+      body: JSON.stringify({ question, doc_ids: state.selected.size ? [...state.selected] : null, chat_id: state.chatId }),
     });
     if (res.status === 401) { location.href = "/login"; return; }
     if (!res.ok || !res.body) throw new Error(await res.text());
@@ -592,7 +598,8 @@ async function ask(question) {
         buf = buf.slice(idx + 2);
         if (!line.startsWith("data:")) continue;
         const ev = JSON.parse(line.slice(5));
-        if (ev.type === "sources") sources = ev.sources;
+        if (ev.type === "chat") { state.chatId = ev.id; }
+        else if (ev.type === "sources") sources = ev.sources;
         else if (ev.type === "delta") { text += ev.text; if (!frame) frame = requestAnimationFrame(paint); }
         else if (ev.type === "done") cited = ev.cited || [];
         else if (ev.type === "error") toast(`${L("error")}: ${ev.message}`, true);
@@ -603,6 +610,7 @@ async function ask(question) {
     renderSources(body, sources, cited, question + " " + text.slice(0, 300));
     const byN = Object.fromEntries(sources.map((x) => [x.n, x]));
     state.log.push({ role: "bot", text, sources: cited.map((n) => byN[n]).filter(Boolean) });
+    loadChats();
     addTools(body, () => text);
   } catch (e) {
     bubble.textContent = `${L("error")}: ${e.message}`;
@@ -947,7 +955,7 @@ const TABS = {
         <span style="font-family:var(--display);font-size:22px;font-weight:700">${state.docs.length}</span></div></div>
       <div class="set-group">
         ${actionRow("export", L("export"), L("export_d"), icon("download") + " " + L("export"))}
-        ${actionRow("clear-history", L("clear_hist"), L("clear_hist_d"), L("do_it"))}</div>
+        ${actionRow("clear-history", L("clear_hist"), L("clear_hist_d"), L("delete"), "danger")}</div>
       <div class="set-group danger-zone">${actionRow("delete-docs", L("delete_docs"), L("delete_docs_d"), L("delete"), "danger")}</div>`;
   },
   system() {
@@ -1011,9 +1019,15 @@ const ACTIONS = {
     catch (e) { toast(errText(e), true); }
   },
   export: exportChat,
-  async "clear-history"() { await clearChat(); toast(L("done")); },
+  async "clear-history"() {
+    if (!(await confirmDialog(L("del_all_chats_t"), L("irreversible")))) return;
+    await api("/api/chats", { method: "DELETE" });
+    newChat();
+    await loadChats();
+    toast(L("done"));
+  },
   async "delete-docs"() {
-    if (!confirm(L("confirm_all"))) return;
+    if (!(await confirmDialog(L("del_all_docs_t"), L("irreversible")))) return;
     await api("/api/documents", { method: "DELETE" });
     state.selected.clear();
     state.mapCache = {};
@@ -1037,7 +1051,7 @@ const ACTIONS = {
   },
   logout,
   async "delete-account"() {
-    if (!confirm(L("confirm_del"))) return;
+    if (!(await confirmDialog(L("del_acc_t"), L("delete_acc_d")))) return;
     const password = state.user.guest ? "" : prompt(L("confirm_pw")) || "";
     if (!state.user.guest && !password) return;
     try { await jsonPost("/api/profile/delete", { password }); location.href = "/login"; }
@@ -1059,12 +1073,108 @@ function bindSettings() {
   });
 }
 
-async function clearChat() {
-  await api("/api/clear", { method: "POST" });
+/* ================= сохранённые чаты ================= */
+function confirmDialog(title, text, okLabel) {
+  return new Promise((resolve) => {
+    const wrap = document.createElement("div");
+    wrap.className = "confirm";
+    wrap.innerHTML = `<div class="confirm-card" role="alertdialog" aria-modal="true">
+      <h3>${esc(title)}</h3><p>${esc(text || "")}</p>
+      <div class="row-actions"><button type="button" class="btn ghost" data-r="0">${L("cancel")}</button>
+      <button type="button" class="btn danger" data-r="1">${esc(okLabel || L("delete"))}</button></div></div>`;
+    const close = (r) => { wrap.remove(); document.removeEventListener("keydown", onKey, true); resolve(r); };
+    const onKey = (e) => { if (e.key === "Escape") { e.stopPropagation(); close(false); } if (e.key === "Enter") close(true); };
+    wrap.addEventListener("click", (e) => { const b = e.target.closest("[data-r]"); if (b) close(b.dataset.r === "1"); else if (e.target === wrap) close(false); });
+    document.addEventListener("keydown", onKey, true);
+    document.body.appendChild(wrap);
+    wrap.querySelector('[data-r="1"]').focus();
+  });
+}
+
+function timeLabel(ts) {
+  const d = new Date(ts * 1000), now = new Date();
+  const locale = { kk: "kk-KZ", ru: "ru-RU", en: "en-US" }[state.lang];
+  return d.toDateString() === now.toDateString()
+    ? d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
+    : d.toLocaleDateString(locale, { day: "numeric", month: "short" });
+}
+
+function renderChats() {
+  const list = $("#chatList");
+  list.innerHTML = "";
+  for (const c of state.chats) {
+    const el = document.createElement("div");
+    el.className = "chat-item" + (c.id === state.chatId ? " active" : "");
+    el.innerHTML = `<div class="ct"><b>${esc(c.title || L("untitled"))}</b><small>${timeLabel(c.updated)}</small></div>
+      <button type="button" class="del" title="${L("delete")}" aria-label="${L("delete")}">${icon("trash")}</button>`;
+    el.onclick = (e) => { if (!e.target.closest(".del")) openChat(c.id); };
+    el.querySelector(".del").onclick = () => deleteChat(c);
+    list.appendChild(el);
+  }
+  $("#chatCount").textContent = state.chats.length;
+  $("#chatEmpty").style.display = state.chats.length ? "none" : "block";
+}
+
+async function loadChats() {
+  try { state.chats = await api("/api/chats"); } catch (_) { state.chats = []; }
+  renderChats();
+}
+
+function resetChatView() {
   $("#messages").innerHTML = "";
   $("#suggestions").innerHTML = "";
   $("#welcome").style.display = "";
   state.log = [];
+}
+
+function newChat() {
+  state.chatId = null;
+  resetChatView();
+  renderChats();
+  setView("chat");
+  $("#question").focus();
+}
+
+async function openChat(id) {
+  if (state.busy) return;
+  const chat = await api(`/api/chats/${id}`).catch(() => null);
+  if (!chat) { await loadChats(); return; }
+  state.chatId = id;
+  resetChatView();
+  hideWelcome();
+  let lastQuestion = "";
+  for (const m of chat.messages) {
+    if (m.role === "user") {
+      addUserMessage(m.text);
+      lastQuestion = m.text;
+    } else {
+      const { body } = addBotMessage();
+      body.querySelector(".bubble").innerHTML = md(m.text);
+      const sources = m.sources || [];
+      renderSources(body, sources, sources.map((x) => x.n), lastQuestion + " " + m.text.slice(0, 300));
+      addTools(body, () => m.text);
+    }
+    state.log.push({ role: m.role, text: m.text, sources: m.sources });
+  }
+  renderChats();
+  setView("chat");
+  scrollDown();
+}
+
+async function deleteChat(c) {
+  if (!(await confirmDialog(L("del_chat_t"), L("del_chat_d").replace("{t}", c.title || L("untitled"))))) return;
+  await api(`/api/chats/${c.id}`, { method: "DELETE" }).catch(() => {});
+  if (c.id === state.chatId) newChat();
+  await loadChats();
+  toast(L("chat_deleted"));
+}
+
+async function clearChat() {
+  // кнопка-корзина сверху: удаляет текущий чат (с подтверждением)
+  const current = state.chats.find((c) => c.id === state.chatId);
+  if (current) return deleteChat(current);
+  if (!state.log.length) return;
+  if (await confirmDialog(L("del_chat_t"), L("irreversible"))) newChat();
 }
 
 /* ================= voice ================= */
@@ -1124,7 +1234,8 @@ function init() {
     ask(q);
   };
 
-  $("#clearChat").onclick = async () => { await clearChat(); toast(L("cleared")); };
+  $("#clearChat").onclick = clearChat;
+  $("#newChat").onclick = () => { newChat(); $("#sidebar").classList.remove("open"); };
 
   $("#tabs").onclick = (e) => { const b = e.target.closest("button"); if (b) setView(b.dataset.view); };
   $("#evClose").onclick = closeEvidence;
@@ -1153,6 +1264,7 @@ function init() {
     if (s.llm_enabled) api("/api/llm-check").then((c) => { s.llm_ok = c.ok; if (!c.ok) toast(L("llm_down"), true); }).catch(() => {});
   }).catch(() => {});
   loadDocs().catch((e) => toast(e.message, true));
+  loadChats();
 }
 
 init();
