@@ -127,6 +127,7 @@ Object.assign(I18N.kk, {
   your_mistakes: "Қателерді талдау", correct_answer: "Дұрыс жауап", evidence: "Дәлел",
   trust_ok: "{n} дереккөзбен расталған", trust_none: "Құжатта дәлел табылмады",
   stat_pages: "бет", stat_dates: "мерзім", stat_numbers: "сан", stat_req: "талап", map_btn: "Карта",
+  logout: "Шығу", guest: "Қонақ режимі",
 });
 Object.assign(I18N.ru, {
   tab_chat: "Вопрос-ответ", tab_map: "Карта документа", tab_quiz: "Проверка знаний",
@@ -143,6 +144,7 @@ Object.assign(I18N.ru, {
   your_mistakes: "Разбор ошибок", correct_answer: "Правильный ответ", evidence: "Доказательство",
   trust_ok: "Подтверждено {n} источн.", trust_none: "Подтверждение в документе не найдено",
   stat_pages: "стр.", stat_dates: "сроков", stat_numbers: "цифр", stat_req: "требований", map_btn: "Карта",
+  logout: "Выйти", guest: "Гостевой режим",
 });
 Object.assign(I18N.en, {
   tab_chat: "Q&A", tab_map: "Document map", tab_quiz: "Knowledge check",
@@ -159,6 +161,7 @@ Object.assign(I18N.en, {
   your_mistakes: "Review of mistakes", correct_answer: "Correct answer", evidence: "Evidence",
   trust_ok: "Backed by {n} source(s)", trust_none: "No supporting evidence found",
   stat_pages: "pages", stat_dates: "dates", stat_numbers: "numbers", stat_req: "requirements", map_btn: "Map",
+  logout: "Log out", guest: "Guest mode",
 });
 
 const $ = (s) => document.querySelector(s);
@@ -174,6 +177,7 @@ const state = {
   quizDoc: null,
   quiz: null,
   quizN: 5,
+  user: null,
 };
 
 function pickLang() {
@@ -197,6 +201,7 @@ function applyI18n() {
   renderDocs();
   renderStatus();
   renderScope();
+  renderUser();
   if (state.view === "map") renderMap();
   if (state.view === "quiz") renderQuiz();
 }
@@ -796,6 +801,19 @@ function paintQuizResult(doc, qz) {
   $("#qNew").onclick = () => startQuiz(doc);
 }
 
+/* ================= пользователь ================= */
+function renderUser() {
+  const u = state.user;
+  if (!u) return;
+  $("#userAvatar").textContent = (u.name || u.username || "?").trim()[0] || "?";
+  $("#userName").innerHTML = u.guest ? `${L("guest")}<small>${esc(u.username)}</small>` : `${esc(u.name)}<small>@${esc(u.username)}</small>`;
+}
+
+async function logout() {
+  await fetch("/api/auth/logout", { method: "POST" });
+  location.href = "/login";
+}
+
 /* ================= status ================= */
 function renderStatus() {
   const s = state.status;
@@ -889,6 +907,9 @@ function init() {
     const link = e.target.closest(".loc-link");
     if (link) openEvidence(link.dataset.chunk, link.dataset.q);
   });
+
+  $("#logoutBtn").onclick = logout;
+  api("/api/auth/me").then((u) => { state.user = u; renderUser(); }).catch(() => {});
 
   $("#openSidebar").onclick = () => $("#sidebar").classList.add("open");
   $("#closeSidebar").onclick = () => $("#sidebar").classList.remove("open");
