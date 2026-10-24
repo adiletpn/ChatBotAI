@@ -70,7 +70,7 @@ history = History()
 
 # ---------------------------------------------------------------- промпты
 
-SYSTEM_PROMPT = """You are DocMind AI — an intelligent assistant that answers questions strictly based on the user's uploaded documents (PDF, DOCX and others).
+SYSTEM_PROMPT = """You are Mind AI — an intelligent assistant that answers questions strictly based on the user's uploaded documents (PDF, DOCX and others).
 
 Rules:
 1. Use ONLY the information from the numbered CONTEXT fragments. Never invent facts, numbers, dates or names.
