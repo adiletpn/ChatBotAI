@@ -42,7 +42,8 @@ DISPOSABLE = {
     "tmail.ws", "inboxkitten.com", "1secmail.com", "1secmail.net", "emailfake.com", "crazymailing.com",
 }
 DEFAULT_SETTINGS = {
-    "theme": "system",          # system | light | dark
+    "theme": "system",          # system | light | dark | sepia | midnight
+    "accent": "indigo",         # graphite | indigo | emerald | ocean | amber | rose
     "font": "m",                # s | m | l
     "width": "normal",          # normal | wide
     "ui_lang": "auto",          # auto | kk | ru | en
@@ -53,7 +54,8 @@ DEFAULT_SETTINGS = {
     "suggestions": True,
 }
 SETTING_CHOICES = {
-    "theme": {"system", "light", "dark"}, "font": {"s", "m", "l"}, "width": {"normal", "wide"},
+    "theme": {"system", "light", "dark", "sepia", "midnight"},
+    "accent": {"graphite", "indigo", "emerald", "ocean", "amber", "rose"}, "font": {"s", "m", "l"}, "width": {"normal", "wide"},
     "ui_lang": {"auto", "kk", "ru", "en"},
     "answer_lang": {"auto", "kk", "ru", "en"}, "answer_style": {"concise", "balanced", "detailed"},
 }
