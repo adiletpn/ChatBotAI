@@ -14,12 +14,12 @@ from pptx.util import Emu, Inches, Pt
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 
-TEAL = RGBColor(0x0F, 0x76, 0x6E)
-TEAL_SOFT = RGBColor(0xE6, 0xF4, 0xF2)
-DARK = RGBColor(0x0F, 0x17, 0x2A)
-MUTED = RGBColor(0x64, 0x74, 0x8B)
+TEAL = RGBColor(0xC2, 0x60, 0x3E)  # фирменный терракотовый
+TEAL_SOFT = RGBColor(0xF6, 0xE8, 0xE1)
+DARK = RGBColor(0x1F, 0x1E, 0x1D)
+MUTED = RGBColor(0x75, 0x73, 0x6B)
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
-BORDER = RGBColor(0xE2, 0xE8, 0xF0)
+BORDER = RGBColor(0xE6, 0xE3, 0xD8)
 FONT = "Arial"
 
 prs = Presentation()
@@ -106,7 +106,7 @@ def picture(slide, path, x, y, w=None, h=None):
 s = prs.slides.add_slide(BLANK)
 rect(s, 0, 0, W, H, fill=TEAL, line=None, shape=MSO_SHAPE.RECTANGLE)
 text(s, Inches(0.8), Inches(0.7), Inches(8), Inches(0.5), "INNOVATION AI HACKATHON – 2026  ·  AIChatBots", size=16,
-     bold=True, color=RGBColor(0xA7, 0xF3, 0xD0))
+     bold=True, color=RGBColor(0xF6, 0xE8, 0xE1))
 text(s, Inches(0.8), Inches(1.7), Inches(7.5), Inches(1.4), "DocMind AI", size=66, bold=True, color=WHITE)
 text(s, Inches(0.8), Inches(3.0), Inches(6.6), Inches(1.6),
      "Құжаттармен сөйлесетін зияткер чат-бот\nИнтеллектуальный чат-бот, который отвечает на вопросы по документам",
@@ -252,9 +252,10 @@ stack = [("Backend", "Python 3, FastAPI, потоковые ответы (SSE)")
          ("Поиск", "BM25 + стемминг для казахского и русского, межъязыковое расширение запроса"),
          ("Документы", "PyMuPDF, python-docx, python-pptx, openpyxl, BeautifulSoup"),
          ("OCR", "Tesseract 5 с моделями kaz, rus, eng"),
-         ("Интерфейсы", "HTML/CSS/JS (адаптивный, тёмная тема), Telegram — aiogram 3")]
+         ("Интерфейсы", "HTML/CSS/JS (адаптивный, тёмная тема), Telegram — aiogram 3"),
+         ("Безопасность", "Вход по логину/паролю: хэши PBKDF2, HttpOnly-cookie, изоляция документов")]
 for i, (k, v) in enumerate(stack):
-    y = Inches(1.55) + i * Inches(0.85)
+    y = Inches(1.45) + i * Inches(0.78)
     rect(s, Inches(0.6), y, Inches(2.6), Inches(0.65), fill=TEAL, line=None)
     text(s, Inches(0.6), y, Inches(2.6), Inches(0.65), k, size=16, bold=True, color=WHITE, align=PP_ALIGN.CENTER,
          anchor=MSO_ANCHOR.MIDDLE)
@@ -309,7 +310,7 @@ text(s, 0, Inches(2.4), W, Inches(1.2), "Рахмет! Спасибо!", size=54
 text(s, 0, Inches(3.7), W, Inches(1), "DocMind AI — ответы по документам с точным источником", size=22, color=WHITE,
      align=PP_ALIGN.CENTER)
 text(s, 0, Inches(5.0), W, Inches(1), "Сайт: ____________     Telegram: @____________", size=18,
-     color=RGBColor(0xA7, 0xF3, 0xD0), align=PP_ALIGN.CENTER)
+     color=RGBColor(0xF6, 0xE8, 0xE1), align=PP_ALIGN.CENTER)
 
 out = DOCS / "DocMind_AI_Presentation.pptx"
 prs.save(out)
