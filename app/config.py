@@ -30,7 +30,7 @@ def _float(name: str, default: float) -> float:
 
 
 class Settings:
-    app_name = "DocMind AI"
+    app_name = "Mind AI"
 
     # LLM
     llm_provider = os.getenv("LLM_PROVIDER", "openai").strip().lower()
@@ -45,6 +45,13 @@ class Settings:
 
     # Telegram
     telegram_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+
+    # Почта для кодов подтверждения (Gmail: smtp.gmail.com, порт 587, пароль приложения)
+    smtp_host = os.getenv("SMTP_HOST", "").strip()
+    smtp_port = _int("SMTP_PORT", 587)
+    smtp_user = os.getenv("SMTP_USER", "").strip()
+    smtp_password = os.getenv("SMTP_PASSWORD", "").strip()
+    smtp_from = os.getenv("SMTP_FROM", "").strip()
 
     # Сервер
     host = os.getenv("HOST", "0.0.0.0")
