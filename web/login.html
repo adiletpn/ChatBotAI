@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DocMind AI — Кіру</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body { min-height: 100vh; }
+    .auth { display: grid; grid-template-columns: minmax(380px, 1fr) 1.1fr; min-height: 100vh; min-height: 100dvh; }
+    .auth-form { display: flex; flex-direction: column; padding: 28px 32px; }
+    .auth-top { display: flex; align-items: center; justify-content: space-between; }
+    .auth-brand { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-weight: 600; font-size: 20px; }
+    .auth-brand svg { width: 30px; height: 30px; color: var(--accent); }
+    .auth-box { width: 100%; max-width: 380px; margin: auto; padding: 32px 0; }
+    .auth-box h1 { font-family: var(--serif); font-weight: 500; font-size: 36px; letter-spacing: -.02em; line-height: 1.15; margin: 0 0 8px; }
+    .auth-box .sub { color: var(--muted); margin: 0 0 28px; }
+    .switch { display: flex; gap: 2px; background: var(--panel-2); border-radius: 11px; padding: 3px; margin-bottom: 22px; }
+    .switch button { flex: 1; border: 0; background: none; border-radius: 9px; padding: 7px; font-weight: 500; color: var(--muted); font-size: 14px; }
+    .switch button.active { background: var(--panel); color: var(--text); box-shadow: var(--shadow); }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .field label { font-size: 13px; font-weight: 500; color: var(--muted); }
+    .field .wrap { position: relative; }
+    .field input { width: 100%; font: inherit; font-size: 15px; color: var(--text); background: var(--panel); border: 1px solid var(--border); border-radius: 11px; padding: 11px 13px; outline: 0; transition: border-color .15s, box-shadow .15s; }
+    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .field .eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: none; color: var(--faint); font-size: 12px; font-weight: 500; padding: 6px 8px; border-radius: 7px; }
+    .field .eye:hover { color: var(--text); background: var(--hover); }
+    .field[hidden] { display: none; }
+    .error { color: var(--bad); background: var(--bad-soft); border-radius: 10px; padding: 9px 12px; font-size: 13.5px; margin-bottom: 14px; }
+    .error[hidden] { display: none; }
+    .primary { width: 100%; border: 0; background: var(--text); color: var(--bg); border-radius: 11px; padding: 12px; font-weight: 600; font-size: 15px; margin-top: 6px; transition: opacity .15s; }
+    .primary:hover { opacity: .88; }
+    .primary:disabled { opacity: .5; }
+    .or { display: flex; align-items: center; gap: 12px; color: var(--faint); font-size: 12.5px; margin: 20px 0; }
+    .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    .guest { width: 100%; border: 1px solid var(--border); background: transparent; border-radius: 11px; padding: 11px; font-weight: 500; font-size: 14.5px; }
+    .guest:hover { background: var(--hover); }
+    .fine { color: var(--faint); font-size: 12px; text-align: center; margin-top: 18px; }
+
+    .auth-art { background: var(--sidebar); display: flex; flex-direction: column; justify-content: center; padding: 56px; position: relative; overflow: hidden; }
+    .auth-art::after { content: ""; position: absolute; width: 520px; height: 520px; right: -160px; bottom: -200px; border-radius: 50%; background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%); }
+    .art-inner { max-width: 520px; position: relative; z-index: 1; }
+    .art-quote { font-family: var(--serif); font-size: 34px; line-height: 1.25; letter-spacing: -.015em; margin: 0 0 30px; }
+    .art-quote em { color: var(--accent); font-style: italic; }
+    .art-demo { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); font-size: 14px; }
+    .art-q { background: var(--panel-2); border-radius: 12px; padding: 8px 12px; margin-left: auto; width: fit-content; max-width: 85%; margin-bottom: 12px; }
+    .art-a { display: flex; gap: 10px; }
+    .art-a svg { width: 22px; height: 22px; color: var(--accent); flex: none; margin-top: 2px; }
+    .art-a mark { background: var(--mark); color: var(--text); border-radius: 3px; padding: 0 2px; }
+    .art-src { display: inline-flex; gap: 6px; align-items: center; margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 3px 9px; font-size: 12px; color: var(--muted); }
+    .art-list { list-style: none; padding: 0; margin: 26px 0 0; display: flex; flex-direction: column; gap: 10px; color: var(--muted); font-size: 14px; }
+    .art-list li { display: flex; gap: 10px; align-items: center; }
+    .art-list svg { color: var(--accent); }
+    @media (max-width: 880px) {
+      .auth { grid-template-columns: 1fr; }
+      .auth-art { display: none; }
+      .auth-form { padding: 20px 18px; }
+      .auth-box h1 { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-logo" viewBox="0 0 32 32"><path d="M16 3.5 26.8 9.75v12.5L16 28.5 5.2 22.25V9.75z" fill="currentColor"/><path d="M11.5 11h5.2a5 5 0 0 1 0 10h-5.2z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path class="ico" d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11z"/><circle class="ico" cx="12" cy="10" r="2.2"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle class="ico" cx="12" cy="12" r="9"/><path class="ico" d="M3 12h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3z"/></symbol>
+  <symbol id="i-quiz" viewBox="0 0 24 24"><path class="ico" d="m2.5 9 9.5-5 9.5 5-9.5 5zM6.5 11.2V16c3 2.2 8 2.2 11 0v-4.8M21.5 9v5"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path class="ico" d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></symbol>
+</svg>
+
+<div class="auth">
+  <section class="auth-form">
+    <div class="auth-top">
+      <div class="auth-brand"><svg><use href="#i-logo"/></svg>DocMind</div>
+      <div class="lang-switch" id="langSwitch">
+        <button data-lang="kk">ҚАЗ</button><button data-lang="ru">РУС</button><button data-lang="en">ENG</button>
+      </div>
+    </div>
+
+    <div class="auth-box">
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="sub"></p>
+
+      <div class="switch" id="modeSwitch">
+        <button type="button" data-mode="login" class="active" data-t="login"></button>
+        <button type="button" data-mode="register" data-t="register"></button>
+      </div>
+
+      <form id="form" novalidate>
+        <div class="field" id="nameField" hidden>
+          <label for="name" data-t="name"></label>
+          <div class="wrap"><input id="name" autocomplete="name" maxlength="60"></div>
+        </div>
+        <div class="field">
+          <label for="username" data-t="username"></label>
+          <div class="wrap"><input id="username" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="32" required></div>
+        </div>
+        <div class="field">
+          <label for="password" data-t="password"></label>
+          <div class="wrap">
+            <input id="password" type="password" autocomplete="current-password" maxlength="128" required>
+            <button type="button" class="eye" id="eye" data-t="show"></button>
+          </div>
+        </div>
+        <div class="error" id="error" hidden></div>
+        <button class="primary" id="submit" type="submit"></button>
+      </form>
+
+      <div class="or" data-t="or"></div>
+      <button class="guest" id="guest" type="button" data-t="guest"></button>
+      <p class="fine" data-t="fine"></p>
+    </div>
+  </section>
+
+  <section class="auth-art">
+    <div class="art-inner">
+      <p class="art-quote" data-t="quote"></p>
+      <div class="art-demo">
+        <div class="art-q" data-t="demo_q"></div>
+        <div class="art-a"><svg><use href="#i-logo"/></svg><div><span data-t="demo_a1"></span> <mark data-t="demo_mark"></mark> <span data-t="demo_a2"></span>
+          <div class="art-src"><svg width="14" height="14"><use href="#i-pin"/></svg><span data-t="demo_src"></span></div></div></div>
+      </div>
+      <ul class="art-list">
+        <li><svg><use href="#i-pin"/></svg><span data-t="li1"></span></li>
+        <li><svg><use href="#i-globe"/></svg><span data-t="li2"></span></li>
+        <li><svg><use href="#i-scan"/></svg><span data-t="li3"></span></li>
+        <li><svg><use href="#i-quiz"/></svg><span data-t="li4"></span></li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+const T = {
+  kk: {
+    title: "Қош келдіңіз", sub: "Құжаттарыңызбен жұмысты жалғастыру үшін кіріңіз.",
+    login: "Кіру", register: "Тіркелу", name: "Атыңыз", username: "Логин", password: "Құпиясөз",
+    show: "Көрсету", hide: "Жасыру", or: "немесе", guest: "Қонақ ретінде кіру",
+    fine: "Құпиясөздер шифрланған күйде сақталады. Құжаттарыңызды тек сіз көресіз.",
+    submit_login: "Кіру", submit_register: "Аккаунт құру",
+    quote: "Құжатыңыз <em>сөйлей</em> бастайды.",
+    demo_q: "Финал қашан өтеді?", demo_a1: "Чемпионаттың финалдық кезеңі", demo_mark: "2026 жылғы 14 қарашада", demo_a2: "өтеді [1].",
+    demo_src: "Ереже.pdf · бет 1",
+    li1: "Әр жауап — бетке сілтемесімен", li2: "Қазақша, орысша, ағылшынша", li3: "Сканерлер мен фотоларды оқиды", li4: "Құжат бойынша білімді тексеру",
+    err_invalid: "Логин немесе құпиясөз қате.", err_username: "Логин: 3–32 таңба, латын әріптері, сандар, _ . -",
+    err_password_short: "Құпиясөз кемінде 6 таңбадан тұруы керек.", err_username_taken: "Бұл логин бос емес.",
+    err_empty: "Логин мен құпиясөзді енгізіңіз.", err_net: "Серверге қосылу мүмкін болмады.",
+  },
+  ru: {
+    title: "С возвращением", sub: "Войдите, чтобы продолжить работу с документами.",
+    login: "Вход", register: "Регистрация", name: "Ваше имя", username: "Логин", password: "Пароль",
+    show: "Показать", hide: "Скрыть", or: "или", guest: "Войти как гость",
+    fine: "Пароли хранятся в зашифрованном виде. Ваши документы видите только вы.",
+    submit_login: "Войти", submit_register: "Создать аккаунт",
+    quote: "Ваш документ <em>заговорит</em>.",
+    demo_q: "Когда пройдёт финал?", demo_a1: "Финальный этап чемпионата пройдёт", demo_mark: "14 ноября 2026 года", demo_a2: "[1].",
+    demo_src: "Ереже.pdf · стр. 1",
+    li1: "Каждый ответ — со ссылкой на страницу", li2: "Казахский, русский, английский", li3: "Читает сканы и фото", li4: "Проверка знаний по документу",
+    err_invalid: "Неверный логин или пароль.", err_username: "Логин: 3–32 символа, латиница, цифры, _ . -",
+    err_password_short: "Пароль должен быть не короче 6 символов.", err_username_taken: "Этот логин уже занят.",
+    err_empty: "Введите логин и пароль.", err_net: "Не удалось подключиться к серверу.",
+  },
+  en: {
+    title: "Welcome back", sub: "Sign in to continue working with your documents.",
+    login: "Sign in", register: "Sign up", name: "Your name", username: "Username", password: "Password",
+    show: "Show", hide: "Hide", or: "or", guest: "Continue as guest",
+    fine: "Passwords are stored hashed. Only you can see your documents.",
+    submit_login: "Sign in", submit_register: "Create account",
+    quote: "Your documents <em>start talking</em>.",
+    demo_q: "When is the final?", demo_a1: "The final stage of the championship takes place on", demo_mark: "14 November 2026", demo_a2: "[1].",
+    demo_src: "Ereje.pdf · p. 1",
+    li1: "Every answer links to its page", li2: "Kazakh, Russian, English", li3: "Reads scans and photos", li4: "Knowledge check on any document",
+    err_invalid: "Wrong username or password.", err_username: "Username: 3–32 chars — letters, digits, _ . -",
+    err_password_short: "Password must be at least 6 characters.", err_username_taken: "This username is taken.",
+    err_empty: "Enter your username and password.", err_net: "Could not reach the server.",
+  },
+};
+const $ = (s) => document.querySelector(s);
+let lang = "kk", mode = "login";
+try { lang = localStorage.getItem("docmind_lang") || ((navigator.language || "").startsWith("ru") ? "ru" : "kk"); } catch (_) {}
+if (!T[lang]) lang = "kk";
+const t = (k) => T[lang][k] || T.ru[k] || k;
+
+function render() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-t]").forEach((el) => {
+    if (el.id === "eye") return;
+    el.innerHTML = t(el.dataset.t);
+  });
+  $("#eye").textContent = $("#password").type === "password" ? t("show") : t("hide");
+  $("#submit").textContent = t(mode === "login" ? "submit_login" : "submit_register");
+  $("#nameField").hidden = mode !== "register";
+  $("#password").autocomplete = mode === "login" ? "current-password" : "new-password";
+  document.querySelectorAll("#langSwitch button").forEach((b) => b.classList.toggle("active", b.dataset.lang === lang));
+  document.querySelectorAll("#modeSwitch button").forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+}
+
+function showError(key) {
+  $("#error").textContent = t("err_" + key) || t("err_invalid");
+  $("#error").hidden = false;
+}
+
+async function send(url, body) {
+  $("#submit").disabled = $("#guest").disabled = true;
+  $("#error").hidden = true;
+  try {
+    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) });
+    if (res.ok) { location.href = "/"; return; }
+    let detail = "invalid";
+    try { detail = (await res.json()).detail; } catch (_) {}
+    showError(typeof detail === "string" && T.ru["err_" + detail] ? detail : "invalid");
+  } catch (_) {
+    showError("net");
+  } finally {
+    $("#submit").disabled = $("#guest").disabled = false;
+  }
+}
+
+$("#langSwitch").onclick = (e) => {
+  if (!e.target.dataset.lang) return;
+  lang = e.target.dataset.lang;
+  try { localStorage.setItem("docmind_lang", lang); } catch (_) {}
+  render();
+};
+$("#modeSwitch").onclick = (e) => {
+  if (!e.target.dataset.mode) return;
+  mode = e.target.dataset.mode;
+  $("#error").hidden = true;
+  render();
+};
+$("#eye").onclick = () => {
+  const p = $("#password");
+  p.type = p.type === "password" ? "text" : "password";
+  render();
+};
+$("#form").onsubmit = (e) => {
+  e.preventDefault();
+  const username = $("#username").value.trim(), password = $("#password").value;
+  if (!username || !password) return showError("empty");
+  if (mode === "register") send("/api/auth/register", { username, password, name: $("#name").value.trim() });
+  else send("/api/auth/login", { username, password });
+};
+$("#guest").onclick = () => send("/api/auth/guest");
+render();
+$("#username").focus();
+</script>
+</body>
+</html>
