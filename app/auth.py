@@ -45,6 +45,7 @@ DEFAULT_SETTINGS = {
     "theme": "system",          # system | light | dark
     "font": "m",                # s | m | l
     "width": "normal",          # normal | wide
+    "ui_lang": "auto",          # auto | kk | ru | en
     "answer_lang": "auto",      # auto | kk | ru | en
     "answer_style": "balanced",  # concise | balanced | detailed
     "show_sources": True,
@@ -53,6 +54,7 @@ DEFAULT_SETTINGS = {
 }
 SETTING_CHOICES = {
     "theme": {"system", "light", "dark"}, "font": {"s", "m", "l"}, "width": {"normal", "wide"},
+    "ui_lang": {"auto", "kk", "ru", "en"},
     "answer_lang": {"auto", "kk", "ru", "en"}, "answer_style": {"concise", "balanced", "detailed"},
 }
 LIMITS = {  # действие: (максимум, окно в секундах) — на один IP
