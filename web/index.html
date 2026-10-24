@@ -38,6 +38,8 @@
   <symbol id="i-book" viewBox="0 0 24 24"><path class="ico" d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2zM4 20a2 2 0 0 0 2 2h13v-4"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path class="ico" d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24"><path class="ico" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path class="ico" d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path class="ico" d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path class="ico" d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><circle class="ico" cx="12" cy="12" r="3"/><path class="ico" d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle class="ico" cx="12" cy="8" r="4"/><path class="ico" d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
@@ -127,6 +129,10 @@
         <div class="input-row">
           <button type="button" class="icon-btn attach" id="attachBtn" data-i18n-title="upload_title" aria-label="attach"><svg><use href="#i-clip"/></svg></button>
           <textarea id="question" rows="1" data-i18n-placeholder="placeholder"></textarea>
+          <div class="model-pick">
+            <button type="button" class="model-btn" id="modelBtn" aria-haspopup="true"><span id="modelLabel"></span><svg class="chev"><use href="#i-chev"/></svg></button>
+            <div class="model-menu" id="modelMenu" hidden></div>
+          </div>
           <button type="button" class="icon-btn mic" id="micBtn" data-i18n-title="voice" aria-label="voice" hidden><svg><use href="#i-mic"/></svg></button>
           <button type="submit" class="send" id="sendBtn" aria-label="send"><svg><use href="#i-send"/></svg></button>
         </div>

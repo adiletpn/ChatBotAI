@@ -710,3 +710,29 @@ textarea:focus-visible, .input:focus-visible, .code-boxes input:focus-visible { 
 .confirm-card p { color: var(--muted); font-size: 14px; margin: 0 0 18px; overflow-wrap: anywhere; }
 .confirm-card .row-actions { justify-content: flex-end; }
 a.btn { text-decoration: none; display: inline-block; }
+
+/* ================= выбор модели и стиля ответа (в поле ввода) ================= */
+.model-pick { position: relative; flex: none; align-self: center; }
+.model-btn { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; border-radius: 10px; padding: 6px 8px 6px 10px; font-size: 13px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+.model-btn:hover, .model-btn[aria-expanded="true"] { background: var(--hover); color: var(--text); }
+.model-btn .chev { width: 15px; height: 15px; }
+.model-menu { position: absolute; right: 0; bottom: calc(100% + 12px); width: 310px; z-index: 40; padding: 6px; border-radius: 16px;
+  background: var(--glass-strong); backdrop-filter: blur(26px) saturate(150%); -webkit-backdrop-filter: blur(26px) saturate(150%);
+  border: 1px solid var(--border); box-shadow: var(--shadow-lg); animation: pop .16s ease; }
+.model-menu[hidden] { display: none; }
+.mm-head { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--faint); padding: 8px 10px 4px; }
+.mm-item { width: 100%; display: flex; align-items: flex-start; gap: 10px; border: 0; background: none; text-align: left; border-radius: 11px; padding: 9px 10px; }
+.mm-item:hover { background: var(--hover); }
+.mm-item .mm-t { flex: 1; min-width: 0; }
+.mm-item b { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; }
+.mm-item span.d { display: block; font-size: 12px; color: var(--muted); margin-top: 1px; line-height: 1.35; }
+.mm-item .ok { width: 18px; height: 18px; color: var(--accent); flex: none; margin-top: 2px; }
+.mm-item.soon b, .mm-item.soon span.d { opacity: .62; }
+.mm-badge { font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 1px 6px; border-radius: 6px; background: var(--panel-2); color: var(--muted); }
+.mm-badge.pro { background: var(--accent-soft); color: var(--accent); }
+.mm-sep { height: 1px; background: var(--border); margin: 6px 4px; }
+@media (max-width: 760px) {
+  .model-btn { padding: 6px 6px; font-size: 12px; }
+  .model-btn .mb-style { display: none; }
+  .model-menu { width: min(310px, calc(100vw - 24px)); right: -44px; }
+}
