@@ -88,6 +88,14 @@ def normalize_email(email: str) -> str:
     return f"{local}@{domain}"
 
 
+def check_email(email: str) -> None:
+    if not EMAIL_RE.match(email.strip()):
+        raise AuthError("email_invalid")
+    domain = email.strip().lower().rsplit("@", 1)[1]
+    if domain in DISPOSABLE or any(domain.endswith("." + d) for d in DISPOSABLE):
+        raise AuthError("email_disposable")
+
+
 def check_password(password: str, email: str = "") -> None:
     if len(password) < 8:
         raise AuthError("password_short")
@@ -167,11 +175,7 @@ class UserStore:
 
     def register(self, name: str, email: str, password: str) -> tuple[dict, str | None]:
         email = email.strip()
-        if not EMAIL_RE.match(email):
-            raise AuthError("email_invalid")
-        domain = email.lower().rsplit("@", 1)[1]
-        if domain in DISPOSABLE or any(domain.endswith("." + d) for d in DISPOSABLE):
-            raise AuthError("email_disposable")
+        check_email(email)
         name = re.sub(r"\s+", " ", name).strip()[:60]
         if len(name) < 2:
             raise AuthError("name_invalid")
@@ -261,6 +265,33 @@ class UserStore:
         self.sessions = {k: s for k, s in self.sessions.items() if s["user_id"] != user["id"]}
         self._save()
 
+    def firebase_login(self, uid: str, email: str, name: str) -> dict:
+        """Вход через Firebase (email-ссылка или Google). Почта уже подтверждена Firebase."""
+        check_email(email)
+        with self.lock:
+            user = next((u for u in self.users.values() if u.get("firebase_uid") == uid), None)
+            if not user:
+                same = self.find(email)
+                if same and same.get("firebase_uid") not in (None, uid):
+                    raise AuthError("email_taken")  # тот же ящик (с учётом Gmail-алиасов) уже у другого аккаунта
+                user = same
+            if not user:
+                user = {"id": secrets.token_hex(8), "email": email.lower(), "email_key": normalize_email(email),
+                        "name": (re.sub(r"\s+", " ", name).strip() or email.split("@")[0])[:60],
+                        "salt": "", "hash": "", "verified": True, "guest": False, "created": time.time(),
+                        "failed": 0, "locked_until": 0, "settings": dict(DEFAULT_SETTINGS)}
+                self.users[user["id"]] = user
+            user["firebase_uid"], user["verified"] = uid, True
+            self._save()
+            return user
+
+    def email_available(self, email: str) -> None:
+        """Проверка до создания аккаунта в Firebase: формат, одноразовые ящики, Gmail-алиасы."""
+        check_email(email)
+        user = self.find(email)  # find учитывает Gmail-алиасы: a.b+1@gmail.com = ab@gmail.com
+        if user and user.get("verified"):
+            raise AuthError("email_taken")
+
     def delete(self, user: dict) -> None:
         with self.lock:
             self.users.pop(user["id"], None)
@@ -319,6 +350,7 @@ class UserStore:
 def public_user(user: dict) -> dict:
     return {
         "id": user["id"], "name": user["name"], "email": user.get("email", ""), "guest": user.get("guest", False),
+        "provider": "firebase" if user.get("firebase_uid") and not user.get("hash") else "password",
         "settings": {**DEFAULT_SETTINGS, **user.get("settings", {})},
     }
 

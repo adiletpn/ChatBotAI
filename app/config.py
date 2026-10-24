@@ -52,6 +52,12 @@ class Settings:
     smtp_user = os.getenv("SMTP_USER", "").strip()
     smtp_password = os.getenv("SMTP_PASSWORD", "").strip()
     smtp_from = os.getenv("SMTP_FROM", "").strip()
+    # Firebase Authentication (публичный веб-конфиг проекта). Если задан — вход и регистрация идут через Firebase
+    firebase_api_key = os.getenv("FIREBASE_API_KEY", "").strip()
+    firebase_auth_domain = os.getenv("FIREBASE_AUTH_DOMAIN", "").strip()
+    firebase_project_id = os.getenv("FIREBASE_PROJECT_ID", "").strip()
+    firebase_app_id = os.getenv("FIREBASE_APP_ID", "").strip()
+
     # Brevo — отправка писем по HTTP (бесплатно 300 писем/день); нужна там, где хостинг закрывает SMTP
     brevo_api_key = os.getenv("BREVO_API_KEY", "").strip()
     mail_from_email = os.getenv("MAIL_FROM_EMAIL", "").strip()
