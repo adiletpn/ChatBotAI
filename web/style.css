@@ -1,92 +1,93 @@
 /* ==========================================================================
    Mind AI — дизайн-система
-   Шрифты: Geologica (заголовки), Onest (текст). Стекло + мягкие свечения.
-   Тема: data-theme="light|dark" на <html>, иначе — системная.
+   Шрифты: Geologica (заголовки), Onest (текст). Спокойная нейтральная палитра.
+   Темы:   data-theme = light | dark | sepia | midnight (иначе — системная светлая/тёмная)
+   Акцент: data-accent = graphite | indigo | emerald | ocean | amber | rose
    ========================================================================== */
 :root {
-  --bg: #f5f6fb;
-  --glass: rgba(255, 255, 255, .66);
-  --glass-strong: rgba(255, 255, 255, .86);
+  --bg: #fafafa;
+  --glass: rgba(255, 255, 255, .78);
+  --glass-strong: rgba(255, 255, 255, .94);
   --solid: #ffffff;
-  --panel-2: rgba(18, 20, 43, .045);
-  --hover: rgba(18, 20, 43, .06);
-  --text: #12142b;
-  --muted: #5d6182;
-  --faint: #9a9db8;
-  --border: rgba(18, 20, 43, .09);
-  --border-strong: rgba(18, 20, 43, .16);
-  --accent: #6d5df6;
-  --accent-hover: #5b4be6;
-  --accent-soft: rgba(109, 93, 246, .12);
-  --accent-2: #22b8d9;
-  --grad: linear-gradient(135deg, #7c6cff 0%, #5b8cff 55%, #22c3e6 100%);
-  --ok: #129166; --ok-soft: rgba(18, 145, 102, .12);
-  --bad: #d63d4f; --bad-soft: rgba(214, 61, 79, .12);
-  --warn: #b7791f; --warn-soft: rgba(183, 121, 31, .13);
-  --mark: rgba(253, 214, 99, .55);
-  --blob-1: rgba(124, 108, 255, .30);
-  --blob-2: rgba(34, 195, 230, .24);
-  --blob-3: rgba(244, 114, 182, .16);
-  --shadow: 0 1px 2px rgba(18, 20, 43, .04), 0 10px 30px rgba(18, 20, 43, .07);
-  --shadow-lg: 0 24px 80px rgba(18, 20, 43, .18);
+  --panel-2: rgba(0, 0, 0, .035);
+  --hover: rgba(0, 0, 0, .05);
+  --text: #18181b;
+  --muted: #63636b;
+  --faint: #a1a1aa;
+  --border: rgba(0, 0, 0, .08);
+  --border-strong: rgba(0, 0, 0, .14);
+  --ok: #16834f; --ok-soft: rgba(22, 131, 79, .1);
+  --bad: #cc3340; --bad-soft: rgba(204, 51, 64, .1);
+  --warn: #a8670c; --warn-soft: rgba(168, 103, 12, .11);
+  --mark: rgba(250, 204, 21, .38);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 4px 16px rgba(0, 0, 0, .04);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, .14);
+  --accent: #4f52d1;
+  --on-accent: #ffffff;
   --display: "Geologica", "Onest", ui-sans-serif, system-ui, sans-serif;
   --sans: "Onest", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --chat-w: 780px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0a0b13;
-    --glass: rgba(22, 24, 40, .58);
-    --glass-strong: rgba(24, 26, 44, .86);
-    --solid: #151729;
-    --panel-2: rgba(255, 255, 255, .045);
-    --hover: rgba(255, 255, 255, .065);
-    --text: #eceefb;
-    --muted: #a0a3c2;
-    --faint: #63678a;
-    --border: rgba(255, 255, 255, .08);
-    --border-strong: rgba(255, 255, 255, .16);
-    --accent: #8f82ff;
-    --accent-hover: #a397ff;
-    --accent-soft: rgba(143, 130, 255, .16);
-    --ok: #4fd1a1; --ok-soft: rgba(79, 209, 161, .13);
-    --bad: #ff7a8a; --bad-soft: rgba(255, 122, 138, .13);
-    --warn: #f3b955; --warn-soft: rgba(243, 185, 85, .13);
-    --mark: rgba(253, 214, 99, .32);
-    --blob-1: rgba(110, 92, 255, .30);
-    --blob-2: rgba(34, 195, 230, .18);
-    --blob-3: rgba(236, 72, 153, .14);
-    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px rgba(0, 0, 0, .3);
-    --shadow-lg: 0 24px 80px rgba(0, 0, 0, .55);
+  :root:not([data-theme]) {
+    --bg: #121214; --glass: rgba(30, 30, 33, .74); --glass-strong: rgba(30, 30, 34, .96); --solid: #1c1c1f;
+    --panel-2: rgba(255, 255, 255, .04); --hover: rgba(255, 255, 255, .06);
+    --text: #ececef; --muted: #a1a1aa; --faint: #63636b;
+    --border: rgba(255, 255, 255, .08); --border-strong: rgba(255, 255, 255, .14);
+    --ok: #4ccf8b; --ok-soft: rgba(76, 207, 139, .12); --bad: #ff7b86; --bad-soft: rgba(255, 123, 134, .12);
+    --warn: #f0b44c; --warn-soft: rgba(240, 180, 76, .12); --mark: rgba(250, 204, 21, .26);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25); --shadow-lg: 0 20px 60px rgba(0, 0, 0, .55);
+    --accent: #8b8ef0;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0a0b13;
-  --glass: rgba(22, 24, 40, .58);
-  --glass-strong: rgba(24, 26, 44, .86);
-  --solid: #151729;
-  --panel-2: rgba(255, 255, 255, .045);
-  --hover: rgba(255, 255, 255, .065);
-  --text: #eceefb;
-  --muted: #a0a3c2;
-  --faint: #63678a;
-  --border: rgba(255, 255, 255, .08);
-  --border-strong: rgba(255, 255, 255, .16);
-  --accent: #8f82ff;
-  --accent-hover: #a397ff;
-  --accent-soft: rgba(143, 130, 255, .16);
-  --ok: #4fd1a1; --ok-soft: rgba(79, 209, 161, .13);
-  --bad: #ff7a8a; --bad-soft: rgba(255, 122, 138, .13);
-  --warn: #f3b955; --warn-soft: rgba(243, 185, 85, .13);
-  --mark: rgba(253, 214, 99, .32);
-  --blob-1: rgba(110, 92, 255, .30);
-  --blob-2: rgba(34, 195, 230, .18);
-  --blob-3: rgba(236, 72, 153, .14);
-  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px rgba(0, 0, 0, .3);
-  --shadow-lg: 0 24px 80px rgba(0, 0, 0, .55);
+  --bg: #121214; --glass: rgba(30, 30, 33, .74); --glass-strong: rgba(30, 30, 34, .96); --solid: #1c1c1f;
+  --panel-2: rgba(255, 255, 255, .04); --hover: rgba(255, 255, 255, .06);
+  --text: #ececef; --muted: #a1a1aa; --faint: #63636b;
+  --border: rgba(255, 255, 255, .08); --border-strong: rgba(255, 255, 255, .14);
+  --ok: #4ccf8b; --ok-soft: rgba(76, 207, 139, .12); --bad: #ff7b86; --bad-soft: rgba(255, 123, 134, .12);
+  --warn: #f0b44c; --warn-soft: rgba(240, 180, 76, .12); --mark: rgba(250, 204, 21, .26);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25); --shadow-lg: 0 20px 60px rgba(0, 0, 0, .55);
+  --accent: #8b8ef0;
   color-scheme: dark;
+}
+:root[data-theme="sepia"] {
+  --bg: #f5f0e6; --glass: rgba(255, 252, 245, .78); --glass-strong: rgba(255, 252, 245, .95); --solid: #fffcf5;
+  --panel-2: rgba(70, 45, 10, .045); --hover: rgba(70, 45, 10, .06);
+  --text: #2b261f; --muted: #6e655a; --faint: #a99f90;
+  --border: rgba(70, 45, 10, .1); --border-strong: rgba(70, 45, 10, .17);
+  --accent: #9a5b2c;
+  color-scheme: light;
+}
+:root[data-theme="midnight"] {
+  --bg: #0c1220; --glass: rgba(20, 28, 46, .74); --glass-strong: rgba(20, 28, 46, .96); --solid: #141c2e;
+  --panel-2: rgba(255, 255, 255, .04); --hover: rgba(255, 255, 255, .06);
+  --text: #e5eaf5; --muted: #95a1ba; --faint: #5c6884;
+  --border: rgba(255, 255, 255, .08); --border-strong: rgba(255, 255, 255, .14);
+  --ok: #4ccf8b; --ok-soft: rgba(76, 207, 139, .12); --bad: #ff7b86; --bad-soft: rgba(255, 123, 134, .12);
+  --warn: #f0b44c; --warn-soft: rgba(240, 180, 76, .12); --mark: rgba(250, 204, 21, .26);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25); --shadow-lg: 0 20px 60px rgba(0, 0, 0, .55);
+  --accent: #6ea8ff;
+  color-scheme: dark;
+}
+/* акцентные цвета (одинаково читаются на светлых и тёмных темах) */
+:root[data-accent="indigo"] { --accent: #6366f1; --on-accent: #fff; }
+:root[data-accent="emerald"] { --accent: #10a26b; --on-accent: #fff; }
+:root[data-accent="ocean"] { --accent: #0e8fd6; --on-accent: #fff; }
+:root[data-accent="amber"] { --accent: #d4880f; --on-accent: #fff; }
+:root[data-accent="rose"] { --accent: #e0466a; --on-accent: #fff; }
+:root[data-accent="graphite"] { --accent: var(--text); --on-accent: var(--bg); }
+/* производные от акцента */
+:root {
+  --accent-hover: color-mix(in srgb, var(--accent) 86%, var(--text));
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --accent-2: var(--accent);
+  --grad: var(--accent);
+  --blob-1: color-mix(in srgb, var(--accent) 9%, transparent);
+  --blob-2: color-mix(in srgb, var(--accent) 5%, transparent);
+  --blob-3: transparent;
 }
 :root[data-width="wide"] { --chat-w: 1040px; }
 :root[data-font="s"] body { zoom: .92; }
@@ -454,3 +455,54 @@ textarea::placeholder { color: var(--faint); }
 }
 /* у полей ввода своя подсветка — системная рамка фокуса не нужна */
 textarea:focus-visible, .input:focus-visible, .code-boxes input:focus-visible { outline: none; }
+
+/* ================= минимализм: без свечений, акцент — только там, где нужен ================= */
+.dz-icon, .send, .btn, .empty-state .big, .quiz-start .big, .msg.user .bubble { box-shadow: none; }
+.welcome-mark { filter: none; }
+.dz-icon { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+.empty-state .big, .quiz-start .big { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+.send { background: var(--text); color: var(--bg); }
+.btn { background: var(--accent); color: var(--on-accent); }
+.btn:hover { background: var(--accent-hover); transform: none; }
+.btn.ghost { background: transparent; color: var(--text); }
+.btn.danger { background: var(--bad); color: #fff; }
+.msg.user .bubble { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+.welcome h1 .grad, .brand-name em, .map-stats b, .art-quote em { background: none; -webkit-background-clip: initial; background-clip: initial; color: inherit; }
+.brand-name em { color: var(--muted); }
+.map-stats b { color: var(--text); }
+.map-hero::before { background: var(--accent); height: 2px; }
+.timeline li::before { background: var(--accent); }
+.avatar-u { background: var(--text); color: var(--bg); }
+.switch input:checked + i { background: var(--accent); }
+.feature:hover { transform: none; box-shadow: none; border-color: var(--border-strong); }
+.aurora span { filter: blur(120px); }
+.cite:hover, .loc-link:hover { color: var(--on-accent); }
+
+/* логотип — рукописное «mind» */
+.wordmark { display: block; height: 30px; width: auto; color: var(--text); }
+.brand .wordmark { height: 28px; }
+.welcome-mark { width: auto; height: auto; margin: 0 auto 14px; }
+.welcome-mark .wordmark { height: 64px; margin: 0 auto; }
+.brand-mark, .avatar { display: none; }
+.msg.bot { gap: 0; }
+
+/* выбор темы и акцента */
+.theme-cards { grid-template-columns: repeat(5, 1fr); }
+.pv.light { background: #fafafa; }
+.pv.dark { background: #121214; }
+.pv.sepia { background: #f5f0e6; }
+.pv.midnight { background: #0c1220; }
+.pv.system { background: linear-gradient(110deg, #fafafa 50%, #121214 50%); }
+.pv { position: relative; }
+.pv::after { content: ""; position: absolute; left: 10px; right: 30%; bottom: 10px; height: 8px; border-radius: 4px; background: var(--accent); opacity: .85; }
+.accents { display: flex; gap: 10px; flex-wrap: wrap; }
+.accents button { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--solid); box-shadow: 0 0 0 1px var(--border-strong); padding: 0; }
+.accents button.active { box-shadow: 0 0 0 2px var(--text); }
+@media (max-width: 760px) { .theme-cards { grid-template-columns: repeat(3, 1fr); } }
+
+/* логотип-надпись: рукописное «mind» + «AI» основным шрифтом */
+.logo-text { display: inline-flex; align-items: center; gap: 6px; color: var(--text); line-height: 1; }
+.logo-ai { font-family: var(--display); font-weight: 600; font-size: 17px; letter-spacing: -.01em; color: var(--muted); padding: 2px 6px; border: 1px solid var(--border-strong); border-radius: 7px; }
+.welcome-mark .logo-text { gap: 10px; }
+.welcome-mark .logo-ai { font-size: 30px; padding: 3px 10px; border-radius: 11px; }
+.brand-sub { margin-top: 2px; }
