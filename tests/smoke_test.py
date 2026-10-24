@@ -86,17 +86,41 @@ async def main() -> None:
     headers = {}
     check("без входа — 401", client.get("/api/documents").status_code == 401)
     check("без входа — редирект на /login", client.get("/", follow_redirects=False).status_code in (302, 307))
-    r = client.post("/api/auth/register", json={"username": "aigerim", "password": "secret123", "name": "Айгерім"})
-    check("регистрация", r.status_code == 200 and r.json()["username"] == "aigerim")
-    r = client.post("/api/auth/register", json={"username": "aigerim", "password": "secret123"})
-    check("повторный логин отклонён", r.status_code == 400)
-    check("короткий пароль отклонён",
-          client.post("/api/auth/register", json={"username": "bob", "password": "123"}).status_code == 400)
+    from app import mailer
+    from app.auth import normalize_email
+    check("Gmail-алиасы = один адрес", normalize_email("Ai.Gerim+test@GMAIL.com") == "aigerim@gmail.com")
+    reg = {"name": "Айгерім", "email": "aigerim@example.com", "password": "secret2026", "lang": "ru"}
+    check("слабый пароль отклонён", client.post("/api/auth/register", json={**reg, "password": "onlyletters"}).status_code == 400)
+    check("одноразовая почта отклонена",
+          client.post("/api/auth/register", json={**reg, "email": "x@mailinator.com"}).status_code == 400)
+    r = client.post("/api/auth/register", json=reg)
+    check("регистрация → нужен код", r.status_code == 200 and r.json()["need_verify"] is True, r.text[:120])
+    check("без подтверждения вход запрещён",
+          client.post("/api/auth/login", json={"email": reg["email"], "password": reg["password"]}).status_code == 403)
+    check("неверный код", client.post("/api/auth/verify", json={"email": reg["email"], "code": "000000"}).status_code == 400)
+    code = [m["code"] for m in mailer.outbox if m["to"] == reg["email"] and m["kind"] == "verify"][-1]
+    r = client.post("/api/auth/verify", json={"email": reg["email"], "code": code})
+    check("подтверждение email кодом", r.status_code == 200 and client.get("/api/auth/me").status_code == 200)
+    check("повторная регистрация того же email",
+          client.post("/api/auth/register", json={**reg, "email": "AIGERIM@example.com"}).status_code == 400)
     stranger = TestClient(app)
-    check("неверный пароль", stranger.post("/api/auth/login", json={"username": "aigerim", "password": "wrong"}).status_code == 401)
-    check("вход по паролю", stranger.post("/api/auth/login", json={"username": "aigerim", "password": "secret123"}).status_code == 200)
+    check("неверный пароль", stranger.post("/api/auth/login", json={"email": reg["email"], "password": "wrong1234"}).status_code == 401)
+    check("вход по паролю", stranger.post("/api/auth/login", json={"email": reg["email"], "password": reg["password"]}).status_code == 200)
     stranger.post("/api/auth/logout")
     check("выход", stranger.get("/api/auth/me").status_code == 401)
+    check("сброс: ответ одинаковый для неизвестного email",
+          stranger.post("/api/auth/send-code", json={"email": "nobody@example.com", "kind": "reset"}).status_code == 200)
+    stranger.post("/api/auth/send-code", json={"email": reg["email"], "kind": "reset"})
+    code = [m["code"] for m in mailer.outbox if m["kind"] == "reset"][-1]
+    r = stranger.post("/api/auth/reset", json={"email": reg["email"], "code": code, "password": "newpass2026"})
+    check("сброс пароля по коду", r.status_code == 200)
+    check("старая сессия закрыта после сброса", client.get("/api/auth/me").status_code == 401)
+    client.post("/api/auth/login", json={"email": reg["email"], "password": "newpass2026"})
+    check("вход с новым паролем", client.get("/api/auth/me").status_code == 200)
+    r = client.put("/api/settings", json={"theme": "dark", "answer_style": "concise", "show_trust": False, "theme_bad": 1})
+    check("настройки сохраняются", r.status_code == 200 and r.json()["theme"] == "dark" and r.json()["show_trust"] is False
+          and "theme_bad" not in r.json())
+    stranger.post("/api/auth/logout")
     check("гостевой вход", stranger.post("/api/auth/guest").json()["guest"] is True)
     r = client.get("/api/status")
     check("/api/status", r.status_code == 200 and r.json()["llm_enabled"] is False)
