@@ -88,7 +88,8 @@ async def main() -> None:
     client = TestClient(app)
     headers = {}
     check("без входа — 401", client.get("/api/documents").status_code == 401)
-    check("без входа — редирект на /login", client.get("/", follow_redirects=False).status_code in (302, 307))
+    check("без входа — главная видна, данные закрыты",
+          client.get("/", follow_redirects=False).status_code == 200 and client.get("/api/chats").status_code == 401)
     from app import mailer
     from app.auth import normalize_email
     check("Gmail-алиасы = один адрес", normalize_email("Ai.Gerim+test@GMAIL.com") == "aigerim@gmail.com")
