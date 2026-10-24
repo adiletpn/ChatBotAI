@@ -82,7 +82,21 @@ async def main() -> None:
 
     print("REST API:")
     client = TestClient(app)
-    headers = {"X-Session-Id": "smoketest123"}
+    headers = {}
+    check("без входа — 401", client.get("/api/documents").status_code == 401)
+    check("без входа — редирект на /login", client.get("/", follow_redirects=False).status_code in (302, 307))
+    r = client.post("/api/auth/register", json={"username": "aigerim", "password": "secret123", "name": "Айгерім"})
+    check("регистрация", r.status_code == 200 and r.json()["username"] == "aigerim")
+    r = client.post("/api/auth/register", json={"username": "aigerim", "password": "secret123"})
+    check("повторный логин отклонён", r.status_code == 400)
+    check("короткий пароль отклонён",
+          client.post("/api/auth/register", json={"username": "bob", "password": "123"}).status_code == 400)
+    stranger = TestClient(app)
+    check("неверный пароль", stranger.post("/api/auth/login", json={"username": "aigerim", "password": "wrong"}).status_code == 401)
+    check("вход по паролю", stranger.post("/api/auth/login", json={"username": "aigerim", "password": "secret123"}).status_code == 200)
+    stranger.post("/api/auth/logout")
+    check("выход", stranger.get("/api/auth/me").status_code == 401)
+    check("гостевой вход", stranger.post("/api/auth/guest").json()["guest"] is True)
     r = client.get("/api/status")
     check("/api/status", r.status_code == 200 and r.json()["llm_enabled"] is False)
     with open(SAMPLES / "Instrukciya_po_ohrane_truda.docx", "rb") as f:
@@ -104,14 +118,14 @@ async def main() -> None:
     chunk_id = f"{pdf_id}:0"
     r = client.get(f"/api/chunk?chunk={chunk_id}", headers=headers)
     check("фрагмент-доказательство", r.status_code == 200 and r.json()["has_page"])
-    r = client.get(f"/api/evidence.png?session=smoketest123&chunk={chunk_id}&q=Жамбыл облысы")
+    r = client.get(f"/api/evidence.png?chunk={chunk_id}&q=Жамбыл облысы")
     check("страница с подсветкой", r.status_code == 200 and r.content[:4] == b"\x89PNG")
-    r = client.get(f"/api/evidence.png?session=other_session&chunk={chunk_id}")
+    r = stranger.get(f"/api/evidence.png?chunk={chunk_id}")
     check("чужая страница недоступна", r.status_code == 404)
     client.delete(f"/api/documents/{pdf_id}", headers=headers)
-    r = client.get(f"/api/documents/{doc_id}/file?session=smoketest123")
+    r = client.get(f"/api/documents/{doc_id}/file")
     check("скачивание оригинала", r.status_code == 200 and len(r.content) > 1000)
-    r = client.get(f"/api/documents/{doc_id}/file?session=other_session")
+    r = stranger.get(f"/api/documents/{doc_id}/file")
     check("чужой документ недоступен", r.status_code == 404)
     r = client.post("/api/documents", headers=headers, files={"files": ("virus.exe", b"MZ")})
     check("неподдерживаемый формат", "error" in r.json()[0])
