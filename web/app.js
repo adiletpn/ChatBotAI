@@ -982,7 +982,7 @@ const TABS = {
   },
   account() {
     const u = state.user || {};
-    return head("account") + (u.guest ? "" : `
+    return head("account") + (u.guest || u.provider === "firebase" ? "" : `
       <div class="set-group" style="padding:16px"><b style="display:block;margin-bottom:12px">${L("change_pw")}</b>
         <div class="field"><label>${L("old_pw")}</label><input class="input" type="password" id="pwOld" autocomplete="current-password"></div>
         <div class="field"><label>${L("new_pw")}</label><input class="input" type="password" id="pwNew" autocomplete="new-password">
@@ -1052,8 +1052,9 @@ const ACTIONS = {
   logout,
   async "delete-account"() {
     if (!(await confirmDialog(L("del_acc_t"), L("delete_acc_d")))) return;
-    const password = state.user.guest ? "" : prompt(L("confirm_pw")) || "";
-    if (!state.user.guest && !password) return;
+    const needPw = !state.user.guest && state.user.provider !== "firebase";  // у входа через Firebase/Google нет пароля здесь
+    const password = needPw ? prompt(L("confirm_pw")) || "" : "";
+    if (needPw && !password) return;
     try { await jsonPost("/api/profile/delete", { password }); location.href = "/login"; }
     catch (e) { toast(errText(e), true); }
   },
