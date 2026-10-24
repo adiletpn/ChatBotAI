@@ -90,8 +90,6 @@
   --blob-3: transparent;
 }
 :root[data-width="wide"] { --chat-w: 1040px; }
-:root[data-font="s"] body { zoom: .92; }
-:root[data-font="l"] body { zoom: 1.08; }
 
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }

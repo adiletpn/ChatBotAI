@@ -904,7 +904,7 @@ function applyPrefs() {
   const p = prefs(), root = document.documentElement;
   if (p.theme === "system") delete root.dataset.theme; else root.dataset.theme = p.theme;
   root.dataset.accent = p.accent;
-  root.dataset.font = p.font;
+  delete root.dataset.font;  // «Размер текста» временно отключён: увеличение ломало окно настроек
   root.dataset.width = p.width;
   try { localStorage.setItem("mind_prefs", JSON.stringify({ theme: p.theme, accent: p.accent, font: p.font, width: p.width })); } catch (_) {}
   if (p.ui_lang !== "auto" && p.ui_lang !== state.lang) setLang(p.ui_lang);
@@ -981,7 +981,6 @@ const TABS = {
           <div class="accents">${Object.entries(ACCENTS).map(([k, c]) => `
             <button type="button" title="${L("ac_" + k)}" aria-label="${L("ac_" + k)}" data-pref="accent" data-val="${k}" class="${p.accent === k ? "active" : ""}" style="background:${c}"></button>`).join("")}</div></div></div>
       <div class="set-group">
-        ${segRow("font", L("font_size"), L("font_size_d"), [["s", L("f_s")], ["m", L("f_m")], ["l", L("f_l")]])}
         ${segRow("width", L("width"), L("width_d"), [["normal", L("w_normal")], ["wide", L("w_wide")]])}</div>`;
   },
   language() {

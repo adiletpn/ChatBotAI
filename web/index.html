@@ -10,7 +10,7 @@
   <script>
     // тема и размеры применяются до отрисовки, чтобы не было «мигания»
     try { const s = JSON.parse(localStorage.getItem("mind_prefs") || "{}"); const r = document.documentElement;
-      if (s.theme && s.theme !== "system") r.dataset.theme = s.theme; if (s.accent) r.dataset.accent = s.accent; if (s.font) r.dataset.font = s.font; if (s.width) r.dataset.width = s.width; } catch (_) {}
+      if (s.theme && s.theme !== "system") r.dataset.theme = s.theme; if (s.accent) r.dataset.accent = s.accent; if (s.width) r.dataset.width = s.width; } catch (_) {}
   </script>
 </head>
 <body>
