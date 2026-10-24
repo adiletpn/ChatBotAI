@@ -8,11 +8,19 @@ _LAT = re.compile(r"[a-zA-Z]")
 LANG_NAMES = {"kk": "Kazakh (қазақ тілі)", "ru": "Russian (русский язык)", "en": "English"}
 
 
+# Частые казахские слова, в которых нет особых букв («Командада неше адам болады?»)
+KK_WORDS = {"неше", "болады", "болса", "бола", "керек", "мен", "бен", "пен", "туралы", "бойынша", "деген",
+            "бар", "ма", "ме", "ба", "бе", "па", "пе", "адам", "немесе", "дейін", "кейін", "арқылы", "тиіс"}
+_WORD = re.compile(r"[а-яёәғқңөұүһі]+", re.I)
+
+
 def detect_lang(text: str, default: str = "ru") -> str:
     """Казахские буквы (ә, ғ, қ, ң, ө, ұ, ү, һ, і) не встречаются в русском — это надёжный признак."""
     if not text:
         return default
     if any(ch in KK_LETTERS for ch in text):
+        return "kk"
+    if any(w in KK_WORDS for w in _WORD.findall(text.lower())):
         return "kk"
     cyr = len(_CYR.findall(text))
     lat = len(_LAT.findall(text))

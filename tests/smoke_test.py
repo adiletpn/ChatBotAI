@@ -41,6 +41,7 @@ async def main() -> None:
     settings.llm_api_key = ""
     print("Язык:")
     check("kk", detect_lang("Финал қашан өтеді?") == "kk")
+    check("kk без особых букв", detect_lang("Командада неше адам болады?") == "kk")
     check("ru", detect_lang("Когда пройдёт финал?") == "ru")
     check("en", detect_lang("When is the final?") == "en")
 
