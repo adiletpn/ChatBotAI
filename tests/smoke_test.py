@@ -132,6 +132,14 @@ async def main() -> None:
     doc_id = r.json()[0]["id"]
     r = client.post("/api/ask", headers=headers, json={"question": "Какой номер вызова пожарной службы?"})
     check("стриминг /api/ask", r.status_code == 200 and "101" in r.text, r.text[:150])
+    chat_list = client.get("/api/chats").json()
+    check("чат сохранён после вопроса", len(chat_list) == 1 and "пожар" in chat_list[0]["title"].lower(), str(chat_list)[:120])
+    chat_id = chat_list[0]["id"]
+    r = client.post("/api/ask", headers=headers, json={"question": "А скорая помощь?", "chat_id": chat_id})
+    msgs = client.get(f"/api/chats/{chat_id}").json()["messages"]
+    check("продолжение того же чата", len(msgs) == 4 and msgs[1]["role"] == "bot" and len(client.get("/api/chats").json()) == 1)
+    check("чужой чат недоступен", TestClient(app).get(f"/api/chats/{chat_id}").status_code in (401, 404))
+    check("удаление чата", client.delete(f"/api/chats/{chat_id}").status_code == 200 and client.get("/api/chats").json() == [])
     r = client.get(f"/api/documents/{doc_id}/summary?lang=ru", headers=headers)
     check("резюме", r.status_code == 200 and r.json()["summary"])
     r = client.get(f"/api/documents/{doc_id}/insights?lang=ru", headers=headers)
