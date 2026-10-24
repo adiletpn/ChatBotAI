@@ -2,15 +2,15 @@
 import asyncio
 import json
 import logging
-import re
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, Response, StreamingResponse
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from . import insights, llm, rag
+from .auth import COOKIE, SESSION_DAYS, AuthError, public_user, users
 from .config import settings
 from .lang import format_loc
 from .ocr import ocr_engine
@@ -40,12 +40,16 @@ app = FastAPI(title=settings.app_name, lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=settings.web_dir), name="static")
 
 
+def current_user(request: Request) -> dict | None:
+    return users.user_by_token(request.cookies.get(COOKIE))
+
+
 def owner_of(request: Request) -> str:
-    """Каждый браузер работает со своим набором документов (id сессии хранится в localStorage)."""
-    sid = request.headers.get("X-Session-Id", "")
-    if not re.fullmatch(r"[A-Za-z0-9_-]{8,64}", sid):
-        raise HTTPException(400, "Нет X-Session-Id")
-    return f"web:{sid}"
+    """Каждый пользователь видит только свои документы."""
+    user = current_user(request)
+    if not user:
+        raise HTTPException(401, "Требуется вход")
+    return f"user:{user['id']}"
 
 
 def public(doc: dict) -> dict:
@@ -53,8 +57,72 @@ def public(doc: dict) -> dict:
 
 
 @app.get("/")
-async def index():
+async def index(request: Request):
+    if not current_user(request):
+        return RedirectResponse("/login")
     return FileResponse(settings.web_dir / "index.html")
+
+
+@app.get("/login")
+async def login_page(request: Request):
+    if current_user(request):
+        return RedirectResponse("/")
+    return FileResponse(settings.web_dir / "login.html")
+
+
+# ---------------------------------------------------------------- аккаунты
+
+class Credentials(BaseModel):
+    username: str = Field(max_length=64)
+    password: str = Field(max_length=128)
+    name: str = Field(default="", max_length=60)
+
+
+def _signed_in(user: dict, request: Request) -> JSONResponse:
+    resp = JSONResponse(public_user(user))
+    resp.set_cookie(COOKIE, users.create_session(user), max_age=SESSION_DAYS * 86400, httponly=True,
+                    samesite="lax", secure=request.url.scheme == "https")
+    return resp
+
+
+@app.post("/api/auth/register")
+async def register(body: Credentials, request: Request):
+    try:
+        user = await asyncio.to_thread(users.register, body.username, body.password, body.name)
+    except AuthError as exc:
+        raise HTTPException(400, str(exc))
+    return _signed_in(user, request)
+
+
+@app.post("/api/auth/login")
+async def login(body: Credentials, request: Request):
+    try:
+        user = await asyncio.to_thread(users.verify, body.username, body.password)
+    except AuthError:
+        await asyncio.sleep(0.5)  # замедляем перебор паролей
+        raise HTTPException(401, "invalid")
+    return _signed_in(user, request)
+
+
+@app.post("/api/auth/guest")
+async def guest(request: Request):
+    return _signed_in(users.guest(), request)
+
+
+@app.post("/api/auth/logout")
+async def logout(request: Request):
+    users.drop_session(request.cookies.get(COOKIE))
+    resp = JSONResponse({"ok": True})
+    resp.delete_cookie(COOKIE)
+    return resp
+
+
+@app.get("/api/auth/me")
+async def me(request: Request):
+    user = current_user(request)
+    if not user:
+        raise HTTPException(401, "Требуется вход")
+    return public_user(user)
 
 
 @app.get("/api/status")
@@ -111,8 +179,8 @@ async def delete_document(doc_id: str, request: Request):
 
 
 @app.get("/api/documents/{doc_id}/file")
-async def document_file(doc_id: str, session: str):
-    doc = store.get(doc_id, f"web:{session}")
+async def document_file(doc_id: str, request: Request):
+    doc = store.get(doc_id, owner_of(request))
     if not doc:
         raise HTTPException(404, "Документ не найден")
     return FileResponse(store.file_path(doc), filename=doc["name"],
@@ -161,10 +229,10 @@ async def chunk_info(chunk: str, request: Request, lang: str = "ru"):
 
 
 @app.get("/api/evidence.png")
-async def evidence(session: str, chunk: str, q: str = ""):
-    """Страница PDF с подсветкой строк-доказательств (картинка, поэтому session — в query)."""
+async def evidence(chunk: str, request: Request, q: str = ""):
+    """Страница PDF с подсветкой строк-доказательств."""
     found = store.get_chunk(chunk)
-    doc = store.get(found["doc_id"], f"web:{session}") if found else None
+    doc = store.get(found["doc_id"], owner_of(request)) if found else None
     if not doc:
         raise HTTPException(404, "Фрагмент не найден")
     png = await asyncio.to_thread(insights.render_evidence, doc, found, q[:2000])
