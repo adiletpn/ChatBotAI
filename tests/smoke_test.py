@@ -124,6 +124,18 @@ async def main() -> None:
     check("настройки сохраняются", r.status_code == 200 and r.json()["theme"] == "dark" and r.json()["show_trust"] is False
           and "theme_bad" not in r.json())
     stranger.post("/api/auth/logout")
+    from app.auth import users as user_store, AuthError
+    fb_user = user_store.firebase_login("fb-uid-1", "Ali.Test@gmail.com", "Али")
+    check("вход через Firebase создаёт аккаунт", fb_user["verified"] and fb_user["email_key"] == "alitest@gmail.com")
+    check("повторный вход Firebase — тот же аккаунт", user_store.firebase_login("fb-uid-1", "ali.test@gmail.com", "")["id"] == fb_user["id"])
+    try:
+        user_store.firebase_login("fb-uid-2", "alitest+x@gmail.com", "")
+        check("Gmail-алиас другого аккаунта отклонён", False)
+    except AuthError:
+        check("Gmail-алиас другого аккаунта отклонён", True)
+    check("проверка email до регистрации",
+          client.post("/api/auth/check-email", json={"email": "ali.test+1@gmail.com"}).status_code == 400
+          and client.post("/api/auth/check-email", json={"email": "fresh@example.com"}).status_code == 200)
     check("гостевой вход отключён", stranger.post("/api/auth/guest").status_code in (404, 405))
     other = {"name": "Бауыржан", "email": "baur@example.com", "password": "other2026x"}
     stranger.post("/api/auth/register", json=other)
