@@ -164,7 +164,6 @@ Object.assign(I18N.en, {
 const $ = (s) => document.querySelector(s);
 const state = {
   lang: pickLang(),
-  sid: sessionId(),
   docs: [],
   selected: new Set(),
   status: null,
@@ -186,18 +185,6 @@ function pickLang() {
   return nav === "ru" ? "ru" : nav === "en" ? "en" : "kk";
 }
 
-function sessionId() {
-  try {
-    let sid = localStorage.getItem("docmind_sid");
-    if (!sid) {
-      sid = Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, "0")).join("");
-      localStorage.setItem("docmind_sid", sid);
-    }
-    return sid;
-  } catch (_) {
-    return "anon" + Math.random().toString(36).slice(2, 14);
-  }
-}
 
 const L = (key) => I18N[state.lang][key] ?? I18N.ru[key] ?? key;
 
@@ -216,7 +203,8 @@ function applyI18n() {
 
 /* ================= API ================= */
 async function api(path, options = {}) {
-  const res = await fetch(path, { ...options, headers: { "X-Session-Id": state.sid, ...(options.headers || {}) } });
+  const res = await fetch(path, options);
+  if (res.status === 401) { location.href = "/login"; throw new Error("401"); }
   if (!res.ok) throw new Error((await res.text()) || res.statusText);
   return res.json();
 }
@@ -231,6 +219,7 @@ function toast(text, isError = false) {
 }
 
 /* ================= markdown ================= */
+const icon = (name) => `<svg><use href="#i-${name}"/></svg>`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 function inline(s) {
@@ -286,7 +275,7 @@ function extClass(ext) {
 }
 
 function fileUrl(docId, loc) {
-  let url = `/api/documents/${docId}/file?session=${encodeURIComponent(state.sid)}`;
+  let url = `/api/documents/${docId}/file`;
   if (loc && loc.type === "page") url += `#page=${loc.value}`;
   return url;
 }
@@ -308,10 +297,10 @@ function renderDocs(pending = []) {
         </div>
       </div>
       <div class="doc-actions">
-        <button data-act="summary">✨ ${L("summary")}</button>
-        <button data-act="map">🧭 ${L("map_btn")}</button>
-        <button data-act="open" title="${L("open")}">↗</button>
-        <button data-act="delete" class="del" title="${L("delete")}">🗑</button>
+        <button data-act="summary">${icon("spark")}${L("summary")}</button>
+        <button data-act="map">${icon("map")}${L("map_btn")}</button>
+        <button data-act="open" title="${L("open")}">${icon("open")}</button>
+        <button data-act="delete" class="del" title="${L("delete")}">${icon("trash")}</button>
       </div>`;
     el.querySelector(".doc-info").onclick = () => toggleSelect(d.id);
     el.querySelector('[data-act="summary"]').onclick = () => showSummary(d);
@@ -334,7 +323,7 @@ function renderScope() {
   const sel = state.docs.filter((d) => state.selected.has(d.id));
   $("#scope").innerHTML = sel.length
     ? `${L("scope_sel")} <b>${sel.map((d) => esc(d.name)).join(", ")}</b>`
-    : `🔎 ${L("scope_all")} (${state.docs.length})`;
+    : `${L("scope_all")} · ${state.docs.length}`;
 }
 
 function toggleSelect(id) {
@@ -394,7 +383,7 @@ async function showSummary(doc, justUploaded = false) {
   try {
     const s = await api(`/api/documents/${doc.id}/summary?lang=${state.lang}`);
     const meta = `${doc.pages} ${L("pages")} · ${doc.chunks} ${L("chunks")}${doc.ocr_pages ? ` · ${L("ocr")}: ${doc.ocr_pages}` : ""}`;
-    bubble.innerHTML = `<p><b>${justUploaded ? "✅ " + L("doc_ready") : "✨ " + L("summary_title")}: ${esc(doc.name)}</b><br><small style="color:var(--muted)">${meta}</small></p>${md(s.summary || "")}`;
+    bubble.innerHTML = `<p><b>${justUploaded ? L("doc_ready") : L("summary_title")}: ${esc(doc.name)}</b><br><small style="color:var(--muted)">${meta}</small></p>${md(s.summary || "")}`;
     if (s.questions && s.questions.length) {
       const wrap = document.createElement("div");
       wrap.innerHTML = `<p style="margin-top:10px"><b>${L("ask_these")}</b></p><div class="summary-q"></div>`;
@@ -441,7 +430,7 @@ function addUserMessage(text) {
   scrollDown();
 }
 
-const BOT_AVATAR = `<div class="avatar"><svg viewBox="0 0 32 32"><path d="M9 7h9l5 5v13H9z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="18" r="3" fill="currentColor"/></svg></div>`;
+const BOT_AVATAR = `<div class="avatar"><svg><use href="#i-logo"/></svg></div>`;
 
 function addBotMessage() {
   const el = document.createElement("div");
@@ -472,7 +461,7 @@ function renderSources(body, sources, cited, evidenceQuery) {
     b.type = "button";
     b.className = "src-chip";
     b.dataset.n = s.n;
-    b.innerHTML = `<span class="n">${s.n}</span><span class="t">📍 ${esc(s.doc_name)}${s.loc_label ? " · " + esc(s.loc_label) : ""}</span>`;
+    b.innerHTML = `<span class="n">${s.n}</span><span class="t">${esc(s.doc_name)}${s.loc_label ? " · " + esc(s.loc_label) : ""}</span>`;
     b.onclick = () => open(s.n);
     chips.appendChild(b);
   }
@@ -520,7 +509,7 @@ async function openEvidence(chunkId, query) {
     img.alt = info.loc_label;
     img.onload = () => { $("#evPage").innerHTML = ""; $("#evPage").appendChild(img); };
     img.onerror = () => { $("#evPage").innerHTML = ""; };
-    img.src = `/api/evidence.png?session=${encodeURIComponent(state.sid)}&chunk=${encodeURIComponent(chunkId)}&q=${encodeURIComponent(query)}`;
+    img.src = `/api/evidence.png?chunk=${encodeURIComponent(chunkId)}&q=${encodeURIComponent(query)}`;
   } catch (e) {
     $("#evPage").innerHTML = "";
     $("#evQuote").textContent = `${L("error")}: ${e.message}`;
@@ -537,7 +526,7 @@ function addTools(body, getText) {
   tools.className = "msg-tools";
   const copy = document.createElement("button");
   copy.type = "button";
-  copy.textContent = "⧉ " + L("copy");
+  copy.textContent = L("copy");
   copy.onclick = async () => {
     try { await navigator.clipboard.writeText(getText()); toast(L("copied")); } catch (_) {}
   };
@@ -564,9 +553,10 @@ async function ask(question) {
   try {
     const res = await fetch("/api/ask", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Session-Id": state.sid },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question, doc_ids: state.selected.size ? [...state.selected] : null }),
     });
+    if (res.status === 401) { location.href = "/login"; return; }
     if (!res.ok || !res.body) throw new Error(await res.text());
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
@@ -636,10 +626,10 @@ function renderPicker(selector, key, onChange) {
   }
 }
 
-const emptyState = () => `<div class="empty-state"><div class="big">📂</div>${L("need_doc")}</div>`;
+const emptyState = () => `<div class="empty-state"><div class="big">${icon("folder")}</div>${L("need_doc")}</div>`;
 const loadingState = (text) => `<div class="loading"><span class="spinner"></span>${text}</div>`;
 const locLink = (item) => (item.chunk_id
-  ? ` <button class="loc-link" data-chunk="${esc(item.chunk_id)}" data-q="${esc(item.quote || "")}">📍 ${esc(item.loc_label || L("evidence"))}</button>`
+  ? ` <button class="loc-link" data-chunk="${esc(item.chunk_id)}" data-q="${esc(item.quote || "")}">${esc(item.loc_label || L("evidence"))}</button>`
   : "");
 
 /* ---------- карта документа ---------- */
@@ -681,17 +671,17 @@ function paintMap(doc, m) {
       </div>
     </div>
     <div class="map-grid">
-      <section class="panel"><h4>📅 ${L("timeline")}<span class="cnt">${m.timeline.length}</span></h4>
+      <section class="panel"><h4>${icon("calendar")}${L("timeline")}<span class="cnt">${m.timeline.length}</span></h4>
         ${m.timeline.length ? `<ul class="timeline">${m.timeline.map((t) => `<li><div class="date">${esc(t.date || "")}</div><div class="ev">${esc(t.event || "")}${locLink(t)}</div></li>`).join("")}</ul>` : none}
       </section>
-      <section class="panel"><h4>🔢 ${L("numbers")}<span class="cnt">${m.numbers.length}</span></h4>
+      <section class="panel"><h4>${icon("hash")}${L("numbers")}<span class="cnt">${m.numbers.length}</span></h4>
         ${m.numbers.length ? `<div class="tiles">${m.numbers.map((n) => `<div class="tile"><div class="v">${esc(n.value || "")}</div><div class="l">${esc(n.label || "")}</div><div>${locLink(n)}</div></div>`).join("")}</div>` : none}
       </section>
-      <section class="panel wide"><h4>✅ ${L("requirements")}<span class="cnt" id="reqCount">${reqDone}/${m.requirements.length} ${L("done_of")}</span></h4>
+      <section class="panel wide"><h4>${icon("check")}${L("requirements")}<span class="cnt" id="reqCount">${reqDone}/${m.requirements.length} ${L("done_of")}</span></h4>
         ${m.requirements.length ? `<div class="progress"><div id="reqBar" style="width:${m.requirements.length ? (reqDone / m.requirements.length) * 100 : 0}%"></div></div>
         <ul class="checklist">${m.requirements.map((r, i) => `<li class="${done.includes(i) ? "done" : ""}"><input type="checkbox" data-i="${i}" ${done.includes(i) ? "checked" : ""}><span class="txt">${esc(r.text || "")}</span>${locLink(r)}</li>`).join("")}</ul>` : none}
       </section>
-      ${m.terms.length ? `<section class="panel wide"><h4>📖 ${L("terms")}<span class="cnt">${m.terms.length}</span></h4>
+      ${m.terms.length ? `<section class="panel wide"><h4>${icon("book")}${L("terms")}<span class="cnt">${m.terms.length}</span></h4>
         <dl class="terms">${m.terms.map((t) => `<div><dt>${esc(t.term || "")}</dt><dd>${esc(t.definition || "")}</dd></div>`).join("")}</dl></section>` : ""}
     </div>`;
   $("#mapBody").querySelectorAll(".checklist input").forEach((box) => {
@@ -723,7 +713,7 @@ function renderQuiz() {
 function paintQuizStart(doc) {
   $("#quizBody").innerHTML = `
     <div class="quiz-start">
-      <div class="big">🎓</div>
+      <div class="big">${icon("quiz")}</div>
       <h3>${esc(doc.name)}</h3>
       <div class="muted">${L("quiz_intro")}</div>
       <div class="seg">${[5, 7, 10].map((n) => `<button type="button" data-n="${n}" class="${n === state.quizN ? "active" : ""}">${n}</button>`).join("")}</div>
@@ -769,7 +759,7 @@ function paintQuestion(qz) {
       else if (k === choice) b.classList.add("wrong");
     });
     const ok = choice === q.answer;
-    $("#qExplain").innerHTML = `<div class="explain"><b>${ok ? "✅ " + L("correct") : "❌ " + L("wrong")}</b>${q.explanation ? `<span>${esc(q.explanation)}</span>` : ""}${locLink(q)}</div>`;
+    $("#qExplain").innerHTML = `<div class="explain"><b style="color:var(${ok ? "--ok" : "--bad"})">${ok ? L("correct") : L("wrong")}</b>${q.explanation ? `<span>${esc(q.explanation)}</span>` : ""}${locLink(q)}</div>`;
     const last = qz.i === total - 1;
     $("#qNext").innerHTML = `<button class="btn" type="button">${last ? L("finish") : L("next")}</button>`;
     $("#qNext button").onclick = () => { qz.i += 1; renderQuiz(); };
@@ -894,7 +884,7 @@ function init() {
   $("#evClose").onclick = closeEvidence;
   $("#scrim").onclick = closeEvidence;
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeEvidence(); });
-  // ссылки «📍 стр. N» в карте документа и в тесте
+  // ссылки «стр. N» в карте документа и в тесте
   document.addEventListener("click", (e) => {
     const link = e.target.closest(".loc-link");
     if (link) openEvidence(link.dataset.chunk, link.dataset.q);
