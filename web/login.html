@@ -52,7 +52,8 @@
     .row-between { display: flex; justify-content: flex-end; margin: -4px 0 14px; }
     .or { display: flex; align-items: center; gap: 12px; color: var(--faint); font-size: 12.5px; margin: 20px 0; }
     .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--border); }
-    .guest { width: 100%; padding: 11px; }
+    .google { width: 100%; padding: 11px; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4px; }
+    .google svg { width: 18px; height: 18px; }
     .fine { color: var(--faint); font-size: 12px; text-align: center; margin-top: 18px; }
     .code-boxes { display: flex; gap: 8px; justify-content: space-between; margin: 4px 0 16px; }
     .code-boxes input { width: 100%; max-width: 56px; height: 62px; text-align: center; font-family: var(--display); font-size: 24px; font-weight: 700; border-radius: 14px; padding: 0; }
@@ -107,6 +108,8 @@
           <button type="button" data-mode="login" data-t="login"></button>
           <button type="button" data-mode="register" data-t="register"></button>
         </div>
+        <button type="button" class="btn ghost google" id="googleBtn" hidden><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span data-t="google"></span></button>
+        <div class="or" id="googleOr" data-t="or" hidden></div>
         <form id="mainForm" novalidate>
           <div class="field" id="nameField"><label for="name" data-t="name"></label><input class="input" id="name" autocomplete="name" maxlength="60"></div>
           <div class="field"><label for="email" data-t="email"></label><input class="input" id="email" type="email" autocomplete="email" autocapitalize="off" spellcheck="false" maxlength="120"></div>
@@ -144,11 +147,22 @@
         <div class="back"><button type="button" class="link" id="backLink" data-t="back"></button></div>
       </div>
 
+      <div id="paneLink" hidden>
+        <h1 data-t="link_title"></h1>
+        <p class="sub" id="linkSub"></p>
+        <div class="msg-box info" id="linkInfo" hidden></div>
+        <div class="msg-box err" id="linkErr" hidden></div>
+        <button class="btn primary" id="linkDone" type="button" data-t="i_confirmed"></button>
+        <div class="back"><button type="button" class="link" id="linkResend" data-t="resend_link"></button></div>
+        <div class="back"><button type="button" class="link" id="linkBack" data-t="back"></button></div>
+      </div>
+
       <div id="paneForgot" hidden>
         <h1 data-t="forgot_title"></h1>
         <p class="sub" data-t="forgot_sub"></p>
         <form id="forgotForm" novalidate>
           <div class="field"><label for="forgotEmail" data-t="email"></label><input class="input" id="forgotEmail" type="email" autocomplete="email" maxlength="120"></div>
+          <div class="msg-box info" id="forgotInfo" hidden></div>
           <div class="msg-box err" id="forgotErr" hidden></div>
           <button class="btn primary" type="submit" data-t="send_code"></button>
         </form>
@@ -251,6 +265,9 @@ const T = {
     err_mail_failed: "Could not send the email. Try again later.", err_empty: "Please fill in all fields.", err_net: "Could not reach the server.",
   },
 };
+Object.assign(T.kk, {"google": "Google арқылы кіру", "link_title": "Поштаңызды растаңыз", "link_sub": "Сілтемені {email} мекенжайына жібердік. Хатты ашып, сілтемені басыңыз да, осында оралыңыз. «Спам» қалтасын да тексеріңіз.", "link_sent": "Растау хаты жіберілді.", "i_confirmed": "Поштамды растадым", "resend_link": "Хатты қайта жіберу", "err_not_yet": "Пошта әлі расталмаған — хаттағы сілтемені ашыңыз.", "reset_sent": "Егер мұндай аккаунт бар болса, құпиясөзді қалпына келтіру сілтемесін жібердік. Поштаны және «Спам» қалтасын тексеріңіз."});
+Object.assign(T.ru, {"google": "Войти через Google", "link_title": "Подтвердите почту", "link_sub": "Мы отправили ссылку на {email}. Откройте письмо, нажмите ссылку и вернитесь сюда. Проверьте и папку «Спам».", "link_sent": "Письмо с подтверждением отправлено.", "i_confirmed": "Я подтвердил почту", "resend_link": "Отправить письмо ещё раз", "err_not_yet": "Почта ещё не подтверждена — откройте ссылку из письма.", "reset_sent": "Если такой аккаунт есть, мы отправили ссылку для сброса пароля. Проверьте почту и папку «Спам»."});
+Object.assign(T.en, {"google": "Continue with Google", "link_title": "Confirm your email", "link_sub": "We sent a link to {email}. Open the email, click the link and come back here. Check your spam folder too.", "link_sent": "Confirmation email sent.", "i_confirmed": "I have confirmed my email", "resend_link": "Send the email again", "err_not_yet": "Your email is not confirmed yet — open the link from the email.", "reset_sent": "If this account exists, we sent a password reset link. Check your inbox and spam folder."});
 const $ = (s) => document.querySelector(s);
 let lang = "kk", mode = "login", codeKind = "verify", codeEmail = "", cooldown = 0, timer = null;
 try {
@@ -262,7 +279,7 @@ const t = (k) => T[lang][k] ?? T.ru[k] ?? k;
 const has = (k) => k in T[lang] || k in T.ru;
 
 function show(pane) {
-  for (const id of ["paneMain", "paneCode", "paneForgot"]) $("#" + id).hidden = id !== pane;
+  for (const id of ["paneMain", "paneCode", "paneForgot", "paneLink"]) $("#" + id).hidden = id !== pane;
   document.querySelectorAll(".msg-box").forEach((el) => (el.hidden = true));
   const first = $("#" + pane).querySelector("input");
   if (first) setTimeout(() => first.focus(), 30);
@@ -285,6 +302,7 @@ function render() {
   $("#newPwField").hidden = codeKind !== "reset";
   $("#resend").textContent = cooldown > 0 ? t("resend_in").replace("{s}", cooldown) : t("resend");
   $("#resend").disabled = cooldown > 0;
+  $("#linkSub").innerHTML = t("link_sub").replace("{email}", `<b>${linkEmail.replace(/</g, "&lt;")}</b>`);
   document.querySelectorAll("#langSwitch button").forEach((b) => b.classList.toggle("active", b.dataset.lang === lang));
   document.querySelectorAll("#modeSwitch button").forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
 }
@@ -327,7 +345,63 @@ function openCode(kind, email, mail) {
   startCooldown();
 }
 
-function busy(on) { document.querySelectorAll("button[type=submit]").forEach((b) => (b.disabled = on)); }
+function busy(on) { document.querySelectorAll("button[type=submit], #googleBtn, #linkDone").forEach((b) => (b.disabled = on)); }
+
+// ---------- Firebase Authentication (если задан конфиг на сервере)
+let FB = null, linkEmail = "";
+const FB_VERSION = "10.12.2";
+const FB_ERR = {
+  "auth/email-already-in-use": "email_taken", "auth/invalid-credential": "invalid", "auth/wrong-password": "invalid",
+  "auth/user-not-found": "invalid", "auth/invalid-email": "email_invalid", "auth/weak-password": "password_short",
+  "auth/too-many-requests": "too_many", "auth/network-request-failed": "net", "auth/missing-password": "empty",
+};
+const fbCode = (e) => FB_ERR[e && e.code] || "invalid";
+
+async function initFirebase() {
+  try {
+    const cfg = (await (await fetch("/api/auth/config")).json()).firebase;
+    if (!cfg) return;
+    const appMod = await import(`https://www.gstatic.com/firebasejs/${FB_VERSION}/firebase-app.js`);
+    const m = await import(`https://www.gstatic.com/firebasejs/${FB_VERSION}/firebase-auth.js`);
+    const auth = m.getAuth(appMod.initializeApp(cfg));
+    await m.setPersistence(auth, m.inMemoryPersistence);  // вход хранит наш сервер, Firebase — только для подтверждения
+    auth.languageCode = lang;
+    FB = { auth, m };
+    $("#googleBtn").hidden = $("#googleOr").hidden = false;
+  } catch (e) {
+    console.warn("Firebase недоступен, используется обычный вход", e);
+  }
+}
+
+async function exchange(user) {
+  const id_token = await user.getIdToken(true);
+  const r = await post("/api/auth/firebase", { id_token, name: user.displayName || $("#name").value.trim() });
+  if (r.ok) { location.href = "/"; return true; }
+  return r.code;
+}
+
+function openLink(email, sent) {
+  linkEmail = email;
+  render();
+  show("paneLink");
+  if (sent) { $("#linkInfo").textContent = t("link_sent"); $("#linkInfo").hidden = false; }
+}
+
+async function fbSubmit(email, password, box) {
+  const { auth, m } = FB;
+  if (mode === "register") {
+    const chk = await post("/api/auth/check-email", { email });
+    if (!chk.ok) return err(box, chk.code);
+    const cred = await m.createUserWithEmailAndPassword(auth, email, password);
+    await m.updateProfile(cred.user, { displayName: $("#name").value.trim() });
+    await m.sendEmailVerification(cred.user, { url: location.origin + "/login" });
+    return openLink(email, true);
+  }
+  const cred = await m.signInWithEmailAndPassword(auth, email, password);
+  if (!cred.user.emailVerified) return openLink(email, false);
+  const r = await exchange(cred.user);
+  if (r !== true) err(box, r);
+}
 
 // ---------- вход / регистрация
 $("#mainForm").onsubmit = async (e) => {
@@ -343,6 +417,10 @@ $("#mainForm").onsubmit = async (e) => {
     if (password !== $("#password2").value) return err(box, "mismatch");
   }
   busy(true);
+  if (FB) {
+    try { await fbSubmit(email, password, box); } catch (ex) { err(box, fbCode(ex)); } finally { busy(false); }
+    return;
+  }
   try {
     if (mode === "register") {
       const r = await post("/api/auth/register", { name: $("#name").value.trim(), email, password, lang });
@@ -413,6 +491,15 @@ $("#forgotForm").onsubmit = async (e) => {
   e.preventDefault();
   const email = $("#forgotEmail").value.trim();
   if (!email) return err($("#forgotErr"), "empty");
+  if (FB) {
+    busy(true);
+    try { await FB.m.sendPasswordResetEmail(FB.auth, email, { url: location.origin + "/login" }); }
+    catch (ex) { if (!["auth/user-not-found", "auth/invalid-credential"].includes(ex.code)) { busy(false); return err($("#forgotErr"), fbCode(ex)); } }
+    busy(false);
+    $("#forgotInfo").textContent = t("reset_sent");  // одинаковый ответ, даже если такого аккаунта нет
+    $("#forgotInfo").hidden = false;
+    return;
+  }
   busy(true);
   const r = await post("/api/auth/send-code", { email, kind: "reset", lang }).catch(() => ({ code: "net" }));
   busy(false);
@@ -434,6 +521,37 @@ document.querySelectorAll("[data-eye]").forEach((b) => (b.onclick = () => {
 }));
 $("#backLink").onclick = () => show(codeKind === "reset" ? "paneForgot" : "paneMain");
 $("#forgotBack").onclick = () => show("paneMain");
+$("#googleBtn").onclick = async () => {
+  if (!FB) return;
+  busy(true);
+  try {
+    const cred = await FB.m.signInWithPopup(FB.auth, new FB.m.GoogleAuthProvider());
+    const r = await exchange(cred.user);
+    if (r !== true) err($("#mainErr"), r);
+  } catch (ex) {
+    if (!["auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(ex.code)) err($("#mainErr"), fbCode(ex));
+  } finally { busy(false); }
+};
+$("#linkDone").onclick = async () => {
+  const u = FB && FB.auth.currentUser;
+  if (!u) return show("paneMain");
+  busy(true);
+  try {
+    await u.reload();
+    if (!u.emailVerified) return err($("#linkErr"), "not_yet");
+    const r = await exchange(u);
+    if (r !== true) err($("#linkErr"), r);
+  } catch (ex) { err($("#linkErr"), fbCode(ex)); } finally { busy(false); }
+};
+$("#linkResend").onclick = async () => {
+  const u = FB && FB.auth.currentUser;
+  if (!u) return show("paneMain");
+  try {
+    await FB.m.sendEmailVerification(u, { url: location.origin + "/login" });
+    $("#linkInfo").textContent = t("link_sent"); $("#linkInfo").hidden = false;
+  } catch (ex) { err($("#linkErr"), fbCode(ex)); }
+};
+$("#linkBack").onclick = () => show("paneMain");
 $("#langSwitch").onclick = (e) => {
   if (!e.target.dataset.lang) return;
   lang = e.target.dataset.lang;
@@ -448,6 +566,7 @@ $("#modeSwitch").onclick = (e) => {
 };
 render();
 show("paneMain");
+initFirebase();
 </script>
 </body>
 </html>
