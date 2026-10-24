@@ -826,3 +826,33 @@ a.btn { text-decoration: none; display: inline-block; }
 .plan .btn { width: 100%; margin-top: 4px; }
 .plan .btn:disabled { opacity: .55; cursor: not-allowed; }
 @media (max-width: 720px) { .plans { grid-template-columns: 1fr; } }
+
+/* ---------- «ход мыслей» ---------- */
+.think { margin-bottom: 8px; font-size: 13px; color: var(--muted); }
+.think-head { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; padding: 2px 0; color: inherit; font: inherit; font-weight: 500; cursor: default; max-width: 100%; text-align: left; }
+.think:not(.live) .think-head { cursor: pointer; }
+.think:not(.live) .think-head:hover { color: var(--text); }
+.think-head svg { width: 14px; height: 14px; flex: none; transition: transform .2s; display: none; }
+.think:not(.live) .think-head svg { display: block; }
+.think.open .think-head svg { transform: rotate(180deg); }
+.think-time { color: var(--faint); font-variant-numeric: tabular-nums; }
+.think.live .think-title {
+  background: linear-gradient(90deg, var(--muted) 0%, var(--muted) 40%, var(--text) 50%, var(--muted) 60%, var(--muted) 100%);
+  background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: shimmer 1.8s linear infinite;
+}
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+.think-steps { list-style: none; margin: 6px 0 2px; padding: 0 0 0 14px; border-left: 2px solid var(--border); display: grid; gap: 5px; }
+.think:not(.live):not(.open) .think-steps { display: none; }
+.think.live .think-steps li:last-child { display: none; }  /* текущий шаг уже в заголовке */
+.think-steps li { position: relative; font-size: 12.5px; color: var(--faint); animation: rise .25s ease both; }
+.think-steps li::before { content: ""; position: absolute; left: -19px; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
+.think-steps li.ok::before { background: var(--ok); }
+
+/* ---------- поэтапная загрузка ---------- */
+.staged { align-items: center; }
+.staged-body { display: grid; gap: 10px; min-width: 220px; }
+.staged-t { font-weight: 500; color: var(--text); }
+.staged-t.in { animation: rise .3s ease both; }
+.staged-bar { height: 4px; border-radius: 99px; background: var(--panel-2); overflow: hidden; }
+.staged-bar i { display: block; height: 100%; width: 0; background: var(--grad); border-radius: 99px; transition: width .3s linear; }

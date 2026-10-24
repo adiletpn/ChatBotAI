@@ -34,17 +34,37 @@ Respond in {lang_name}. Return ONLY valid JSON:
 Up to 6 points and up to 3 attention items. Be specific: quote numbers, dates and names. Do not invent anything."""
 
 
-def _sentences(doc: dict) -> list[tuple[str, dict]]:
+# «3.2», «5.1.2», «7.» или «7)» в начале предложения; «100 балл» и «2026 жылғы» — не пункты
+# после номера — текст пункта с заглавной буквы («1.8 метра» — это число, а не пункт)
+CLAUSE_RE = re.compile(r"^(\d{1,2}(?:\.\d{1,2})+|\d{1,2}(?=[.)]))[.)]?(?:\s+(?=[A-ZА-ЯЁӘҒҚҢӨҰҮҺІ«\"])|$)")
+CLAUSE_WORD = {"kk": "{}-тармақ", "ru": "п. {}", "en": "clause {}"}
+
+
+def _sentences(doc: dict) -> list[tuple[str, dict, str]]:
+    """Предложения документа: (текст, страница, номер пункта «3.2» — если документ нумерованный)."""
     pages = parse_file(doc["name"], store.file_path(doc).read_bytes())
-    out = []
+    out, clause = [], ""
     for page in pages:
         text = re.sub(r"(\w)-\n(\w)", r"\1\2", page["text"])
         text = re.sub(r"[ \t]*\n[ \t]*", "\n", text)
         for sentence in split_sentences(text):
-            sentence = re.sub(r"\s+", " ", sentence).strip()
+            sentence = re.sub(r"\s+", " ", sentence).strip().lstrip("#").strip()
+            m = CLAUSE_RE.match(sentence)
+            if m:
+                clause = m.group(1)
+                if not sentence[m.end():].strip():  # «3.2.» отдельным куском — это только номер пункта
+                    continue
             if len(sentence) > 1:
-                out.append((sentence, page["loc"]))
+                out.append((sentence, page["loc"], clause))
     return out
+
+
+def _where(item: tuple, lang: str) -> str:
+    """«стр. 2 · п. 3.2»; у Word-документов страниц нет — только номер пункта."""
+    _, loc, clause = item
+    page = format_loc(loc, lang) if loc.get("type") in ("page", "slide", "sheet") else ""
+    parts = [page, CLAUSE_WORD[lang].format(clause) if clause else ""]
+    return " · ".join(p for p in parts if p) or format_loc(loc, lang)
 
 
 def _norm(sentence: str) -> str:
@@ -69,9 +89,9 @@ def _word_diff(old: str, new: str) -> list[list[str]]:
 def diff_docs(doc_a: dict, doc_b: dict, lang: str) -> dict:
     """Чистое сравнение без LLM (выполняется в потоке)."""
     old, new = _sentences(doc_a), _sentences(doc_b)
-    matcher = difflib.SequenceMatcher(None, [_norm(s) for s, _ in old], [_norm(s) for s, _ in new], autojunk=False)
+    matcher = difflib.SequenceMatcher(None, [_norm(s[0]) for s in old], [_norm(s[0]) for s in new], autojunk=False)
     changes, stats = [], {"added": 0, "removed": 0, "changed": 0}
-    loc = lambda item: format_loc(item[1], lang)  # noqa: E731
+    loc = lambda item: _where(item, lang)  # noqa: E731
 
     for op, i1, i2, j1, j2 in matcher.get_opcodes():
         if op == "equal":
@@ -80,17 +100,17 @@ def diff_docs(doc_a: dict, doc_b: dict, lang: str) -> dict:
         if op == "replace":
             # равное число предложений — сравниваем попарно, иначе блоком
             pairs = list(zip(olds, news)) if len(olds) == len(news) else [(
-                (" ".join(s for s, _ in olds), olds[0][1]), (" ".join(s for s, _ in news), news[0][1]))]
+                (" ".join(s[0] for s in olds), *olds[0][1:]), (" ".join(s[0] for s in news), *news[0][1:]))]
             for o, n in pairs:
                 stats["changed"] += 1
                 changes.append({"kind": "changed", "old": o[0], "new": n[0], "loc_old": loc(o), "loc_new": loc(n),
                                 "words": _word_diff(o[0], n[0])})
         elif op == "delete":
             stats["removed"] += 1
-            changes.append({"kind": "removed", "old": " ".join(s for s, _ in olds), "loc_old": loc(olds[0])})
+            changes.append({"kind": "removed", "old": " ".join(s[0] for s in olds), "loc_old": loc(olds[0])})
         else:
             stats["added"] += 1
-            changes.append({"kind": "added", "new": " ".join(s for s, _ in news), "loc_new": loc(news[0])})
+            changes.append({"kind": "added", "new": " ".join(s[0] for s in news), "loc_new": loc(news[0])})
 
     stats["similarity"] = round(matcher.ratio() * 100)
     stats["total"] = len(changes)

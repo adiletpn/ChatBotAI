@@ -88,6 +88,14 @@ def client_ip(request: Request) -> str:
     return host
 
 
+def spend(action: str, owner: str) -> None:
+    """Лимит дорогих запросов на пользователя (вопросы, тесты, карточки, экспорт)."""
+    try:
+        limiter.hit(action, owner)
+    except AuthError:
+        raise HTTPException(429, "Слишком много запросов — подождите немного") from None
+
+
 def auth_error(exc: AuthError, status: int = 400) -> HTTPException:
     return HTTPException(status, str(exc))
 
@@ -398,6 +406,8 @@ async def document_insights(doc_id: str, request: Request, lang: str = "ru"):
     doc = store.get(doc_id, owner_of(request))
     if not doc:
         raise HTTPException(404, "Документ не найден")
+    if not doc.get("cache", {}).get(f"insights2:{_lang(lang)}"):  # готовую карту отдаём без лимита
+        spend("generate", doc["owner"])
     return await insights.insights(doc, _lang(lang))
 
 
@@ -406,6 +416,7 @@ async def document_quiz(doc_id: str, request: Request, lang: str = "ru", n: int 
     doc = store.get(doc_id, owner_of(request))
     if not doc:
         raise HTTPException(404, "Документ не найден")
+    spend("generate", doc["owner"])
     return await insights.quiz(doc, _lang(lang), max(3, min(n, 10)))
 
 
@@ -418,6 +429,7 @@ async def compare_documents(a: str, b: str, request: Request, lang: str = "ru"):
         raise HTTPException(404, "Документ не найден")
     if a == b:
         raise HTTPException(400, "Выберите два разных документа")
+    spend("generate", owner)
     return await compare.compare(doc_a, doc_b, _lang(lang))
 
 
@@ -436,6 +448,7 @@ class ExportRequest(BaseModel):
 async def export_file(body: ExportRequest, request: Request):
     """Ответ или сравнение версий — файлом PDF/DOCX, чтобы отправить коллегам."""
     owner = owner_of(request)
+    spend("export", owner)
     lang = _lang(body.lang)
     if body.kind == "compare":
         doc_a, doc_b = store.get(body.a, owner), store.get(body.b, owner)
@@ -460,6 +473,7 @@ async def document_cards(doc_id: str, request: Request, lang: str = "ru", n: int
     doc = store.get(doc_id, owner_of(request))
     if not doc:
         raise HTTPException(404, "Документ не найден")
+    spend("generate", doc["owner"])
     return await insights.cards(doc, _lang(lang), max(5, min(n, 20)))
 
 
@@ -498,6 +512,7 @@ class AskRequest(BaseModel):
 @app.post("/api/ask")
 async def ask(body: AskRequest, request: Request):
     owner = owner_of(request)
+    spend("ask", owner)
     user = current_user(request) or {}
     prefs = dict(user.get("settings", {}))
     if user.get("plan") != "pro":  # Mind Pro — по подписке (пока не продаётся): остальным всегда Lite
@@ -516,7 +531,7 @@ async def ask(body: AskRequest, request: Request):
             msgs = chat["messages"]
             for q, a in zip(msgs[::2], msgs[1::2]):
                 rag.history.add(key, q["text"], a["text"])
-        parts, sources, cited = [], [], []
+        parts, sources, cited, extra = [], [], [], {}
         try:
             async for event in rag.answer_stream(body.question, owner, key, body.doc_ids, prefs):
                 if event["type"] == "delta":
@@ -525,13 +540,18 @@ async def ask(body: AskRequest, request: Request):
                     sources = event["sources"]
                 elif event["type"] == "done":
                     cited = event.get("cited", [])
+                elif event["type"] == "followups":
+                    extra["followups"] = event["items"]
+                elif event["type"] == "vision":
+                    extra["vision"] = event["pages"]
                 yield sse(event)
         except Exception as exc:  # noqa: BLE001
             log.exception("Ошибка ответа")
             yield sse({"type": "error", "message": str(exc)})
         if parts:
             by_n = {x["n"]: x for x in sources}
-            chats.add_exchange(chat["id"], body.question, "".join(parts).strip(), [by_n[n] for n in cited if n in by_n])
+            chats.add_exchange(chat["id"], body.question, "".join(parts).strip(), [by_n[n] for n in cited if n in by_n],
+                               extra)
 
     return StreamingResponse(events(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})

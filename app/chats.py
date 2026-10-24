@@ -44,8 +44,9 @@ class ChatStore:
             self._save()
         return chat
 
-    def add_exchange(self, chat_id: str, question: str, answer: str, sources: list[dict]) -> None:
-        """Сохраняет вопрос и ответ. Из источников храним только то, что нужно для ссылок."""
+    def add_exchange(self, chat_id: str, question: str, answer: str, sources: list[dict], extra: dict | None = None) -> None:
+        """Сохраняет вопрос и ответ. Из источников храним только то, что нужно для ссылок.
+        extra — подсказки следующего вопроса и страницы, которые смотрел Mind Pro."""
         keep = ("n", "chunk_id", "doc_id", "doc_name", "loc", "loc_label")
         with self.lock:
             chat = self.chats.get(chat_id)
@@ -54,7 +55,8 @@ class ChatStore:
             now = time.time()
             chat["messages"] += [
                 {"role": "user", "text": question, "ts": now},
-                {"role": "bot", "text": answer, "ts": now, "sources": [{k: s.get(k) for k in keep} for s in sources]},
+                {"role": "bot", "text": answer, "ts": now, "sources": [{k: s.get(k) for k in keep} for s in sources],
+                 **{k: v for k, v in (extra or {}).items() if k in ("followups", "vision") and v}},
             ]
             del chat["messages"][:-MAX_MESSAGES]
             if not chat["title"]:

@@ -233,6 +233,7 @@ async def answer_stream(question: str, owner: str, session_key: str,
     all_chunks = store.doc_chunks(allowed)
     past = history.get(session_key)
 
+    yield {"type": "status", "step": "search"}  # «ход мыслей» в интерфейсе: что бот делает прямо сейчас
     # Короткий уточняющий вопрос («а сколько баллов?») ищем вместе с предыдущим вопросом
     search_query = question
     if past and len(tokenize(question)) <= 2:
@@ -275,6 +276,7 @@ async def answer_stream(question: str, owner: str, session_key: str,
     messages = [*past, {"role": "user", "content": user_message}]
 
     parts: list[str] = []
+    yield {"type": "status", "step": "write"}
     if pro:
         pages = await asyncio.to_thread(_page_images, [c for c, _ in hits] + context, sources, lang)
         if pages:

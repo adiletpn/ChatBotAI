@@ -202,6 +202,15 @@ Object.assign(I18N.ru, {"set_plan": "Тариф", "plan_sub": "Что входи
 Object.assign(I18N.en, {"set_plan": "Plan", "plan_sub": "What the free version includes and what Mind Pro adds", "plan_current": "Your plan", "plan_free_price": "Free", "plan_pro_price": "Subscription", "plan_soon": "Coming soon", "plan_plus": "Everything in Lite, plus:", "pro_toast": "Mind Pro is a subscription — coming soon",
   "lite_f": ["Answers from your documents — with page references", "PDF, DOCX, PPTX, XLSX, photos and scans (OCR)", "Kazakh, Russian and English", "Search by meaning, not just by words", "Document map, quiz and flashcards", "Compare document versions", "Export answers to PDF and Word"],
   "pro_f": ["“Vision”: reads tables, charts and diagrams right from PDF pages", "Twice the context — deep analysis of large documents", "Shows which pages it looked at", "Early access to new features"]});
+Object.assign(I18N.kk, {"th_read": "Сұрақты оқып жатырмын", "th_search": "Құжаттардан іздеп жатырмын — сөздер мен мағына бойынша", "th_found": "{n} үзінді таптым · {where}", "th_none": "Дәл сәйкестік жоқ — бүкіл құжатты қараймын", "th_vision": "Беттерді қарап жатырмын: {pages}", "th_write": "Жауапты құрастырып жатырмын", "th_h1": "Деректерді дереккөздермен салыстырып жатырмын", "th_h2": "Сандар мен күндерді тексеріп жатырмын", "th_h3": "Жауаптың құрылымын жасап жатырмын", "th_done": "{s} с ойландым", "too_many_req": "Сұраулар тым көп — сәл күте тұрыңыз",
+  "ld_read": "Құжатты толық оқып жатырмын", "ld_dates": "Мерзімдер мен күндерді табамын", "ld_numbers": "Негізгі сандарды жазып аламын", "ld_reqs": "Талаптарды жинаймын", "ld_terms": "Глоссарий құрастырамын", "ld_facts": "Маңызды деректерді таңдаймын", "ld_questions": "Сұрақтар ойлап табамын", "ld_options": "Сенімді жауап нұсқаларын іріктеймін", "ld_check": "Жауаптарды мәтін бойынша тексеремін", "ld_cards": "Карточкаларды жазамын", "ld_memo": "Есте сақтауға тұрарлықты таңдаймын", "ld_parse": "Екі нұсқаны да талдап жатырмын", "ld_match": "Тармақтарды салыстырамын", "ld_words": "Өзгерістерді сөз бойынша іздеймін", "ld_weigh": "Ненің маңызды екенін бағалаймын"});
+Object.assign(I18N.ru, {"th_read": "Читаю вопрос", "th_search": "Ищу в документах — по словам и по смыслу", "th_found": "Нашёл {n} фрагм. · {where}", "th_none": "Точных совпадений нет — смотрю документ целиком", "th_vision": "Смотрю страницы: {pages}", "th_write": "Формулирую ответ", "th_h1": "Сверяю факты с источниками", "th_h2": "Проверяю цифры и даты", "th_h3": "Выстраиваю структуру ответа", "th_done": "Думал {s} с", "too_many_req": "Слишком много запросов — подождите немного",
+  "ld_read": "Читаю документ целиком", "ld_dates": "Нахожу сроки и даты", "ld_numbers": "Выписываю ключевые цифры", "ld_reqs": "Собираю требования", "ld_terms": "Составляю глоссарий", "ld_facts": "Выбираю важные факты", "ld_questions": "Придумываю вопросы", "ld_options": "Подбираю правдоподобные варианты", "ld_check": "Проверяю ответы по тексту", "ld_cards": "Пишу карточки", "ld_memo": "Выбираю, что стоит запомнить", "ld_parse": "Разбираю обе версии", "ld_match": "Сопоставляю пункты", "ld_words": "Ищу изменения по словам", "ld_weigh": "Оцениваю, что важно"});
+Object.assign(I18N.en, {"th_read": "Reading the question", "th_search": "Searching the documents — by words and by meaning", "th_found": "Found {n} passages · {where}", "th_none": "No exact matches — reading the whole document", "th_vision": "Looking at the pages: {pages}", "th_write": "Writing the answer", "th_h1": "Checking facts against the sources", "th_h2": "Verifying numbers and dates", "th_h3": "Structuring the answer", "th_done": "Thought for {s}s", "too_many_req": "Too many requests — please wait a moment",
+  "ld_read": "Reading the whole document", "ld_dates": "Finding deadlines and dates", "ld_numbers": "Collecting key numbers", "ld_reqs": "Gathering requirements", "ld_terms": "Building a glossary", "ld_facts": "Picking the important facts", "ld_questions": "Writing questions", "ld_options": "Choosing plausible options", "ld_check": "Checking answers against the text", "ld_cards": "Writing flashcards", "ld_memo": "Choosing what is worth remembering", "ld_parse": "Parsing both versions", "ld_match": "Matching clauses", "ld_words": "Finding word-level changes", "ld_weigh": "Weighing what matters"});
+Object.assign(I18N.kk, {"fix_mistakes": "Қателерді түзету", "cards_hard": "Қиындарын қайталау"});
+Object.assign(I18N.ru, {"fix_mistakes": "Исправить ошибки", "cards_hard": "Повторить трудные"});
+Object.assign(I18N.en, {"fix_mistakes": "Fix mistakes", "cards_hard": "Review the hard ones"});
 
 const $ = (s) => document.querySelector(s);
 const state = {
@@ -258,7 +267,13 @@ function applyI18n() {
 async function api(path, options = {}) {
   const res = await fetch(path, options);
   if (res.status === 401) { requireLogin("any"); throw new Error("401"); }
-  if (!res.ok) throw new Error((await res.text()) || res.statusText);
+  if (res.status === 429) throw new Error(L("too_many_req"));
+  if (!res.ok) {
+    const text = await res.text();
+    let detail = text;
+    try { detail = JSON.parse(text).detail || text; } catch (_) {}
+    throw new Error(typeof detail === "string" ? detail : res.statusText);
+  }
   return res.json();
 }
 
@@ -614,6 +629,48 @@ function addTools(body, msg, question) {
   body.appendChild(tools);
 }
 
+// «Ход мыслей», как у Claude: реальные шаги (поиск, найденные страницы, ответ) + время.
+// Пока модель думает — шаги видны и текущий переливается; с первым словом ответа блок сворачивается в «Думал N с».
+function createThinking(body) {
+  const el = document.createElement("div");
+  el.className = "think live";
+  el.innerHTML = `<button type="button" class="think-head"><span class="think-title"></span><span class="think-time"></span>${icon("chev")}</button><ol class="think-steps"></ol>`;
+  body.insertBefore(el, body.querySelector(".bubble"));
+  const title = el.querySelector(".think-title"), list = el.querySelector(".think-steps"), time = el.querySelector(".think-time");
+  const t0 = Date.now();
+  const secs = () => Math.max(1, Math.round((Date.now() - t0) / 1000));
+  const clock = setInterval(() => { time.textContent = `${secs()} ${state.lang === "en" ? "s" : "с"}`; }, 500);
+  let hintTimer = 0, done = false;
+  el.querySelector(".think-head").onclick = () => { if (done) el.classList.toggle("open"); };
+  const step = (text) => {
+    if (done) return;
+    list.querySelectorAll("li").forEach((li) => li.classList.add("ok"));
+    const li = document.createElement("li");
+    li.textContent = text;
+    list.appendChild(li);
+    title.textContent = text;
+    scrollDown();
+  };
+  return {
+    step,
+    hints() {  // пока ждём первое слово модели — показываем, над чем она работает
+      let i = 0;
+      clearInterval(hintTimer);
+      hintTimer = setInterval(() => { if (i < 3) step(L(`th_h${++i}`)); else clearInterval(hintTimer); }, 2600);
+    },
+    finish() {
+      if (done) return;
+      done = true;
+      clearInterval(clock);
+      clearInterval(hintTimer);
+      list.querySelectorAll("li").forEach((li) => li.classList.add("ok"));
+      el.classList.remove("live");
+      title.textContent = L("th_done").replace("{s}", secs());
+      time.textContent = "";
+    },
+  };
+}
+
 // Mind Pro: какие страницы модель «посмотрела» глазами (кнопки открывают PDF на этой странице)
 function addVisionNote(body, pages) {
   const note = document.createElement("div");
@@ -636,20 +693,23 @@ async function ask(question) {
   state.log.push({ role: "user", text: question });
   const { body } = addBotMessage();
   const bubble = body.querySelector(".bubble");
-  bubble.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
+  bubble.hidden = true;  // до первого слова ответа виден «ход мыслей»
+  const think = createThinking(body);
+  think.step(L("th_read"));
   scrollDown();
 
-  let text = "", sources = [], cited = [], frame = 0, finished = false;
-  const paint = () => { frame = 0; bubble.innerHTML = md(text); scrollDown(); };
+  let text = "", sources = [], cited = [], frame = 0, finished = false, entry = null, vision = null;
+  const paint = () => { frame = 0; bubble.hidden = false; bubble.innerHTML = md(text); scrollDown(); };
   // ответ готов на событии «done» — подсказки следующего вопроса приходят чуть позже, не держим ввод
   const finish = () => {
     if (finished) return;
     finished = true;
+    think.finish();
     if (frame) cancelAnimationFrame(frame);
     paint();
     renderSources(body, sources, cited, question + " " + text.slice(0, 300));
     const byN = Object.fromEntries(sources.map((x) => [x.n, x]));
-    const entry = { role: "bot", text, sources: cited.map((n) => byN[n]).filter(Boolean) };
+    entry = { role: "bot", text, sources: cited.map((n) => byN[n]).filter(Boolean), vision };
     state.log.push(entry);
     addTools(body, entry, question);
     state.busy = false;
@@ -664,6 +724,7 @@ async function ask(question) {
       body: JSON.stringify({ question, doc_ids: state.selected.size ? [...state.selected] : null, chat_id: state.chatId }),
     });
     if (res.status === 401) { requireLogin("ask", question); return; }
+    if (res.status === 429) throw new Error(L("too_many_req"));
     if (!res.ok || !res.body) throw new Error(await res.text());
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
@@ -679,18 +740,27 @@ async function ask(question) {
         if (!line.startsWith("data:")) continue;
         const ev = JSON.parse(line.slice(5));
         if (ev.type === "chat") { state.chatId = ev.id; }
-        else if (ev.type === "sources") sources = ev.sources;
-        else if (ev.type === "vision") addVisionNote(body, ev.pages);
-        else if (ev.type === "delta") { text += ev.text; if (!frame) frame = requestAnimationFrame(paint); }
+        else if (ev.type === "status") {
+          think.step(L(ev.step === "search" ? "th_search" : "th_write"));
+          if (ev.step === "write") think.hints();
+        }
+        else if (ev.type === "sources") { sources = ev.sources; think.step(foundStep(sources)); }
+        else if (ev.type === "vision") {
+          vision = ev.pages;
+          addVisionNote(body, ev.pages);
+          think.step(L("th_vision").replace("{pages}", ev.pages.map(locLabel).join(", ")));
+        }
+        else if (ev.type === "delta") { if (!text) think.finish(); text += ev.text; if (!frame) frame = requestAnimationFrame(paint); }
         else if (ev.type === "done") { cited = ev.cited || []; finish(); }
-        else if (ev.type === "followups") addFollowups(body, ev.items);
+        else if (ev.type === "followups") { if (entry) entry.followups = ev.items; addFollowups(body, ev.items); }
         else if (ev.type === "error") toast(`${L("error")}: ${ev.message}`, true);
       }
     }
     finish();
     loadChats();  // после конца потока — сервер к этому моменту сохранил ответ в чат
   } catch (e) {
-    if (!finished) bubble.textContent = `${L("error")}: ${e.message}`;
+    think.finish();
+    if (!finished) { bubble.hidden = false; bubble.textContent = `${L("error")}: ${e.message}`; }
   } finally {
     if (!finished) {
       state.busy = false;
@@ -698,6 +768,18 @@ async function ask(question) {
     }
     scrollDown();
   }
+}
+
+// «Нашёл 6 фрагм. · Ереже.pdf · стр. 2, 3» — какие места документов бот читает
+function foundStep(sources) {
+  if (!sources.length) return L("th_none");
+  const byDoc = {};
+  for (const x of sources) (byDoc[x.doc_name] ??= []).push(locLabel(x));
+  const where = Object.entries(byDoc).slice(0, 2).map(([doc, locs]) => {
+    const uniq = [...new Set(locs.filter(Boolean))];
+    return uniq.length ? `${doc} · ${uniq.slice(0, 3).join(", ")}` : doc;
+  }).join("; ");
+  return L("th_found").replace("{n}", sources.length).replace("{where}", where);
 }
 
 // Подсказки следующего вопроса — только под последним ответом
@@ -782,6 +864,25 @@ function renderPicker(selector, key, onChange) {
 // пустое состояние — это и есть кнопка загрузки (клик или перетаскивание файла)
 const emptyState = () => `<button type="button" class="empty-state" data-upload><div class="big">${icon("upload")}</div><b>${L("need_doc_t")}</b>${L("need_doc")}</button>`;
 const loadingState = (text) => `<div class="loading"><span class="spinner"></span>${text}</div>`;
+// Долгая генерация (15–30 с): этапы сменяют друг друга, полоса медленно растёт — видно, что работа идёт
+const STAGES = {
+  map: ["ld_read", "ld_dates", "ld_numbers", "ld_reqs", "ld_terms"],
+  quiz: ["ld_read", "ld_facts", "ld_questions", "ld_options", "ld_check"],
+  cards: ["ld_read", "ld_memo", "ld_cards", "ld_check"],
+  compare: ["ld_parse", "ld_match", "ld_words", "ld_weigh"],
+};
+const stagedState = (kind) => `<div class="loading staged" data-kind="${kind}" data-start="${Date.now()}">
+  <span class="spinner"></span><div class="staged-body"><div class="staged-t">${L(STAGES[kind][0])}</div><div class="staged-bar"><i></i></div></div></div>`;
+setInterval(() => {
+  document.querySelectorAll(".staged").forEach((el) => {
+    const t = (Date.now() - +el.dataset.start) / 1000;
+    const keys = STAGES[el.dataset.kind];
+    const text = L(keys[Math.min(keys.length - 1, Math.floor(t / 3.2))]);
+    const label = el.querySelector(".staged-t");
+    if (label.textContent !== text) { label.textContent = text; label.classList.remove("in"); void label.offsetWidth; label.classList.add("in"); }
+    el.querySelector(".staged-bar i").style.width = `${Math.round(92 * (1 - Math.exp(-t / 14)))}%`;
+  });
+}, 300);
 const locLink = (item) => (item.chunk_id
   ? ` <button class="loc-link" data-chunk="${esc(item.chunk_id)}" data-q="${esc(item.quote || "")}">${esc(locLabel(item) || L("evidence"))}</button>`
   : "");
@@ -794,7 +895,7 @@ async function renderMap() {
   if (!doc) { body.innerHTML = emptyState(); return; }
   const key = `${doc.id}:${state.lang}`;
   if (!state.mapCache[key]) {
-    body.innerHTML = loadingState(L("analyzing"));
+    body.innerHTML = stagedState("map");
     try {
       state.mapCache[key] = await api(`/api/documents/${doc.id}/insights?lang=${state.lang}`);
     } catch (e) {
@@ -881,7 +982,7 @@ async function runCompare() {
   if (state.cmpA === state.cmpB) return toast(L("cmp_pick2"), true);
   const a = state.cmpA, b = state.cmpB, lang = state.lang;
   state.cmp = { loading: true, a: { id: a }, b: { id: b }, lang };
-  $("#cmpBody").innerHTML = loadingState(L("comparing"));
+  $("#cmpBody").innerHTML = stagedState("compare");
   try {
     const data = await api(`/api/compare?a=${a}&b=${b}&lang=${lang}`);
     state.cmp = { ...data, lang };
@@ -947,7 +1048,7 @@ function renderQuiz() {
   if (state.quizMode === "cards") return renderCards(doc);
   const qz = state.quiz && state.quiz.docId === doc.id ? state.quiz : null;
   if (!qz) return paintQuizStart(doc);
-  if (qz.loading) { body.innerHTML = loadingState(L("generating")); return; }
+  if (qz.loading) { body.innerHTML = stagedState("quiz"); return; }
   if (qz.i >= qz.questions.length) return paintQuizResult(doc, qz);
   paintQuestion(qz);
 }
@@ -1030,11 +1131,17 @@ function paintQuizResult(doc, qz) {
       <div class="muted">${right} / ${total} · ${esc(doc.name)}</div>
       ${mistakes.length ? `<div class="mistakes"><b style="color:var(--text)">${L("your_mistakes")}</b>${mistakes.map((x) => `<div>${esc(x.q.question)}<br><b>${L("correct_answer")}: ${esc(x.q.options[x.q.answer])}</b>${locLink(x.q)}</div>`).join("")}</div>` : ""}
       <div class="q-actions" style="justify-content:center;gap:8px">
-        <button class="btn ghost" type="button" id="qRetry">${L("retry")}</button>
+        ${mistakes.length ? `<button class="btn ghost" type="button" id="qRetry">${L("fix_mistakes")} · ${mistakes.length}</button>` : ""}
         <button class="btn" type="button" id="qNew">${L("new_quiz")}</button>
       </div>
     </div>`;
-  $("#qRetry").onclick = () => { qz.i = 0; qz.answers = []; renderQuiz(); };
+  // всё верно — повторять те же вопросы незачем; с ошибками — пересдаём только ошибки
+  if (mistakes.length) $("#qRetry").onclick = () => {
+    qz.questions = mistakes.map((x) => x.q);
+    qz.i = 0;
+    qz.answers = [];
+    renderQuiz();
+  };
   $("#qNew").onclick = () => startQuiz(doc);
 }
 
@@ -1055,14 +1162,14 @@ function renderCards(doc) {
     $("#cardsGo").onclick = () => startCards(doc);
     return;
   }
-  if (cs.loading) { body.innerHTML = loadingState(L("cards_gen")); return; }
+  if (cs.loading) { body.innerHTML = stagedState("cards"); return; }
   if (!cs.queue.length) return paintCardsDone(doc, cs);
   const card = cs.cards[cs.queue[0]];
-  const done = cs.cards.length - cs.queue.length;
+  const done = Math.max(0, cs.total - new Set(cs.queue).size);
   body.innerHTML = `
     <div class="fc-wrap">
-      <div class="q-top"><span>${L("card_n")} ${done + 1} / ${cs.cards.length}</span><span>${cs.queue.length} ${L("left")}</span></div>
-      <div class="progress"><div style="width:${(done / cs.cards.length) * 100}%"></div></div>
+      <div class="q-top"><span>${L("card_n")} ${Math.min(done + 1, cs.total)} / ${cs.total}</span><span>${cs.queue.length} ${L("left")}</span></div>
+      <div class="progress"><div style="width:${(done / cs.total) * 100}%"></div></div>
       <button type="button" class="fc ${cs.flipped ? "flipped" : ""}" id="fcCard" aria-live="polite">
         <span class="fc-inner">
           <span class="fc-face fc-front"><b>${esc(card.front)}</b><small>${L("flip")}</small></span>
@@ -1098,7 +1205,7 @@ async function startCards(doc) {
     if (!state.cards || state.cards.docId !== doc.id) return;
     const cards = data.cards || [];
     if (!cards.length) { state.cards = null; $("#quizBody").innerHTML = `<div class="empty-state">${L("nothing")}</div>`; return; }
-    state.cards = { docId: doc.id, cards, queue: cards.map((_, i) => i), missed: new Set(), knownFirst: 0, flipped: false };
+    state.cards = { docId: doc.id, cards, queue: cards.map((_, i) => i), total: cards.length, missed: new Set(), knownFirst: 0, flipped: false };
   } catch (e) {
     state.cards = null;
     toast(`${L("error")}: ${e.message}`, true);
@@ -1111,14 +1218,16 @@ function paintCardsDone(doc, cs) {
     <div class="quiz-start">
       <div class="big">${icon("check")}</div>
       <h3>${L("cards_done")}</h3>
-      <div class="muted">${L("cards_stat").replace("{k}", cs.knownFirst).replace("{n}", cs.cards.length)} · ${esc(doc.name)}</div>
+      <div class="muted">${L("cards_stat").replace("{k}", cs.knownFirst).replace("{n}", cs.total)} · ${esc(doc.name)}</div>
       <div class="q-actions" style="justify-content:center;gap:8px">
-        <button class="btn ghost" type="button" id="fcRetry">${L("cards_again")}</button>
+        ${cs.missed.size ? `<button class="btn ghost" type="button" id="fcRetry">${L("cards_hard")} · ${cs.missed.size}</button>` : ""}
         <button class="btn" type="button" id="fcNew">${L("new_cards")}</button>
       </div>
     </div>`;
-  $("#fcRetry").onclick = () => {
-    Object.assign(cs, { queue: cs.cards.map((_, i) => i), missed: new Set(), knownFirst: 0, flipped: false });
+  // повторяем только трудные карточки; если все знали сразу — только новые
+  if (cs.missed.size) $("#fcRetry").onclick = () => {
+    const hard = [...cs.missed];
+    Object.assign(cs, { queue: hard, total: hard.length, missed: new Set(), knownFirst: 0, flipped: false });
     renderCards(doc);
   };
   $("#fcNew").onclick = () => startCards(doc);
@@ -1495,19 +1604,21 @@ function renderLog(log) {
   if (!log.length) return;
   hideWelcome();
   let lastQuestion = "";
-  for (const m of log) {
+  log.forEach((m, i) => {
     if (m.role === "user") {
       addUserMessage(m.text);
       lastQuestion = m.text;
     } else {
       const { body } = addBotMessage();
       body.querySelector(".bubble").innerHTML = md(m.text);
+      if (m.vision && m.vision.length) addVisionNote(body, m.vision);
       const sources = m.sources || [];
       renderSources(body, sources, sources.map((x) => x.n), lastQuestion + " " + m.text.slice(0, 300));
       addTools(body, m, lastQuestion);
+      if (i === log.length - 1 && m.followups) addFollowups(body, m.followups);
     }
     state.log.push(m);
-  }
+  });
 }
 
 async function openChat(id) {
@@ -1515,7 +1626,7 @@ async function openChat(id) {
   const chat = await api(`/api/chats/${id}`).catch(() => null);
   if (!chat) { await loadChats(); return; }
   state.chatId = id;
-  renderLog(chat.messages.map((m) => ({ role: m.role, text: m.text, sources: m.sources })));
+  renderLog(chat.messages.map((m) => ({ role: m.role, text: m.text, sources: m.sources, vision: m.vision, followups: m.followups })));
   renderChats();
   setView("chat");
   scrollDown();
