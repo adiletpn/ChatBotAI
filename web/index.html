@@ -3,13 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DocMind AI</title>
+  <title>Mind AI</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/fonts/fonts.css">
   <link rel="stylesheet" href="/static/style.css">
+  <script>
+    // тема и размеры применяются до отрисовки, чтобы не было «мигания»
+    try { const s = JSON.parse(localStorage.getItem("mind_prefs") || "{}"); const r = document.documentElement;
+      if (s.theme && s.theme !== "system") r.dataset.theme = s.theme; if (s.font) r.dataset.font = s.font; if (s.width) r.dataset.width = s.width; } catch (_) {}
+  </script>
 </head>
 <body>
+<div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-logo" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14.5" fill="currentColor"/><circle cx="16" cy="16" r="9.2" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M12.6 7.4c-1.2 5.7-1.2 11.5 0 17.2M19.4 7.4c1.2 5.7 1.2 11.5 0 17.2M7.4 12.6c5.7-1.2 11.5-1.2 17.2 0M7.4 19.4c5.7 1.2 11.5 1.2 17.2 0" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path class="ico" d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 4V6a1 1 0 0 1 1-1z"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path class="ico" d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2zM9 4v14M15 6v14"/></symbol>
   <symbol id="i-quiz" viewBox="0 0 24 24"><path class="ico" d="m2.5 9 9.5-5 9.5 5-9.5 5zM6.5 11.2V16c3 2.2 8 2.2 11 0v-4.8M21.5 9v5"/></symbol>
@@ -31,15 +37,21 @@
   <symbol id="i-book" viewBox="0 0 24 24"><path class="ico" d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2zM4 20a2 2 0 0 0 2 2h13v-4"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path class="ico" d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24"><path class="ico" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle class="ico" cx="12" cy="12" r="3"/><path class="ico" d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle class="ico" cx="12" cy="8" r="4"/><path class="ico" d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path class="ico" d="M12 3a9 9 0 0 0 0 18c1.1 0 1.8-.9 1.8-1.8 0-.5-.2-.9-.5-1.2-.3-.3-.5-.8-.5-1.2 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8z"/><circle cx="7.5" cy="11" r="1.2" fill="currentColor"/><circle cx="10.5" cy="7.2" r="1.2" fill="currentColor"/><circle cx="15" cy="7.5" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-chip" viewBox="0 0 24 24"><rect class="ico" x="6" y="6" width="12" height="12" rx="2"/><path class="ico" d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path class="ico" d="M12 3 4.5 6v6c0 4.6 3.2 7.8 7.5 9 4.3-1.2 7.5-4.4 7.5-9V6z"/><path class="ico" d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path class="ico" d="M12 4v11m0 0-4-4m4 4 4-4M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path class="ico" d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
 </svg>
 
 <div class="app">
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="logo"><svg><use href="#i-logo"/></svg></div>
+      <div class="brand-mark"><img src="/static/favicon.svg" alt=""></div>
       <div>
-        <div class="brand-name">DocMind</div>
+        <div class="brand-name">Mind <em>AI</em></div>
         <div class="brand-sub" data-i18n="tagline"></div>
       </div>
       <button class="icon-btn only-mobile" id="closeSidebar" aria-label="close"><svg><use href="#i-close"/></svg></button>
@@ -50,7 +62,7 @@
       <span class="dz-icon"><svg><use href="#i-upload"/></svg></span>
       <span>
         <span class="dz-title" data-i18n="upload_title"></span><br>
-        <span class="dz-hint">PDF · DOCX · PPTX · XLSX · TXT · JPG</span>
+        <span class="dz-hint" data-i18n="dz_hint"></span>
       </span>
     </label>
 
@@ -61,14 +73,11 @@
     <div class="doc-empty" id="docEmpty" data-i18n="no_docs_hint"></div>
     <div class="doc-list" id="docList"></div>
 
-    <div class="sidebar-foot">
-      <div class="status" id="status"></div>
-      <div class="user-card">
-        <div class="avatar-u" id="userAvatar">·</div>
-        <div class="user-name" id="userName"></div>
-        <button class="icon-btn" id="logoutBtn" data-i18n-title="logout" aria-label="logout"><svg><use href="#i-logout"/></svg></button>
-      </div>
-    </div>
+    <button class="user-card" id="userCard" type="button" data-i18n-title="settings">
+      <span class="avatar-u" id="userAvatar">·</span>
+      <span class="user-name" id="userName"></span>
+      <svg class="gear"><use href="#i-gear"/></svg>
+    </button>
   </aside>
 
   <main class="main">
@@ -80,17 +89,14 @@
         <button data-view="quiz"><svg><use href="#i-quiz"/></svg><span data-i18n="tab_quiz"></span></button>
       </nav>
       <div class="spacer"></div>
-      <div class="lang-switch" id="langSwitch">
-        <button data-lang="kk">ҚАЗ</button><button data-lang="ru">РУС</button><button data-lang="en">ENG</button>
-      </div>
       <button class="icon-btn" id="clearChat" data-i18n-title="clear_chat" aria-label="clear"><svg><use href="#i-trash"/></svg></button>
     </header>
 
     <div class="view" id="viewChat">
       <section class="chat" id="chat">
         <div class="welcome" id="welcome">
-          <div class="welcome-mark"><svg><use href="#i-logo"/></svg></div>
-          <h1 data-i18n="welcome_title"></h1>
+          <div class="welcome-mark"><img src="/static/favicon.svg" alt=""></div>
+          <h1 data-i18n-html="welcome_title"></h1>
           <p class="lead" data-i18n="welcome_text"></p>
           <div class="features">
             <div class="feature"><svg class="f-ico"><use href="#i-file"/></svg><b data-i18n="f1_t"></b><span data-i18n="f1_d"></span></div>
@@ -153,6 +159,23 @@
     </div>
   </aside>
   <div class="scrim" id="scrim"></div>
+</div>
+
+<div class="modal" id="settings" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <nav class="set-nav" id="setNav">
+      <h3 data-i18n="settings"></h3>
+      <button data-tab="profile"><svg><use href="#i-user"/></svg><span data-i18n="set_profile"></span></button>
+      <button data-tab="appearance"><svg><use href="#i-palette"/></svg><span data-i18n="set_appearance"></span></button>
+      <button data-tab="language"><svg><use href="#i-globe"/></svg><span data-i18n="set_language"></span></button>
+      <button data-tab="ai"><svg><use href="#i-spark"/></svg><span data-i18n="set_ai"></span></button>
+      <button data-tab="data"><svg><use href="#i-folder"/></svg><span data-i18n="set_data"></span></button>
+      <button data-tab="system"><svg><use href="#i-chip"/></svg><span data-i18n="set_system"></span></button>
+      <button data-tab="account"><svg><use href="#i-shield"/></svg><span data-i18n="set_account"></span></button>
+    </nav>
+    <section class="set-body" id="setBody"></section>
+    <button class="icon-btn modal-close" id="setClose" aria-label="close"><svg><use href="#i-close"/></svg></button>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 <script src="/static/app.js"></script>
