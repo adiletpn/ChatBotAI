@@ -1,25 +1,36 @@
-"""Генерирует презентацию проекта docs/DocMind_AI_Presentation.pptx (16:9, с заметками докладчика).
+"""Генерирует презентацию docs/Mind_AI_Presentation.pptx (16:9, с заметками докладчика).
+
+Структура подогнана под критерии направления AIChatBots (п. 5.1.2 Ереже):
+актуальность и сфера применения (40), качество работы с документами и точность (30),
+функциональность (15), презентация (15). Слайдов о рынке и финансах нет — за них баллы не дают.
 
 Запуск:  .venv/bin/python scripts/make_presentation.py
-Поля «Команда / Колледж / Руководитель» на титульном слайде заполните своими данными.
+Картинки берутся из docs/deck/. Поля «Команда / Колледж / Руководитель» заполните своими данными.
 """
 from pathlib import Path
 
+from PIL import Image
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.util import Emu, Inches, Pt
+from pptx.util import Inches, Pt
 
 ROOT = Path(__file__).resolve().parent.parent
-DOCS = ROOT / "docs"
+DECK = ROOT / "docs" / "deck"
+OUT = ROOT / "docs" / "Mind_AI_Presentation.pptx"
+SITE = "chatbotai-production-51ae.up.railway.app"
+REPO = "github.com/adiletpn/ChatBotAI"
 
-TEAL = RGBColor(0xC2, 0x60, 0x3E)  # фирменный терракотовый
-TEAL_SOFT = RGBColor(0xF6, 0xE8, 0xE1)
-DARK = RGBColor(0x1F, 0x1E, 0x1D)
-MUTED = RGBColor(0x75, 0x73, 0x6B)
+BG = RGBColor(0xF4, 0xF4, 0xF1)
+CARD = RGBColor(0xFF, 0xFF, 0xFF)
+INK = RGBColor(0x2A, 0x2A, 0x2F)
+DARK = RGBColor(0x14, 0x14, 0x17)
+MUTED = RGBColor(0x6B, 0x6B, 0x73)
+LINE = RGBColor(0xE2, 0xE2, 0xDC)
+ACCENT = RGBColor(0x63, 0x66, 0xF1)
+ACCENT_SOFT = RGBColor(0xEC, 0xEC, 0xFD)
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
-BORDER = RGBColor(0xE6, 0xE3, 0xD8)
 FONT = "Arial"
 
 prs = Presentation()
@@ -28,34 +39,43 @@ W, H = prs.slide_width, prs.slide_height
 BLANK = prs.slide_layouts[6]
 
 
-def text(slide, x, y, w, h, value, size=18, bold=False, color=DARK, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP):
+# ---------------------------------------------------------------- примитивы
+
+def fill(slide, color):
+    bg = slide.background.fill
+    bg.solid()
+    bg.fore_color.rgb = color
+
+
+def text(slide, x, y, w, h, value, size=18, bold=False, color=INK, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP, spacing=1.1):
     box = slide.shapes.add_textbox(x, y, w, h)
     tf = box.text_frame
     tf.word_wrap = True
     tf.vertical_anchor = anchor
-    tf.margin_left = tf.margin_right = Inches(0.05)
-    lines = value if isinstance(value, list) else [value]
-    for i, line in enumerate(lines):
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+    for i, line in enumerate(value if isinstance(value, list) else [value]):
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
         p.alignment = align
+        p.line_spacing = spacing
         run = p.add_run()
         run.text = line
         run.font.size, run.font.bold, run.font.color.rgb, run.font.name = Pt(size), bold, color, FONT
     return box
 
 
-def bullets(slide, x, y, w, h, items, size=18, gap=10):
+def rich(slide, x, y, w, h, items, size=16, gap=10, color=INK):
+    """Список «жирное — пояснение»."""
     box = slide.shapes.add_textbox(x, y, w, h)
     tf = box.text_frame
     tf.word_wrap = True
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     for i, item in enumerate(items):
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
         p.space_after = Pt(gap)
         head, _, tail = item.partition(" — ")
         r = p.add_run()
-        r.text = "▪  " + head
-        r.font.size, r.font.color.rgb, r.font.name = Pt(size), DARK, FONT
-        r.font.bold = bool(tail)
+        r.text = head
+        r.font.size, r.font.bold, r.font.color.rgb, r.font.name = Pt(size), bool(tail), color, FONT
         if tail:
             r2 = p.add_run()
             r2.text = " — " + tail
@@ -63,255 +83,299 @@ def bullets(slide, x, y, w, h, items, size=18, gap=10):
     return box
 
 
-def rect(slide, x, y, w, h, fill=WHITE, line=BORDER, shape=MSO_SHAPE.ROUNDED_RECTANGLE):
+def box(slide, x, y, w, h, color=CARD, line=LINE, radius=0.06, shape=MSO_SHAPE.ROUNDED_RECTANGLE):
     s = slide.shapes.add_shape(shape, x, y, w, h)
     s.fill.solid()
-    s.fill.fore_color.rgb = fill
+    s.fill.fore_color.rgb = color
     if line is None:
         s.line.fill.background()
     else:
         s.line.color.rgb = line
+        s.line.width = Pt(0.75)
     s.shadow.inherit = False
     if shape == MSO_SHAPE.ROUNDED_RECTANGLE:
-        s.adjustments[0] = 0.08
+        s.adjustments[0] = radius
     return s
 
 
-def slide_base(title, number=None, notes=""):
+def picture(slide, name, x, y, w=None, h=None, border=True):
+    path = DECK / name
+    if w is not None and h is not None:  # вписываем с сохранением пропорций и центрируем
+        iw, ih = Image.open(path).size
+        scale = min(w / iw, h / ih)
+        pw, ph = int(iw * scale), int(ih * scale)
+        x, y, w, h = x + (w - pw) // 2, y + (h - ph) // 2, pw, ph
+        pic = slide.shapes.add_picture(str(path), x, y, w, h)
+    else:
+        pic = slide.shapes.add_picture(str(path), x, y, w, h)
+    if border:
+        pic.line.color.rgb = LINE
+        pic.line.width = Pt(0.75)
+    return pic
+
+
+def card(slide, x, y, w, h, num, title, body, title_size=17, body_size=13):
+    box(slide, x, y, w, h)
+    if num:
+        dot = box(slide, x + Inches(0.25), y + Inches(0.25), Inches(0.42), Inches(0.42), color=ACCENT_SOFT, line=None, shape=MSO_SHAPE.OVAL)
+        tf = dot.text_frame
+        tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+        tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        tf.paragraphs[0].alignment = PP_ALIGN.CENTER
+        r = tf.paragraphs[0].add_run()
+        r.text = num
+        r.font.size, r.font.bold, r.font.color.rgb, r.font.name = Pt(13), True, ACCENT, FONT
+    top = y + (Inches(0.85) if num else Inches(0.25))
+    text(slide, x + Inches(0.25), top, w - Inches(0.5), Inches(0.5), title, size=title_size, bold=True)
+    text(slide, x + Inches(0.25), top + Inches(0.45), w - Inches(0.5), h - (top - y) - Inches(0.55), body, size=body_size, color=MUTED, spacing=1.15)
+
+
+def slide(title, kicker="", notes=""):
     s = prs.slides.add_slide(BLANK)
-    number = len(prs.slides)
-    rect(s, 0, 0, Inches(0.18), H, fill=TEAL, line=None, shape=MSO_SHAPE.RECTANGLE)
-    text(s, Inches(0.6), Inches(0.35), Inches(11.5), Inches(0.9), title, size=30, bold=True)
-    text(s, W - Inches(1.6), H - Inches(0.55), Inches(1.2), Inches(0.4), f"DocMind AI · {number}", size=10,
-         color=MUTED, align=PP_ALIGN.RIGHT)
+    fill(s, BG)
+    if kicker:
+        text(s, Inches(0.7), Inches(0.45), Inches(9), Inches(0.3), kicker.upper(), size=11, bold=True, color=ACCENT)
+    text(s, Inches(0.7), Inches(0.72), Inches(11.5), Inches(0.8), title, size=30, bold=True)
+    pic = s.shapes.add_picture(str(DECK / "wordmark_dark.png"), W - Inches(1.75), H - Inches(0.6), height=Inches(0.28))
+    pic.line.fill.background()
+    text(s, Inches(0.7), H - Inches(0.55), Inches(2), Inches(0.3), str(len(prs.slides)), size=10, color=MUTED)
     if notes:
         s.notes_slide.notes_text_frame.text = notes
     return s
 
 
-def card(slide, x, y, w, h, icon, title, body, title_size=17, body_size=13):
-    rect(slide, x, y, w, h)
-    text(slide, x + Inches(0.2), y + Inches(0.15), w - Inches(0.4), Inches(0.5), icon, size=24)
-    text(slide, x + Inches(0.2), y + Inches(0.7), w - Inches(0.4), Inches(0.5), title, size=title_size, bold=True)
-    text(slide, x + Inches(0.2), y + Inches(1.15), w - Inches(0.4), h - Inches(1.2), body, size=body_size, color=MUTED)
+# ---------------------------------------------------------------- 1. Введение
 
-
-def picture(slide, path, x, y, w=None, h=None):
-    pic = slide.shapes.add_picture(str(path), x, y, w, h)
-    pic.line.color.rgb = BORDER
-    return pic
-
-
-# 1. Титул ---------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
-rect(s, 0, 0, W, H, fill=TEAL, line=None, shape=MSO_SHAPE.RECTANGLE)
-text(s, Inches(0.8), Inches(0.7), Inches(8), Inches(0.5), "INNOVATION AI HACKATHON – 2026  ·  AIChatBots", size=16,
-     bold=True, color=RGBColor(0xF6, 0xE8, 0xE1))
-text(s, Inches(0.8), Inches(1.7), Inches(7.5), Inches(1.4), "DocMind AI", size=66, bold=True, color=WHITE)
-text(s, Inches(0.8), Inches(3.0), Inches(6.6), Inches(1.6),
-     "Құжаттармен сөйлесетін зияткер чат-бот\nИнтеллектуальный чат-бот, который отвечает на вопросы по документам",
-     size=20, color=WHITE)
-text(s, Inches(0.8), Inches(5.3), Inches(6.6), Inches(1.4),
-     ["Команда: ____________", "Колледж: ____________", "Руководитель: ____________"], size=16, color=WHITE)
-picture(s, DOCS / "ui_mobile_dark.png", Inches(9.3), Inches(0.6), h=Inches(6.3))
+fill(s, DARK)
+s.shapes.add_picture(str(DECK / "wordmark_white.png"), Inches(0.8), Inches(1.3), height=Inches(1.15))
+text(s, Inches(0.8), Inches(2.8), Inches(5.9), Inches(1.4),
+     ["Интеллектуальный ассистент,", "который отвечает по документам"], size=24, bold=True, color=WHITE, spacing=1.15)
+text(s, Inches(0.8), Inches(3.95), Inches(5.9), Inches(0.4), "Направление AIChatBots · Innovation AI Hackathon – 2026", size=14,
+     color=RGBColor(0xA9, 0xAB, 0xF8))
+text(s, Inches(0.8), Inches(5.3), Inches(5.5), Inches(1.4),
+     ["Команда: ____________", "Колледж: ____________", "Руководитель: ____________"], size=14,
+     color=RGBColor(0xC8, 0xC8, 0xCE), spacing=1.4)
+picture(s, "chat.png", Inches(6.9), Inches(1.05), w=Inches(5.9), h=Inches(5.4), border=False)
 s.notes_slide.notes_text_frame.text = (
-    "Здравствуйте! Мы команда ___ из ___. Представляем DocMind AI — чат-бот, который читает ваши документы "
-    "и отвечает на вопросы по ним на казахском, русском и английском, всегда указывая источник.")
+    "Здравствуйте! Мы команда ___ из ___. Наш проект — Mind AI: интеллектуальный ассистент, который читает "
+    "ваши документы и отвечает на вопросы по ним на казахском, русском и английском, всегда показывая источник.")
 
-# 2. Проблема --------------------------------------------------------------
-s = slide_base("Проблема", 2, "Расскажите о проблеме на живом примере: студент ищет в регламенте дедлайн, "
-               "рабочий — норму выдачи СИЗ в инструкции. Документы длинные, на разных языках, часть — сканы.")
-problems = [
-    ("⏳", "Долгий поиск", "Регламенты, инструкции и приказы занимают десятки страниц — нужный пункт ищут вручную."),
-    ("🌐", "Разные языки", "Документы на казахском, вопросы — на русском или английском, и наоборот."),
-    ("🖨️", "Сканы и фото", "Многие документы существуют только как сканы — по ним не работает обычный поиск Ctrl+F."),
-    ("❓", "Нет доверия к ИИ", "Обычные чат-боты «придумывают» ответы и не показывают, откуда взята информация."),
-]
-for i, (icon, title, body) in enumerate(problems):
-    card(s, Inches(0.6) + i * Inches(3.08), Inches(1.6), Inches(2.9), Inches(3.3), icon, title, body)
-text(s, Inches(0.6), Inches(5.4), Inches(12), Inches(1),
-     "Особенно остро это на производстве: инструкции по охране труда, технологические регламенты и нормативы "
-     "должны находиться быстро и без ошибок.", size=17, color=MUTED)
+# ---------------------------------------------------------------- 2. Проблема
 
-# 3. Решение -------------------------------------------------------------
-s = slide_base("Решение — DocMind AI", 3, "Покажите три шага. Главное отличие — ответ всегда с источником: "
-               "документ, страница и цитата, которую можно открыть.")
-steps = [("1", "Загрузите документ", "PDF, DOCX, PPTX, XLSX, TXT, HTML, фото или скан — через сайт или Telegram"),
+s = slide("Найти ответ в документе — долго и сложно", "Проблема",
+          "Каждый из нас сталкивался: нужен один пункт из длинного документа. Его ищут вручную, документ может быть "
+          "на другом языке или вообще сканом. А если ответ дал ИИ — непонятно, можно ли ему верить.")
+problems = [("1", "Долгий поиск", "Положения, инструкции, учебные материалы занимают десятки страниц — нужный пункт ищут вручную."),
+            ("2", "Разные языки и сканы", "Документ на казахском, вопрос на русском. Сканы и фото вообще не находятся обычным поиском."),
+            ("3", "Нет доверия к ответу", "Ответ без указания источника нельзя проверить — а в учёбе и на работе ошибка дорого стоит.")]
+for i, (n, t, b) in enumerate(problems):
+    card(s, Inches(0.7) + i * Inches(4.05), Inches(1.95), Inches(3.8), Inches(3.3), n, t, b, title_size=19, body_size=15)
+text(s, Inches(0.7), Inches(5.65), Inches(12), Inches(0.6),
+     "Mind AI решает все три: быстро, на любом из трёх языков и с доказательством из документа.", size=17, bold=True, color=ACCENT)
+
+# ---------------------------------------------------------------- 3. Решение
+
+s = slide("Решение: загрузите документ — и задайте вопрос", "Решение",
+          "Работа в три шага. Главное — каждый ответ подтверждён ссылкой на документ и страницу.")
+steps = [("1", "Загрузите документ", "PDF, DOCX, PPTX, XLSX, TXT, скан или фото — на сайте или в Telegram"),
          ("2", "Задайте вопрос", "На казахском, русском или английском — текстом или голосом"),
-         ("3", "Получите ответ с источником", "Точный ответ по документу + ссылки [1] [2]: файл, страница, цитата")]
-for i, (n, title, body) in enumerate(steps):
-    y = Inches(1.6) + i * Inches(1.55)
-    circle = rect(s, Inches(0.7), y, Inches(0.8), Inches(0.8), fill=TEAL, line=None, shape=MSO_SHAPE.OVAL)
-    circle.text_frame.text = n
-    p = circle.text_frame.paragraphs[0]
-    p.alignment = PP_ALIGN.CENTER
-    p.runs[0].font.size, p.runs[0].font.bold, p.runs[0].font.color.rgb = Pt(24), True, WHITE
-    text(s, Inches(1.75), y - Inches(0.05), Inches(4.6), Inches(0.5), title, size=20, bold=True)
-    text(s, Inches(1.75), y + Inches(0.45), Inches(4.6), Inches(0.9), body, size=14, color=MUTED)
-picture(s, DOCS / "ui_chat.png", Inches(6.6), Inches(1.5), w=Inches(6.2))
+         ("3", "Получите ответ с источником", "Точный ответ по документу и ссылки [1] [2] на страницу с цитатой")]
+for i, (n, t, b) in enumerate(steps):
+    y = Inches(1.85) + i * Inches(1.55)
+    card(s, Inches(0.7), y, Inches(4.9), Inches(1.35), "", "", "")
+    dot = box(s, Inches(0.95), y + Inches(0.4), Inches(0.55), Inches(0.55), color=ACCENT, line=None, shape=MSO_SHAPE.OVAL)
+    tf = dot.text_frame
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.paragraphs[0].alignment = PP_ALIGN.CENTER
+    r = tf.paragraphs[0].add_run()
+    r.text = n
+    r.font.size, r.font.bold, r.font.color.rgb, r.font.name = Pt(18), True, WHITE, FONT
+    text(s, Inches(1.75), y + Inches(0.25), Inches(3.7), Inches(0.4), t, size=17, bold=True)
+    text(s, Inches(1.75), y + Inches(0.68), Inches(3.7), Inches(0.6), b, size=12.5, color=MUTED)
+picture(s, "chat.png", Inches(5.95), Inches(1.75), w=Inches(6.7), h=Inches(4.6))
 
-# 3a. Доказательство на странице -------------------------------------------
-s = slide_base("Не просто чат: ответ с доказательством на странице", notes=
-               "Главная фишка: нажимаем на источник — открывается настоящая страница документа, а строки, "
-               "на которых основан ответ, подсвечены маркером. Ответ можно проверить за секунду.")
-picture(s, DOCS / "ui_evidence.png", Inches(0.6), Inches(1.4), w=Inches(8.2))
-bullets(s, Inches(9.1), Inches(1.6), Inches(3.9), Inches(5), [
-    "📍 Дәлел — клик по источнику открывает страницу документа",
-    "Жёлтый маркер — подсвечены именно те строки, на которых основан ответ",
-    "Индикатор доверия — «подтверждено N источниками» под каждым ответом",
-    "Нет доказательства — бот честно предупреждает",
-], size=15)
+# ---------------------------------------------------------------- 4. Как это работает
 
-# 3b. Режимы ---------------------------------------------------------------
-s = slide_base("Три режима работы с документом", notes=
-               "Обычные чат-боты умеют только отвечать на вопросы. DocMind сам анализирует документ "
-               "и проверяет, как человек его усвоил — это важно для инструктажей по охране труда.")
-modes = [("💬 Вопрос-ответ", "диалог на 3 языках с источниками"),
-         ("🧭 Карта документа", "сроки, цифры, чек-лист требований, термины — без единого вопроса"),
-         ("🎓 Проверка знаний", "тест по документу с объяснениями и баллами")]
-for i, (t, d) in enumerate(modes):
-    x = Inches(0.6) + i * Inches(4.1)
-    rect(s, x, Inches(1.4), Inches(3.9), Inches(1.05), fill=TEAL_SOFT if i else WHITE)
-    text(s, x + Inches(0.15), Inches(1.45), Inches(3.6), Inches(0.45), t, size=17, bold=True)
-    text(s, x + Inches(0.15), Inches(1.9), Inches(3.6), Inches(0.5), d, size=12.5, color=MUTED)
-picture(s, DOCS / "ui_map.png", Inches(0.6), Inches(2.75), w=Inches(6.0))
-picture(s, DOCS / "ui_quiz.png", Inches(6.85), Inches(2.75), w=Inches(6.0))
-
-# 4. Как работает ---------------------------------------------------------
-s = slide_base("Как это работает: технология RAG", 4,
-               "RAG — Retrieval-Augmented Generation. Модель не «вспоминает», а читает найденные фрагменты документа. "
-               "Поэтому ответы точные, а каждый факт подтверждён ссылкой.")
-pipeline = [("📄", "Парсинг", "PDF, DOCX, PPTX, XLSX…\nсканы → OCR"),
-            ("✂️", "Фрагменты", "разбиение по абзацам,\nномер страницы"),
-            ("🔎", "Поиск", "BM25 + стемминг kk/ru,\nперевод запроса ×3"),
-            ("🧠", "LLM", "ответ только по\nнайденному тексту"),
-            ("✅", "Ответ", "на языке вопроса\n+ источники [n]")]
-bw, gap = Inches(2.15), Inches(0.33)
-for i, (icon, title, body) in enumerate(pipeline):
-    x = Inches(0.6) + i * (bw + gap)
-    rect(s, x, Inches(1.8), bw, Inches(2.3), fill=TEAL_SOFT if i in (2, 3) else WHITE)
-    text(s, x, Inches(1.95), bw, Inches(0.6), icon, size=28, align=PP_ALIGN.CENTER)
-    text(s, x, Inches(2.6), bw, Inches(0.5), title, size=18, bold=True, align=PP_ALIGN.CENTER)
-    text(s, x, Inches(3.1), bw, Inches(0.9), body, size=13, color=MUTED, align=PP_ALIGN.CENTER)
-    if i < len(pipeline) - 1:
-        arrow = s.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, x + bw + Inches(0.04), Inches(2.8), Inches(0.25), Inches(0.3))
-        arrow.fill.solid()
-        arrow.fill.fore_color.rgb = TEAL
-        arrow.line.fill.background()
-bullets(s, Inches(0.6), Inches(4.5), Inches(12), Inches(2.5), [
+s = slide("Как это работает: технология RAG", "Технология",
+          "RAG — Retrieval-Augmented Generation. Модель не «вспоминает», а читает найденные фрагменты документа. "
+          "Поэтому ответы точные, а каждый факт подтверждён ссылкой.")
+pipe = [("Чтение", "PDF, DOCX, PPTX, XLSX…\nсканы → OCR kaz/rus/eng"), ("Фрагменты", "текст делится на части\nс номером страницы"),
+        ("Поиск", "BM25 + казахская и русская\nморфология, перевод ×3"), ("Ответ ИИ", "только по найденному\nтексту, без выдумок"),
+        ("Источник", "ссылки [n], страница\nи подсветка строк")]
+bw, gap = Inches(2.22), Inches(0.24)
+for i, (t, b) in enumerate(pipe):
+    x = Inches(0.7) + i * (bw + gap)
+    box(s, x, Inches(1.95), bw, Inches(1.9), color=ACCENT_SOFT if i in (2, 3) else CARD)
+    text(s, x, Inches(2.2), bw, Inches(0.4), t, size=17, bold=True, align=PP_ALIGN.CENTER, color=ACCENT if i in (2, 3) else INK)
+    text(s, x + Inches(0.1), Inches(2.75), bw - Inches(0.2), Inches(0.9), b, size=12.5, color=MUTED, align=PP_ALIGN.CENTER)
+    if i < len(pipe) - 1:
+        a = s.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, x + bw + Inches(0.03), Inches(2.78), Inches(0.18), Inches(0.24))
+        a.fill.solid()
+        a.fill.fore_color.rgb = ACCENT
+        a.line.fill.background()
+rich(s, Inches(0.7), Inches(4.35), Inches(11.9), Inches(2.2), [
     "Межъязыковой поиск — вопрос на русском находит ответ в казахском документе",
-    "Защита от «галлюцинаций» — промпт запрещает выдумывать; нет ответа в документе → бот честно говорит об этом",
-    "Офлайн-режим — без интернета бот показывает самые релевантные предложения с источниками",
+    "Только по документу — если ответа нет, Mind AI честно говорит об этом",
+    "Работает и без связи с моделью — показывает найденные фрагменты с источниками",
 ], size=16)
 
-# 5. Возможности ----------------------------------------------------------
-s = slide_base("Возможности", 5, "Подчеркните, что все три бонусных пункта регламента (источник, многоязычие, сканы) реализованы.")
-features = [("📚", "10+ форматов", "PDF, DOCX, PPTX, XLSX, CSV, TXT, HTML, DOC/RTF, JPG/PNG"),
-            ("📍", "Источник ответа ★", "файл, страница / слайд / лист, цитата, открытие на нужной странице"),
-            ("🌐", "3 языка ★", "қазақша · русский · English — вопросы, ответы и интерфейс"),
-            ("🖨️", "OCR сканов ★", "Tesseract kaz+rus+eng: сканы PDF, фото, картинки в DOCX"),
-            ("💬", "Веб + Telegram", "сайт с адаптивным дизайном и Telegram-бот"),
-            ("🧭", "Карта документа", "хронология сроков, ключевые цифры, чек-лист требований, термины"),
-            ("🎙️", "Голосовой ввод", "вопрос голосом на казахском, русском, английском"),
-            ("🎓", "Проверка знаний", "тест по документу: баллы, объяснения, разбор ошибок")]
-for i, (icon, title, body) in enumerate(features):
-    col, row = i % 4, i // 4
-    card(s, Inches(0.6) + col * Inches(3.08), Inches(1.5) + row * Inches(2.75), Inches(2.9), Inches(2.5), icon, title, body,
-         title_size=16, body_size=12.5)
-text(s, Inches(0.6), Inches(6.85), Inches(8), Inches(0.4), "★ — дополнительные возможности, отмеченные в регламенте (п. 5.1.2.7)",
-     size=11, color=MUTED)
+# ---------------------------------------------------------------- 5. Продукт: доказательство
 
-# 6. Соответствие требованиям ---------------------------------------------
-s = slide_base("Соответствие требованиям регламента", 6)
-rows = [("Требование п. 5.1.2", "Реализация"),
-        ("1. Работа с PDF, DOCX и др.", "10+ форматов, таблицы, сканы"),
-        ("2. Точные и понятные ответы", "RAG + запрет выдумывать + цитаты"),
-        ("3. ИИ и NLP", "LLM, определение языка, стемминг, BM25, перевод запроса"),
-        ("4. Telegram / WhatsApp / веб", "Веб-платформа и Telegram-бот"),
-        ("5. Рабочая версия", "Запуск одной командой, автотест: 20 проверок"),
-        ("6. Презентация и видео", "Эта презентация + видео 5–7 минут"),
-        ("7. Источник, многоязычие, сканы", "Все три реализованы")]
-table = s.shapes.add_table(len(rows), 2, Inches(0.6), Inches(1.5), Inches(12.1), Inches(5)).table
-table.columns[0].width, table.columns[1].width = Inches(5), Inches(7.1)
+s = slide("Каждый ответ можно проверить за секунду", "Продукт · ответ с доказательством",
+          "Нажимаем на источник под ответом — открывается настоящая страница документа, а строки, на которых основан "
+          "ответ, подсвечены маркером. Под ответом — индикатор «подтверждено N источниками».")
+picture(s, "evidence.png", Inches(0.7), Inches(1.75), w=Inches(7.6), h=Inches(4.9))
+rich(s, Inches(8.65), Inches(1.95), Inches(4.0), Inches(4.6), [
+    "Ссылки [1] [2] — у каждого факта в ответе",
+    "Страница документа — открывается рядом с чатом",
+    "Подсветка — именно те строки, на которых основан ответ",
+    "Индикатор доверия — «подтверждено N источниками»",
+], size=15, gap=14)
+
+# ---------------------------------------------------------------- 6. Продукт: карта и тест
+
+s = slide("Карта документа и проверка знаний", "Продукт · режимы",
+          "Карта документа: ИИ сам раскладывает документ на сроки, цифры, требования и термины. "
+          "Проверка знаний: тест по документу с объяснениями — например, после инструктажа по охране труда.")
+picture(s, "map.png", Inches(0.7), Inches(1.75), w=Inches(5.95), h=Inches(3.72))
+picture(s, "quiz.png", Inches(6.7), Inches(1.75), w=Inches(5.95), h=Inches(3.72))
+text(s, Inches(0.7), Inches(5.6), Inches(5.9), Inches(0.4), "Карта документа", size=16, bold=True)
+text(s, Inches(0.7), Inches(5.98), Inches(5.9), Inches(0.8), "Сроки, ключевые цифры, чек-лист требований и термины — без единого вопроса, каждый пункт со ссылкой на страницу.", size=12.5, color=MUTED)
+text(s, Inches(6.7), Inches(5.6), Inches(5.9), Inches(0.4), "Проверка знаний", size=16, bold=True)
+text(s, Inches(6.7), Inches(5.98), Inches(5.9), Inches(0.8), "Тест по документу: варианты ответа, мгновенная проверка, объяснение со ссылкой, итоговый балл и разбор ошибок.", size=12.5, color=MUTED)
+
+# ---------------------------------------------------------------- 7. Продукт: платформа
+
+s = slide("Готовая платформа, а не прототип", "Продукт · платформа",
+          "Это полноценный сервис: аккаунты с подтверждением почты, сохранённые чаты, настройки, темы, мобильная версия. "
+          "Он уже работает в интернете.")
+picture(s, "settings.png", Inches(0.7), Inches(1.75), w=Inches(6.6), h=Inches(4.15))
+picture(s, "mobile.png", Inches(7.55), Inches(1.75), w=Inches(2.05), h=Inches(4.45))
+rich(s, Inches(9.95), Inches(1.85), Inches(2.75), Inches(4.8), [
+    "Аккаунты — вход по email с кодом, сброс пароля",
+    "Сохранённые чаты — история и контекст",
+    "Настройки — 5 тем, 6 цветов, язык, стиль ответа",
+    "Телефон — удобная мобильная версия",
+    "Telegram — тот же бот в мессенджере",
+], size=12.5, gap=10)
+
+# ---------------------------------------------------------------- 8. Соответствие регламенту
+
+s = slide("Все требования регламента выполнены", "Соответствие п. 5.1.2",
+          "Пройдёмся по требованиям направления AIChatBots: всё выполнено, включая три дополнительные возможности.")
+rows = [("Требование", "Как выполнено в Mind AI"),
+        ("Работа с PDF, DOCX и другими документами", "10+ форматов: PDF, DOCX, PPTX, XLSX, CSV, TXT, HTML, сканы и фото"),
+        ("Точные и понятные ответы по содержанию", "RAG + запрет выдумывать + ссылка на страницу у каждого факта"),
+        ("Технологии ИИ и обработки языка (NLP)", "Языковая модель, определение языка, морфология kk/ru, перевод запроса"),
+        ("Telegram, WhatsApp или веб-платформа", "Веб-платформа и Telegram-бот"),
+        ("Рабочая версия", f"Работает онлайн: {SITE}"),
+        ("★ Указание источника", "Ссылки [n], страница документа и подсветка строк"),
+        ("★ Многоязычие", "Вопросы, ответы и интерфейс на казахском, русском, английском"),
+        ("★ Сканированные документы", "OCR с казахской, русской и английской моделями")]
+tbl = s.shapes.add_table(len(rows), 2, Inches(0.7), Inches(1.75), Inches(11.9), Inches(4.9)).table
+tbl.columns[0].width, tbl.columns[1].width = Inches(4.6), Inches(7.3)
 for r, (a, b) in enumerate(rows):
     for c, value in enumerate((a, b)):
-        cell = table.cell(r, c)
+        cell = tbl.cell(r, c)
         cell.text = value
         para = cell.text_frame.paragraphs[0]
-        para.runs[0].font.size, para.runs[0].font.name = Pt(16), FONT
-        para.runs[0].font.bold = r == 0 or c == 0
-        para.runs[0].font.color.rgb = WHITE if r == 0 else DARK
+        run = para.runs[0]
+        run.font.size, run.font.name = Pt(13.5), FONT
+        run.font.bold = r == 0 or c == 0
+        run.font.color.rgb = WHITE if r == 0 else (ACCENT if a.startswith("★") and c == 0 else INK)
         cell.fill.solid()
-        cell.fill.fore_color.rgb = TEAL if r == 0 else (TEAL_SOFT if r % 2 else WHITE)
+        cell.fill.fore_color.rgb = INK if r == 0 else (CARD if r % 2 else BG)
+        cell.margin_left = cell.margin_right = Inches(0.15)
 
-# 7. Технологии -----------------------------------------------------------
-s = slide_base("Технологии", 7, "Отвечая на вопросы жюри: модель подключается через .env — любой OpenAI- или "
-               "Anthropic-совместимый API, можно бесплатный.")
-stack = [("Backend", "Python 3, FastAPI, потоковые ответы (SSE)"),
-         ("ИИ / LLM", "OpenAI- или Anthropic-совместимый API (подключается через .env)"),
-         ("Поиск", "BM25 + стемминг для казахского и русского, межъязыковое расширение запроса"),
-         ("Документы", "PyMuPDF, python-docx, python-pptx, openpyxl, BeautifulSoup"),
-         ("OCR", "Tesseract 5 с моделями kaz, rus, eng"),
-         ("Интерфейсы", "HTML/CSS/JS (адаптивный, тёмная тема), Telegram — aiogram 3"),
-         ("Безопасность", "Вход по логину/паролю: хэши PBKDF2, HttpOnly-cookie, изоляция документов")]
-for i, (k, v) in enumerate(stack):
-    y = Inches(1.45) + i * Inches(0.78)
-    rect(s, Inches(0.6), y, Inches(2.6), Inches(0.65), fill=TEAL, line=None)
-    text(s, Inches(0.6), y, Inches(2.6), Inches(0.65), k, size=16, bold=True, color=WHITE, align=PP_ALIGN.CENTER,
-         anchor=MSO_ANCHOR.MIDDLE)
-    text(s, Inches(3.4), y, Inches(9.3), Inches(0.65), v, size=17, anchor=MSO_ANCHOR.MIDDLE)
+# ---------------------------------------------------------------- 9. Результаты
 
-# 8. Демонстрация ---------------------------------------------------------
-s = slide_base("Демонстрация", 8, "Здесь переключитесь на живую демонстрацию: загрузите регламент хакатона, "
-               "спросите по-русски «Когда финал?», откройте источник, затем загрузите скан.")
-picture(s, DOCS / "ui_welcome.png", Inches(0.6), Inches(1.5), w=Inches(7.6))
-bullets(s, Inches(8.6), Inches(1.6), Inches(4.3), Inches(5), [
-    "Регламент хакатона (PDF, қазақша) — «Когда финал?» по-русски → 14 ноября, стр. 1",
-    "Скан без текста — OCR распознаёт таблицу баллов",
-    "Инструкция по охране труда (DOCX) — «Срок носки каски?» → 24 месяца",
-    "Telegram — тот же бот в мессенджере",
-], size=15)
+s = slide("Результаты: работает, проверено, онлайн", "Результаты",
+          "Продукт проверен автотестами и на реальных документах. Он уже доступен по ссылке — можно открыть прямо сейчас.")
+stats = [("10+", "форматов документов"), ("3", "языка: kk · ru · en"), ("52", "автоматические проверки"),
+         ("~10 с", "на ответ с источниками"), ("24/7", "работает онлайн"), ("3", "режима: чат · карта · тест")]
+for i, (v, l) in enumerate(stats):
+    col, row = i % 3, i // 3
+    x, y = Inches(0.7) + col * Inches(4.05), Inches(1.85) + row * Inches(1.75)
+    box(s, x, y, Inches(3.8), Inches(1.5))
+    text(s, x + Inches(0.3), y + Inches(0.22), Inches(3.3), Inches(0.7), v, size=34, bold=True, color=ACCENT)
+    text(s, x + Inches(0.3), y + Inches(0.95), Inches(3.3), Inches(0.4), l, size=14, color=MUTED)
+text(s, Inches(0.7), Inches(5.55), Inches(12), Inches(0.9),
+     ["Проверено: вопрос на русском к казахскому документу, ответы по сканам, честное «в документе этого нет»,",
+      "регистрация с кодом, сброс пароля и изоляция данных пользователей."], size=14, color=MUTED, spacing=1.25)
 
-# 9. Применение -----------------------------------------------------------
-s = slide_base("Где применять", 9)
-uses = [("🏭", "Производство", "инструкции по охране труда, техрегламенты, нормы СИЗ — быстрый ответ рабочему прямо в Telegram"),
-        ("🎓", "Колледжи и вузы", "положения, правила приёма, расписания, методички — помощник для студентов"),
-        ("🏛️", "Госсектор и бизнес", "приказы, договоры, стандарты — поиск по архиву документов на трёх языках"),
-        ("⚖️", "Юристы и HR", "договоры, трудовые нормы, внутренние политики — ответы с точной ссылкой на пункт")]
-for i, (icon, title, body) in enumerate(uses):
+# ---------------------------------------------------------------- 10. Чем Mind AI особенный
+
+s = slide("Что делает Mind AI особенным", "Уникальность",
+          "Шесть вещей, которые делают Mind AI особенным: доказательство на странице, казахский язык, режимы помимо чата, "
+          "честность, приватность и работа даже без связи с моделью.")
+feats = [("Доказательство на странице", "Ответ подтверждён подсвеченными строками в самом документе."),
+         ("Казахский язык", "Морфология в поиске, OCR казахских сканов, интерфейс на трёх языках."),
+         ("Больше, чем чат", "Карта документа и проверка знаний — без единого вопроса."),
+         ("Честность", "Если ответа нет в документе, Mind AI так и говорит — без выдумок."),
+         ("Приватность", "Каждый пользователь видит только свои документы и чаты."),
+         ("Надёжность", "Без связи с моделью продолжает находить фрагменты с источниками.")]
+for i, (t, b) in enumerate(feats):
+    col, row = i % 3, i // 3
+    card(s, Inches(0.7) + col * Inches(4.05), Inches(1.85) + row * Inches(2.3), Inches(3.8), Inches(2.05), str(i + 1), t, b,
+         title_size=16, body_size=13)
+
+# ---------------------------------------------------------------- 11. Где применять
+
+s = slide("Где применять Mind AI", "Сфера применения",
+          "Mind AI подходит для любой организации, где много документов: колледжи, предприятия, госорганы, бизнес.")
+uses = [("Образование", "Учебники, методички, положения и правила — помощник для студентов и преподавателей."),
+        ("Производство и охрана труда", "Инструкции, регламенты, нормы СИЗ — быстрый ответ рабочему и проверка знаний после инструктажа."),
+        ("Госсектор", "Приказы, законы, стандарты — поиск по документам на казахском и русском."),
+        ("Бизнес и юристы", "Договоры, политики, отчёты — ответы с точной ссылкой на пункт и страницу.")]
+for i, (t, b) in enumerate(uses):
     col, row = i % 2, i // 2
-    card(s, Inches(0.6) + col * Inches(6.15), Inches(1.5) + row * Inches(2.65), Inches(5.95), Inches(2.4), icon, title, body,
-         body_size=15)
+    card(s, Inches(0.7) + col * Inches(6.05), Inches(1.85) + row * Inches(2.3), Inches(5.85), Inches(2.05), str(i + 1), t, b,
+         title_size=18, body_size=14)
 
-# 10. Уникальность и развитие ---------------------------------------------
-s = slide_base("Чем мы отличаемся и что дальше", 10)
-text(s, Inches(0.6), Inches(1.4), Inches(6), Inches(0.5), "Преимущества", size=20, bold=True, color=TEAL)
-bullets(s, Inches(0.6), Inches(2.0), Inches(5.9), Inches(4.8), [
-    "Казахский язык — стемминг и OCR под казахский",
-    "Доказательность — подсветка ответа прямо на странице документа",
-    "Не только чат — карта документа и проверка знаний",
-    "Работает со сканами — бесплатный локальный OCR",
-    "Без интернета — офлайн-режим поиска",
-    "Свободный выбор модели — любой совместимый API",
-], size=16)
-text(s, Inches(6.9), Inches(1.4), Inches(6), Inches(0.5), "План развития", size=20, bold=True, color=TEAL)
-bullets(s, Inches(6.9), Inches(2.0), Inches(5.9), Inches(4.8), [
-    "WhatsApp-бот",
-    "Векторный (семантический) поиск",
-    "Подключение к системам документооборота",
-    "Голосовые ответы на казахском",
-    "Роли и общие базы знаний для организаций",
-], size=16)
+# ---------------------------------------------------------------- 12. Команда
 
-# 11. Спасибо -------------------------------------------------------------
+s = slide("Команда", "Команда", "Представьте участников команды и их роли.")
+for i in range(3):
+    x = Inches(0.7) + i * Inches(4.05)
+    box(s, x, Inches(1.95), Inches(3.8), Inches(3.4))
+    box(s, x + Inches(1.35), Inches(2.3), Inches(1.1), Inches(1.1), color=ACCENT_SOFT, line=None, shape=MSO_SHAPE.OVAL)
+    text(s, x, Inches(3.65), Inches(3.8), Inches(0.4), "Имя Фамилия", size=17, bold=True, align=PP_ALIGN.CENTER)
+    text(s, x + Inches(0.3), Inches(4.1), Inches(3.2), Inches(0.9), "Роль в проекте", size=13, color=MUTED, align=PP_ALIGN.CENTER)
+text(s, Inches(0.7), Inches(5.75), Inches(12), Inches(0.4), "Руководитель: ____________", size=15, color=MUTED)
+
+# ---------------------------------------------------------------- 13. Что дальше
+
+s = slide("Что дальше", "Развитие",
+          "Планы развития: WhatsApp, вход через Google, семантический поиск, голосовые ответы на казахском, "
+          "общие базы знаний для организаций.")
+plan = [("WhatsApp-бот", "ещё один привычный мессенджер"), ("Вход через Google", "регистрация в один клик"),
+        ("Семантический поиск", "поиск по смыслу, а не только по словам"), ("Голосовые ответы", "озвучивание ответов на казахском"),
+        ("Базы знаний организаций", "общие документы для команды или колледжа")]
+for i, (t, b) in enumerate(plan):
+    y = Inches(1.9) + i * Inches(0.92)
+    dot = box(s, Inches(0.7), y + Inches(0.08), Inches(0.42), Inches(0.42), color=ACCENT, line=None, shape=MSO_SHAPE.OVAL)
+    tf = dot.text_frame
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.paragraphs[0].alignment = PP_ALIGN.CENTER
+    r = tf.paragraphs[0].add_run()
+    r.text = str(i + 1)
+    r.font.size, r.font.bold, r.font.color.rgb, r.font.name = Pt(13), True, WHITE, FONT
+    text(s, Inches(1.35), y + Inches(0.06), Inches(4.5), Inches(0.45), t, size=18, bold=True)
+    text(s, Inches(5.2), y + Inches(0.1), Inches(7.4), Inches(0.45), b, size=15, color=MUTED)
+
+# ---------------------------------------------------------------- 14. Спасибо
+
 s = prs.slides.add_slide(BLANK)
-rect(s, 0, 0, W, H, fill=TEAL, line=None, shape=MSO_SHAPE.RECTANGLE)
-text(s, 0, Inches(2.4), W, Inches(1.2), "Рахмет! Спасибо!", size=54, bold=True, color=WHITE, align=PP_ALIGN.CENTER)
-text(s, 0, Inches(3.7), W, Inches(1), "DocMind AI — ответы по документам с точным источником", size=22, color=WHITE,
-     align=PP_ALIGN.CENTER)
-text(s, 0, Inches(5.0), W, Inches(1), "Сайт: ____________     Telegram: @____________", size=18,
-     color=RGBColor(0xF6, 0xE8, 0xE1), align=PP_ALIGN.CENTER)
+fill(s, DARK)
+s.shapes.add_picture(str(DECK / "wordmark_white.png"), Inches(0.8), Inches(1.6), height=Inches(1.0))
+text(s, Inches(0.8), Inches(2.95), Inches(7.5), Inches(0.8), "Рахмет! Спасибо!", size=40, bold=True, color=WHITE)
+text(s, Inches(0.8), Inches(3.85), Inches(7.5), Inches(0.5), "Попробуйте Mind AI прямо сейчас", size=18, color=RGBColor(0xC8, 0xC8, 0xCE))
+text(s, Inches(0.8), Inches(4.75), Inches(7.5), Inches(1.2), [SITE, REPO], size=15, color=RGBColor(0xA9, 0xAB, 0xF8), spacing=1.5)
+box(s, Inches(9.0), Inches(1.6), Inches(3.4), Inches(3.4), color=WHITE, line=None, radius=0.08)
+s.shapes.add_picture(str(DECK / "qr_site.png"), Inches(9.25), Inches(1.85), Inches(2.9), Inches(2.9))
+text(s, Inches(9.0), Inches(5.2), Inches(3.4), Inches(0.4), "Сканируйте, чтобы открыть", size=13, color=RGBColor(0xC8, 0xC8, 0xCE), align=PP_ALIGN.CENTER)
+s.notes_slide.notes_text_frame.text = "Спасибо за внимание! Mind AI уже работает онлайн — откройте по QR-коду. Готовы ответить на вопросы."
 
-out = DOCS / "DocMind_AI_Presentation.pptx"
-prs.save(out)
-print("saved", out)
+prs.save(OUT)
+print("saved", OUT, f"({len(prs.slides)} слайдов)")
