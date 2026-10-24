@@ -1,4 +1,4 @@
-"""Веб-сервер DocMind AI: REST API + веб-интерфейс + (опционально) Telegram-бот."""
+"""Веб-сервер Mind AI AI: REST API + веб-интерфейс + (опционально) Telegram-бот."""
 import asyncio
 import json
 import logging

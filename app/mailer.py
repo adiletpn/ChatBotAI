@@ -14,8 +14,8 @@ log = logging.getLogger(__name__)
 outbox: list[dict] = []  # последние письма в режиме разработки
 
 SUBJECTS = {
-    "verify": {"kk": "DocMind: тіркелуді растау коды", "ru": "DocMind: код подтверждения", "en": "DocMind: verification code"},
-    "reset": {"kk": "DocMind: құпиясөзді қалпына келтіру", "ru": "DocMind: сброс пароля", "en": "DocMind: password reset"},
+    "verify": {"kk": "Mind AI: тіркелуді растау коды", "ru": "Mind AI: код подтверждения", "en": "Mind AI: verification code"},
+    "reset": {"kk": "Mind AI: құпиясөзді қалпына келтіру", "ru": "Mind AI: сброс пароля", "en": "Mind AI: password reset"},
 }
 BODIES = {
     "verify": {
