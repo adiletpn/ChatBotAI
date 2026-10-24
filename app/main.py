@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 from . import insights, llm, rag
 from . import mailer
+from .chats import chats
 from .auth import COOKIE, SESSION_DAYS, AuthError, limiter, public_user, users
 from .config import settings
 from .lang import format_loc
@@ -271,7 +272,7 @@ async def delete_account(body: DeleteAccountBody, request: Request):
             raise HTTPException(401, "invalid")
     owner = f"user:{user['id']}"
     store.delete_owner(owner)
-    rag.history.clear(owner)
+    chats.delete_owner(owner)
     users.delete(user)
     resp = JSONResponse({"ok": True})
     resp.delete_cookie(COOKIE)
@@ -404,6 +405,7 @@ async def evidence(chunk: str, request: Request, q: str = ""):
 class AskRequest(BaseModel):
     question: str = Field(min_length=1, max_length=4000)
     doc_ids: list[str] | None = None
+    chat_id: str | None = None
 
 
 @app.post("/api/ask")
@@ -411,22 +413,81 @@ async def ask(body: AskRequest, request: Request):
     owner = owner_of(request)
     prefs = (current_user(request) or {}).get("settings", {})
 
+    def sse(event: dict) -> str:
+        return f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
     async def events():
+        chat = chats.get(body.chat_id, owner) if body.chat_id else None
+        if not chat:
+            chat = chats.create(owner)
+            yield sse({"type": "chat", "id": chat["id"]})
+        key = f"{owner}:{chat['id']}"
+        if not rag.history.get(key):  # после перезапуска сервера восстанавливаем контекст диалога из сохранённого чата
+            msgs = chat["messages"]
+            for q, a in zip(msgs[::2], msgs[1::2]):
+                rag.history.add(key, q["text"], a["text"])
+        parts, sources, cited = [], [], []
         try:
-            async for event in rag.answer_stream(body.question, owner, owner, body.doc_ids, prefs):
-                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+            async for event in rag.answer_stream(body.question, owner, key, body.doc_ids, prefs):
+                if event["type"] == "delta":
+                    parts.append(event["text"])
+                elif event["type"] == "sources":
+                    sources = event["sources"]
+                elif event["type"] == "done":
+                    cited = event.get("cited", [])
+                yield sse(event)
         except Exception as exc:  # noqa: BLE001
             log.exception("Ошибка ответа")
-            yield f"data: {json.dumps({'type': 'error', 'message': str(exc)}, ensure_ascii=False)}\n\n"
+            yield sse({"type": "error", "message": str(exc)})
+        if parts:
+            by_n = {x["n"]: x for x in sources}
+            chats.add_exchange(chat["id"], body.question, "".join(parts).strip(), [by_n[n] for n in cited if n in by_n])
 
     return StreamingResponse(events(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
-@app.post("/api/clear")
-async def clear_history(request: Request):
-    rag.history.clear(owner_of(request))
+# ---------------------------------------------------------------- сохранённые чаты
+
+class ChatTitle(BaseModel):
+    title: str = Field(min_length=1, max_length=80)
+
+
+@app.get("/api/chats")
+async def list_chats(request: Request):
+    return chats.list(owner_of(request))
+
+
+@app.get("/api/chats/{chat_id}")
+async def get_chat(chat_id: str, request: Request):
+    chat = chats.get(chat_id, owner_of(request))
+    if not chat:
+        raise HTTPException(404, "Чат не найден")
+    return {"id": chat["id"], "title": chat["title"], "messages": chat["messages"]}
+
+
+@app.patch("/api/chats/{chat_id}")
+async def rename_chat(chat_id: str, body: ChatTitle, request: Request):
+    if not chats.rename(chat_id, owner_of(request), body.title):
+        raise HTTPException(404, "Чат не найден")
     return {"ok": True}
+
+
+@app.delete("/api/chats/{chat_id}")
+async def delete_chat(chat_id: str, request: Request):
+    owner = owner_of(request)
+    if not chats.delete(chat_id, owner):
+        raise HTTPException(404, "Чат не найден")
+    rag.history.clear(f"{owner}:{chat_id}")
+    return {"ok": True}
+
+
+@app.delete("/api/chats")
+async def delete_all_chats(request: Request):
+    owner = owner_of(request)
+    for chat in chats.list(owner):
+        rag.history.clear(f"{owner}:{chat['id']}")
+    return {"deleted": chats.delete_owner(owner)}
 
 
 def main():
