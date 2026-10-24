@@ -711,3 +711,4 @@ textarea:focus-visible, .input:focus-visible, .code-boxes input:focus-visible { 
 .confirm-card h3 { font-family: var(--display); font-size: 18px; font-weight: 700; letter-spacing: -.01em; margin: 0 0 6px; }
 .confirm-card p { color: var(--muted); font-size: 14px; margin: 0 0 18px; overflow-wrap: anywhere; }
 .confirm-card .row-actions { justify-content: flex-end; }
+a.btn { text-decoration: none; display: inline-block; }
