@@ -3,66 +3,87 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DocMind AI — Кіру</title>
+  <title>Mind AI — Кіру</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/fonts/fonts.css">
   <link rel="stylesheet" href="/static/style.css">
+  <script>
+    try { const s = JSON.parse(localStorage.getItem("mind_prefs") || "{}"); if (s.theme && s.theme !== "system") document.documentElement.dataset.theme = s.theme; } catch (_) {}
+  </script>
   <style>
-    body { min-height: 100vh; }
-    .auth { display: grid; grid-template-columns: minmax(380px, 1fr) 1.1fr; min-height: 100vh; min-height: 100dvh; }
-    .auth-form { display: flex; flex-direction: column; padding: 28px 32px; }
+    body { overflow: auto; }
+    .auth { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(400px, 1fr) 1.1fr; min-height: 100vh; min-height: 100dvh; }
+    .auth-form { display: flex; flex-direction: column; padding: 28px 36px; }
     .auth-top { display: flex; align-items: center; justify-content: space-between; }
-    .auth-brand { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-weight: 600; font-size: 20px; }
-    .auth-brand svg { width: 30px; height: 30px; color: var(--accent); }
-    .auth-box { width: 100%; max-width: 380px; margin: auto; padding: 32px 0; }
-    .auth-box h1 { font-family: var(--serif); font-weight: 500; font-size: 36px; letter-spacing: -.02em; line-height: 1.15; margin: 0 0 8px; }
-    .auth-box .sub { color: var(--muted); margin: 0 0 28px; }
-    .switch { display: flex; gap: 2px; background: var(--panel-2); border-radius: 11px; padding: 3px; margin-bottom: 22px; }
-    .switch button { flex: 1; border: 0; background: none; border-radius: 9px; padding: 7px; font-weight: 500; color: var(--muted); font-size: 14px; }
-    .switch button.active { background: var(--panel); color: var(--text); box-shadow: var(--shadow); }
-    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-    .field label { font-size: 13px; font-weight: 500; color: var(--muted); }
-    .field .wrap { position: relative; }
-    .field input { width: 100%; font: inherit; font-size: 15px; color: var(--text); background: var(--panel); border: 1px solid var(--border); border-radius: 11px; padding: 11px 13px; outline: 0; transition: border-color .15s, box-shadow .15s; }
-    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-    .field .eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: none; color: var(--faint); font-size: 12px; font-weight: 500; padding: 6px 8px; border-radius: 7px; }
-    .field .eye:hover { color: var(--text); background: var(--hover); }
-    .field[hidden] { display: none; }
-    .error { color: var(--bad); background: var(--bad-soft); border-radius: 10px; padding: 9px 12px; font-size: 13.5px; margin-bottom: 14px; }
-    .error[hidden] { display: none; }
-    .primary { width: 100%; border: 0; background: var(--text); color: var(--bg); border-radius: 11px; padding: 12px; font-weight: 600; font-size: 15px; margin-top: 6px; transition: opacity .15s; }
-    .primary:hover { opacity: .88; }
-    .primary:disabled { opacity: .5; }
+    .auth-brand { display: flex; align-items: center; gap: 10px; }
+    .auth-brand img { width: 34px; height: 34px; }
+    .lang-mini { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--glass); backdrop-filter: blur(14px); border: 1px solid var(--border); }
+    .lang-mini button { border: 0; background: none; padding: 4px 9px; border-radius: 9px; font-size: 12px; font-weight: 600; color: var(--faint); }
+    .lang-mini button.active { background: var(--solid); color: var(--text); box-shadow: var(--shadow); }
+    .auth-box { width: 100%; max-width: 400px; margin: auto; padding: 28px 0; animation: rise .4s ease both; }
+    .auth-box h1 { font-family: var(--display); font-weight: 700; font-size: 34px; letter-spacing: -.035em; line-height: 1.12; margin: 0 0 8px; }
+    .auth-box .sub { color: var(--muted); margin: 0 0 26px; }
+    .auth-box .sub b { color: var(--text); font-weight: 600; }
+    .switch-mode { display: flex; gap: 2px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 13px; padding: 3px; margin-bottom: 22px; }
+    .switch-mode button { flex: 1; border: 0; background: none; border-radius: 10px; padding: 8px; font-weight: 600; color: var(--muted); font-size: 14px; }
+    .switch-mode button.active { background: var(--solid); color: var(--text); box-shadow: var(--shadow); }
+    .pw-wrap { position: relative; }
+    .pw-wrap .eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: none; color: var(--faint); font-size: 12px; font-weight: 600; padding: 6px 8px; border-radius: 8px; }
+    .pw-wrap .eye:hover { color: var(--text); background: var(--hover); }
+    .meter { display: flex; gap: 4px; margin-top: 8px; }
+    .meter i { flex: 1; height: 4px; border-radius: 99px; background: var(--panel-2); transition: background .2s; }
+    .meter[data-s="1"] i:nth-child(-n+1) { background: var(--bad); }
+    .meter[data-s="2"] i:nth-child(-n+2) { background: var(--warn); }
+    .meter[data-s="3"] i:nth-child(-n+3) { background: #5b8cff; }
+    .meter[data-s="4"] i { background: var(--ok); }
+    .rules { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--faint); }
+    .rules li::before { content: "○ "; }
+    .rules li.ok { color: var(--ok); }
+    .rules li.ok::before { content: "● "; }
+    .msg-box { border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin-bottom: 14px; }
+    .msg-box.err { color: var(--bad); background: var(--bad-soft); }
+    .msg-box.info { color: var(--text); background: var(--accent-soft); }
+    .msg-box[hidden], .field[hidden], [hidden] { display: none !important; }
+    .primary { width: 100%; margin-top: 6px; padding: 12px; font-size: 15px; }
+    .link { border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 13.5px; padding: 0; }
+    .link:hover { text-decoration: underline; }
+    .link:disabled { color: var(--faint); text-decoration: none; cursor: default; }
+    .row-between { display: flex; justify-content: flex-end; margin: -4px 0 14px; }
     .or { display: flex; align-items: center; gap: 12px; color: var(--faint); font-size: 12.5px; margin: 20px 0; }
     .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--border); }
-    .guest { width: 100%; border: 1px solid var(--border); background: transparent; border-radius: 11px; padding: 11px; font-weight: 500; font-size: 14.5px; }
-    .guest:hover { background: var(--hover); }
+    .guest { width: 100%; padding: 11px; }
     .fine { color: var(--faint); font-size: 12px; text-align: center; margin-top: 18px; }
+    .code-boxes { display: flex; gap: 8px; justify-content: space-between; margin: 4px 0 16px; }
+    .code-boxes input { width: 100%; max-width: 56px; height: 62px; text-align: center; font-family: var(--display); font-size: 24px; font-weight: 700; border-radius: 14px; padding: 0; }
+    .back { margin-top: 16px; text-align: center; }
 
-    .auth-art { background: var(--sidebar); display: flex; flex-direction: column; justify-content: center; padding: 56px; position: relative; overflow: hidden; }
-    .auth-art::after { content: ""; position: absolute; width: 520px; height: 520px; right: -160px; bottom: -200px; border-radius: 50%; background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%); }
+    .auth-art { position: relative; margin: 12px 12px 12px 0; border-radius: 28px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; padding: 56px; background: var(--glass); backdrop-filter: blur(24px) saturate(150%); -webkit-backdrop-filter: blur(24px) saturate(150%); border: 1px solid var(--border); }
+    .auth-art::before { content: ""; position: absolute; width: 420px; height: 420px; right: -120px; top: -120px; border-radius: 50%; background: var(--blob-1); filter: blur(70px); }
+    .auth-art::after { content: ""; position: absolute; width: 380px; height: 380px; left: -100px; bottom: -140px; border-radius: 50%; background: var(--blob-2); filter: blur(70px); }
     .art-inner { max-width: 520px; position: relative; z-index: 1; }
-    .art-quote { font-family: var(--serif); font-size: 34px; line-height: 1.25; letter-spacing: -.015em; margin: 0 0 30px; }
-    .art-quote em { color: var(--accent); font-style: italic; }
-    .art-demo { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); font-size: 14px; }
-    .art-q { background: var(--panel-2); border-radius: 12px; padding: 8px 12px; margin-left: auto; width: fit-content; max-width: 85%; margin-bottom: 12px; }
+    .art-quote { font-family: var(--display); font-weight: 700; font-size: 38px; line-height: 1.12; letter-spacing: -.035em; margin: 0 0 30px; }
+    .art-quote em { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .art-demo { background: var(--glass-strong); border: 1px solid var(--border); border-radius: 20px; padding: 18px; box-shadow: var(--shadow-lg); font-size: 14px; }
+    .art-q { background: var(--grad); color: #fff; border-radius: 14px 14px 4px 14px; padding: 8px 12px; margin-left: auto; width: fit-content; max-width: 85%; margin-bottom: 12px; }
     .art-a { display: flex; gap: 10px; }
-    .art-a svg { width: 22px; height: 22px; color: var(--accent); flex: none; margin-top: 2px; }
-    .art-a mark { background: var(--mark); color: var(--text); border-radius: 3px; padding: 0 2px; }
-    .art-src { display: inline-flex; gap: 6px; align-items: center; margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 3px 9px; font-size: 12px; color: var(--muted); }
-    .art-list { list-style: none; padding: 0; margin: 26px 0 0; display: flex; flex-direction: column; gap: 10px; color: var(--muted); font-size: 14px; }
+    .art-a img { width: 26px; height: 26px; flex: none; margin-top: 1px; }
+    .art-a mark { background: var(--mark); color: var(--text); border-radius: 4px; padding: 0 3px; }
+    .art-src { display: inline-flex; gap: 6px; align-items: center; margin-top: 10px; border: 1px solid var(--border); border-radius: 9px; padding: 3px 9px; font-size: 12px; color: var(--muted); }
+    .art-src b { color: var(--accent); }
+    .art-list { list-style: none; padding: 0; margin: 28px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; color: var(--muted); font-size: 14px; }
     .art-list li { display: flex; gap: 10px; align-items: center; }
     .art-list svg { color: var(--accent); }
-    @media (max-width: 880px) {
+    @media (max-width: 900px) {
       .auth { grid-template-columns: 1fr; }
       .auth-art { display: none; }
-      .auth-form { padding: 20px 18px; }
-      .auth-box h1 { font-size: 30px; }
+      .auth-form { padding: 18px; }
+      .auth-box h1 { font-size: 28px; }
     }
   </style>
 </head>
 <body>
+<div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-logo" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14.5" fill="currentColor"/><circle cx="16" cy="16" r="9.2" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M12.6 7.4c-1.2 5.7-1.2 11.5 0 17.2M19.4 7.4c1.2 5.7 1.2 11.5 0 17.2M7.4 12.6c5.7-1.2 11.5-1.2 17.2 0M7.4 19.4c5.7 1.2 11.5 1.2 17.2 0" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path class="ico" d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11z"/><circle class="ico" cx="12" cy="10" r="2.2"/></symbol>
   <symbol id="i-globe" viewBox="0 0 24 24"><circle class="ico" cx="12" cy="12" r="9"/><path class="ico" d="M3 12h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3z"/></symbol>
   <symbol id="i-quiz" viewBox="0 0 24 24"><path class="ico" d="m2.5 9 9.5-5 9.5 5-9.5 5zM6.5 11.2V16c3 2.2 8 2.2 11 0v-4.8M21.5 9v5"/></symbol>
@@ -72,44 +93,67 @@
 <div class="auth">
   <section class="auth-form">
     <div class="auth-top">
-      <div class="auth-brand"><svg><use href="#i-logo"/></svg>DocMind</div>
-      <div class="lang-switch" id="langSwitch">
-        <button data-lang="kk">ҚАЗ</button><button data-lang="ru">РУС</button><button data-lang="en">ENG</button>
-      </div>
+      <div class="auth-brand"><img src="/static/favicon.svg" alt=""><span class="brand-name">Mind <em>AI</em></span></div>
+      <div class="lang-mini" id="langSwitch"><button data-lang="kk">ҚАЗ</button><button data-lang="ru">РУС</button><button data-lang="en">ENG</button></div>
     </div>
 
     <div class="auth-box">
-      <h1 data-t="title"></h1>
-      <p class="sub" data-t="sub"></p>
-
-      <div class="switch" id="modeSwitch">
-        <button type="button" data-mode="login" class="active" data-t="login"></button>
-        <button type="button" data-mode="register" data-t="register"></button>
+      <div id="paneMain">
+        <h1 id="mainTitle"></h1>
+        <p class="sub" id="mainSub"></p>
+        <div class="switch-mode" id="modeSwitch">
+          <button type="button" data-mode="login" data-t="login"></button>
+          <button type="button" data-mode="register" data-t="register"></button>
+        </div>
+        <form id="mainForm" novalidate>
+          <div class="field" id="nameField"><label for="name" data-t="name"></label><input class="input" id="name" autocomplete="name" maxlength="60"></div>
+          <div class="field"><label for="email" data-t="email"></label><input class="input" id="email" type="email" autocomplete="email" autocapitalize="off" spellcheck="false" maxlength="120"></div>
+          <div class="field">
+            <label for="password" data-t="password"></label>
+            <div class="pw-wrap"><input class="input" id="password" type="password" maxlength="128"><button type="button" class="eye" data-eye="password"></button></div>
+            <div id="pwHelp"><div class="meter" id="meter"><i></i><i></i><i></i><i></i></div>
+              <ul class="rules"><li data-rule="len" data-t="r_len"></li><li data-rule="letter" data-t="r_letter"></li><li data-rule="digit" data-t="r_digit"></li></ul></div>
+          </div>
+          <div class="field" id="confirmField"><label for="password2" data-t="password2"></label><input class="input" id="password2" type="password" autocomplete="new-password" maxlength="128"></div>
+          <div class="row-between" id="forgotRow"><button type="button" class="link" id="forgotLink" data-t="forgot"></button></div>
+          <div class="msg-box err" id="mainErr" hidden></div>
+          <button class="btn primary" id="mainSubmit" type="submit"></button>
+        </form>
+        <div class="or" data-t="or"></div>
+        <button class="btn ghost guest" id="guest" type="button" data-t="guest"></button>
+        <p class="fine" data-t="fine"></p>
       </div>
 
-      <form id="form" novalidate>
-        <div class="field" id="nameField" hidden>
-          <label for="name" data-t="name"></label>
-          <div class="wrap"><input id="name" autocomplete="name" maxlength="60"></div>
-        </div>
-        <div class="field">
-          <label for="username" data-t="username"></label>
-          <div class="wrap"><input id="username" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="32" required></div>
-        </div>
-        <div class="field">
-          <label for="password" data-t="password"></label>
-          <div class="wrap">
-            <input id="password" type="password" autocomplete="current-password" maxlength="128" required>
-            <button type="button" class="eye" id="eye" data-t="show"></button>
+      <div id="paneCode" hidden>
+        <h1 id="codeTitle"></h1>
+        <p class="sub" id="codeSub"></p>
+        <form id="codeForm" novalidate>
+          <div class="code-boxes" id="codeBoxes">
+            <input class="input" inputmode="numeric" maxlength="1" autocomplete="one-time-code"><input class="input" inputmode="numeric" maxlength="1"><input class="input" inputmode="numeric" maxlength="1"><input class="input" inputmode="numeric" maxlength="1"><input class="input" inputmode="numeric" maxlength="1"><input class="input" inputmode="numeric" maxlength="1">
           </div>
-        </div>
-        <div class="error" id="error" hidden></div>
-        <button class="primary" id="submit" type="submit"></button>
-      </form>
+          <div class="field" id="newPwField">
+            <label for="newPassword" data-t="new_password"></label>
+            <div class="pw-wrap"><input class="input" id="newPassword" type="password" autocomplete="new-password" maxlength="128"><button type="button" class="eye" data-eye="newPassword"></button></div>
+            <div class="meter" id="meter2"><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="msg-box info" id="codeInfo" hidden></div>
+          <div class="msg-box err" id="codeErr" hidden></div>
+          <button class="btn primary" id="codeSubmit" type="submit"></button>
+        </form>
+        <div class="back"><button type="button" class="link" id="resend"></button></div>
+        <div class="back"><button type="button" class="link" id="backLink" data-t="back"></button></div>
+      </div>
 
-      <div class="or" data-t="or"></div>
-      <button class="guest" id="guest" type="button" data-t="guest"></button>
-      <p class="fine" data-t="fine"></p>
+      <div id="paneForgot" hidden>
+        <h1 data-t="forgot_title"></h1>
+        <p class="sub" data-t="forgot_sub"></p>
+        <form id="forgotForm" novalidate>
+          <div class="field"><label for="forgotEmail" data-t="email"></label><input class="input" id="forgotEmail" type="email" autocomplete="email" maxlength="120"></div>
+          <div class="msg-box err" id="forgotErr" hidden></div>
+          <button class="btn primary" type="submit" data-t="send_code"></button>
+        </form>
+        <div class="back"><button type="button" class="link" id="forgotBack" data-t="back"></button></div>
+      </div>
     </div>
   </section>
 
@@ -118,7 +162,7 @@
       <p class="art-quote" data-t="quote"></p>
       <div class="art-demo">
         <div class="art-q" data-t="demo_q"></div>
-        <div class="art-a"><svg><use href="#i-logo"/></svg><div><span data-t="demo_a1"></span> <mark data-t="demo_mark"></mark> <span data-t="demo_a2"></span>
+        <div class="art-a"><img src="/static/favicon.svg" alt=""><div><span data-t="demo_a"></span>
           <div class="art-src"><svg width="14" height="14"><use href="#i-pin"/></svg><span data-t="demo_src"></span></div></div></div>
       </div>
       <ul class="art-list">
@@ -135,116 +179,282 @@
 "use strict";
 const T = {
   kk: {
-    title: "Қош келдіңіз", sub: "Құжаттарыңызбен жұмысты жалғастыру үшін кіріңіз.",
-    login: "Кіру", register: "Тіркелу", name: "Атыңыз", username: "Логин", password: "Құпиясөз",
-    show: "Көрсету", hide: "Жасыру", or: "немесе", guest: "Қонақ ретінде кіру",
-    fine: "Құпиясөздер шифрланған күйде сақталады. Құжаттарыңызды тек сіз көресіз.",
-    submit_login: "Кіру", submit_register: "Аккаунт құру",
+    login_title: "Қайта қош келдіңіз", login_sub: "Құжаттарыңызбен жұмысты жалғастыру үшін кіріңіз.",
+    register_title: "Аккаунт құру", register_sub: "Бір минутта тіркеліп, кез келген құжатпен сөйлесіңіз.",
+    login: "Кіру", register: "Тіркелу", name: "Атыңыз", email: "Email", password: "Құпиясөз", password2: "Құпиясөзді қайталаңыз",
+    new_password: "Жаңа құпиясөз", show: "Көрсету", hide: "Жасыру", forgot: "Құпиясөзді ұмыттыңыз ба?", or: "немесе",
+    guest: "Қонақ ретінде кіру", fine: "Құпиясөздер шифрланған күйде сақталады. Құжаттарыңызды тек сіз көресіз.",
+    submit_login: "Кіру", submit_register: "Аккаунт құру", r_len: "8+ таңба", r_letter: "әріптер", r_digit: "сандар",
+    code_title: "Поштаңызды тексеріңіз", code_sub: "6 таңбалы кодты жібердік:", verify: "Растау",
+    reset_title: "Жаңа құпиясөз", reset_sub: "Хаттағы код пен жаңа құпиясөзді енгізіңіз:", reset_btn: "Құпиясөзді сақтау",
+    resend: "Кодты қайта жіберу", resend_in: "Қайта жіберу {s} с кейін", back: "← Артқа", sent: "Жаңа код жіберілді",
+    forgot_title: "Құпиясөзді қалпына келтіру", forgot_sub: "Email-ді енгізіңіз — қалпына келтіру кодын жібереміз.", send_code: "Код жіберу",
+    console_note: "Әзірлеу режимі: код сервер консолінде көрсетілген.",
     quote: "Құжатыңыз <em>сөйлей</em> бастайды.",
-    demo_q: "Финал қашан өтеді?", demo_a1: "Чемпионаттың финалдық кезеңі", demo_mark: "2026 жылғы 14 қарашада", demo_a2: "өтеді [1].",
-    demo_src: "Ереже.pdf · бет 1",
-    li1: "Әр жауап — бетке сілтемесімен", li2: "Қазақша, орысша, ағылшынша", li3: "Сканерлер мен фотоларды оқиды", li4: "Құжат бойынша білімді тексеру",
-    err_invalid: "Логин немесе құпиясөз қате.", err_username: "Логин: 3–32 таңба, латын әріптері, сандар, _ . -",
-    err_password_short: "Құпиясөз кемінде 6 таңбадан тұруы керек.", err_username_taken: "Бұл логин бос емес.",
-    err_empty: "Логин мен құпиясөзді енгізіңіз.", err_net: "Серверге қосылу мүмкін болмады.",
+    demo_q: "Шарттың мерзімі қашан аяқталады?", demo_a: "Шарт <mark>2027 жылғы 31 желтоқсанға дейін</mark> күшінде болады [1].",
+    demo_src: "Шарт.pdf · <b>бет 3</b>",
+    li1: "Әр жауап — бетке сілтемесімен", li2: "Қазақша, орысша, ағылшынша", li3: "Сканерлер мен фотоларды оқиды", li4: "Білімді тексеру тесттері",
+    err_invalid: "Email немесе құпиясөз қате.", err_email_invalid: "Email дұрыс емес.", err_email_disposable: "Уақытша пошталарға тыйым салынған.",
+    err_email_taken: "Бұл email тіркелген. Кіріңіз немесе құпиясөзді қалпына келтіріңіз.", err_name_invalid: "Атыңызды енгізіңіз.",
+    err_password_short: "Құпиясөз кемінде 8 таңба болуы керек.", err_password_weak: "Құпиясөзде әріптер мен сандар болуы керек.",
+    err_mismatch: "Құпиясөздер сәйкес келмейді.", err_locked: "Тым көп сәтсіз әрекет. 15 минуттан кейін қайталаңыз.",
+    err_too_many: "Тым көп сұрау. Кейінірек қайталаңыз.", err_wait: "Жаңа кодты бір минуттан кейін сұраңыз.",
+    err_code_invalid: "Код қате.", err_code_expired: "Кодтың мерзімі өтті — жаңасын сұраңыз.",
+    err_mail_failed: "Хат жіберілмеді. Кейінірек қайталаңыз.", err_empty: "Барлық өрістерді толтырыңыз.", err_net: "Серверге қосылу мүмкін болмады.",
   },
   ru: {
-    title: "С возвращением", sub: "Войдите, чтобы продолжить работу с документами.",
-    login: "Вход", register: "Регистрация", name: "Ваше имя", username: "Логин", password: "Пароль",
-    show: "Показать", hide: "Скрыть", or: "или", guest: "Войти как гость",
-    fine: "Пароли хранятся в зашифрованном виде. Ваши документы видите только вы.",
-    submit_login: "Войти", submit_register: "Создать аккаунт",
+    login_title: "С возвращением", login_sub: "Войдите, чтобы продолжить работу с документами.",
+    register_title: "Создайте аккаунт", register_sub: "Регистрация за минуту — и можно общаться с любым документом.",
+    login: "Вход", register: "Регистрация", name: "Ваше имя", email: "Email", password: "Пароль", password2: "Повторите пароль",
+    new_password: "Новый пароль", show: "Показать", hide: "Скрыть", forgot: "Забыли пароль?", or: "или",
+    guest: "Войти как гость", fine: "Пароли хранятся в зашифрованном виде. Ваши документы видите только вы.",
+    submit_login: "Войти", submit_register: "Создать аккаунт", r_len: "8+ символов", r_letter: "буквы", r_digit: "цифры",
+    code_title: "Проверьте почту", code_sub: "Мы отправили 6-значный код на", verify: "Подтвердить",
+    reset_title: "Новый пароль", reset_sub: "Введите код из письма и новый пароль для", reset_btn: "Сохранить пароль",
+    resend: "Отправить код ещё раз", resend_in: "Повторно через {s} с", back: "← Назад", sent: "Новый код отправлен",
+    forgot_title: "Восстановление пароля", forgot_sub: "Введите email — мы пришлём код для сброса пароля.", send_code: "Отправить код",
+    console_note: "Режим разработки: код выведен в консоль сервера.",
     quote: "Ваш документ <em>заговорит</em>.",
-    demo_q: "Когда пройдёт финал?", demo_a1: "Финальный этап чемпионата пройдёт", demo_mark: "14 ноября 2026 года", demo_a2: "[1].",
-    demo_src: "Ереже.pdf · стр. 1",
-    li1: "Каждый ответ — со ссылкой на страницу", li2: "Казахский, русский, английский", li3: "Читает сканы и фото", li4: "Проверка знаний по документу",
-    err_invalid: "Неверный логин или пароль.", err_username: "Логин: 3–32 символа, латиница, цифры, _ . -",
-    err_password_short: "Пароль должен быть не короче 6 символов.", err_username_taken: "Этот логин уже занят.",
-    err_empty: "Введите логин и пароль.", err_net: "Не удалось подключиться к серверу.",
+    demo_q: "Когда истекает срок договора?", demo_a: "Договор действует <mark>до 31 декабря 2027 года</mark> [1].",
+    demo_src: "Договор.pdf · <b>стр. 3</b>",
+    li1: "Каждый ответ — со ссылкой на страницу", li2: "Казахский, русский, английский", li3: "Читает сканы и фото", li4: "Тесты для проверки знаний",
+    err_invalid: "Неверный email или пароль.", err_email_invalid: "Некорректный email.", err_email_disposable: "Одноразовые почтовые ящики запрещены.",
+    err_email_taken: "Этот email уже зарегистрирован. Войдите или восстановите пароль.", err_name_invalid: "Введите имя.",
+    err_password_short: "Пароль должен быть не короче 8 символов.", err_password_weak: "В пароле должны быть буквы и цифры.",
+    err_mismatch: "Пароли не совпадают.", err_locked: "Слишком много неудачных попыток. Попробуйте через 15 минут.",
+    err_too_many: "Слишком много запросов. Попробуйте позже.", err_wait: "Новый код можно запросить через минуту.",
+    err_code_invalid: "Неверный код.", err_code_expired: "Код истёк — запросите новый.",
+    err_mail_failed: "Не удалось отправить письмо. Попробуйте позже.", err_empty: "Заполните все поля.", err_net: "Не удалось подключиться к серверу.",
   },
   en: {
-    title: "Welcome back", sub: "Sign in to continue working with your documents.",
-    login: "Sign in", register: "Sign up", name: "Your name", username: "Username", password: "Password",
-    show: "Show", hide: "Hide", or: "or", guest: "Continue as guest",
-    fine: "Passwords are stored hashed. Only you can see your documents.",
-    submit_login: "Sign in", submit_register: "Create account",
+    login_title: "Welcome back", login_sub: "Sign in to continue working with your documents.",
+    register_title: "Create your account", register_sub: "Sign up in a minute and talk to any document.",
+    login: "Sign in", register: "Sign up", name: "Your name", email: "Email", password: "Password", password2: "Repeat password",
+    new_password: "New password", show: "Show", hide: "Hide", forgot: "Forgot password?", or: "or",
+    guest: "Continue as guest", fine: "Passwords are stored hashed. Only you can see your documents.",
+    submit_login: "Sign in", submit_register: "Create account", r_len: "8+ characters", r_letter: "letters", r_digit: "digits",
+    code_title: "Check your email", code_sub: "We sent a 6-digit code to", verify: "Verify",
+    reset_title: "New password", reset_sub: "Enter the code from the email and a new password for", reset_btn: "Save password",
+    resend: "Resend code", resend_in: "Resend in {s}s", back: "← Back", sent: "A new code has been sent",
+    forgot_title: "Reset password", forgot_sub: "Enter your email and we will send you a reset code.", send_code: "Send code",
+    console_note: "Development mode: the code is printed in the server console.",
     quote: "Your documents <em>start talking</em>.",
-    demo_q: "When is the final?", demo_a1: "The final stage of the championship takes place on", demo_mark: "14 November 2026", demo_a2: "[1].",
-    demo_src: "Ereje.pdf · p. 1",
-    li1: "Every answer links to its page", li2: "Kazakh, Russian, English", li3: "Reads scans and photos", li4: "Knowledge check on any document",
-    err_invalid: "Wrong username or password.", err_username: "Username: 3–32 chars — letters, digits, _ . -",
-    err_password_short: "Password must be at least 6 characters.", err_username_taken: "This username is taken.",
-    err_empty: "Enter your username and password.", err_net: "Could not reach the server.",
+    demo_q: "When does the contract expire?", demo_a: "The contract is valid <mark>until 31 December 2027</mark> [1].",
+    demo_src: "Contract.pdf · <b>p. 3</b>",
+    li1: "Every answer links to its page", li2: "Kazakh, Russian, English", li3: "Reads scans and photos", li4: "Knowledge check quizzes",
+    err_invalid: "Wrong email or password.", err_email_invalid: "Invalid email.", err_email_disposable: "Disposable email services are not allowed.",
+    err_email_taken: "This email is already registered. Sign in or reset your password.", err_name_invalid: "Enter your name.",
+    err_password_short: "Password must be at least 8 characters.", err_password_weak: "Password must contain letters and digits.",
+    err_mismatch: "Passwords do not match.", err_locked: "Too many failed attempts. Try again in 15 minutes.",
+    err_too_many: "Too many requests. Try again later.", err_wait: "You can request a new code in a minute.",
+    err_code_invalid: "Wrong code.", err_code_expired: "The code has expired — request a new one.",
+    err_mail_failed: "Could not send the email. Try again later.", err_empty: "Please fill in all fields.", err_net: "Could not reach the server.",
   },
 };
 const $ = (s) => document.querySelector(s);
-let lang = "kk", mode = "login";
-try { lang = localStorage.getItem("docmind_lang") || ((navigator.language || "").startsWith("ru") ? "ru" : "kk"); } catch (_) {}
+let lang = "kk", mode = "login", codeKind = "verify", codeEmail = "", cooldown = 0, timer = null;
+try {
+  const nav = navigator.language || "";
+  lang = localStorage.getItem("mind_lang") || (nav.startsWith("ru") ? "ru" : nav.startsWith("en") ? "en" : "kk");
+} catch (_) {}
 if (!T[lang]) lang = "kk";
-const t = (k) => T[lang][k] || T.ru[k] || k;
+const t = (k) => T[lang][k] ?? T.ru[k] ?? k;
+const has = (k) => k in T[lang] || k in T.ru;
+
+function show(pane) {
+  for (const id of ["paneMain", "paneCode", "paneForgot"]) $("#" + id).hidden = id !== pane;
+  document.querySelectorAll(".msg-box").forEach((el) => (el.hidden = true));
+  const first = $("#" + pane).querySelector("input");
+  if (first) setTimeout(() => first.focus(), 30);
+}
 
 function render() {
   document.documentElement.lang = lang;
-  document.querySelectorAll("[data-t]").forEach((el) => {
-    if (el.id === "eye") return;
-    el.innerHTML = t(el.dataset.t);
-  });
-  $("#eye").textContent = $("#password").type === "password" ? t("show") : t("hide");
-  $("#submit").textContent = t(mode === "login" ? "submit_login" : "submit_register");
-  $("#nameField").hidden = mode !== "register";
-  $("#password").autocomplete = mode === "login" ? "current-password" : "new-password";
+  document.querySelectorAll("[data-t]").forEach((el) => (el.innerHTML = t(el.dataset.t)));
+  document.querySelectorAll("[data-eye]").forEach((b) => (b.textContent = $("#" + b.dataset.eye).type === "password" ? t("show") : t("hide")));
+  const reg = mode === "register";
+  $("#mainTitle").textContent = t(reg ? "register_title" : "login_title");
+  $("#mainSub").textContent = t(reg ? "register_sub" : "login_sub");
+  $("#mainSubmit").textContent = t(reg ? "submit_register" : "submit_login");
+  $("#nameField").hidden = $("#confirmField").hidden = $("#pwHelp").hidden = !reg;
+  $("#forgotRow").hidden = reg;
+  $("#password").autocomplete = reg ? "new-password" : "current-password";
+  $("#codeTitle").textContent = t(codeKind === "reset" ? "reset_title" : "code_title");
+  $("#codeSub").innerHTML = `${t(codeKind === "reset" ? "reset_sub" : "code_sub")} <b>${codeEmail.replace(/</g, "&lt;")}</b>`;
+  $("#codeSubmit").textContent = t(codeKind === "reset" ? "reset_btn" : "verify");
+  $("#newPwField").hidden = codeKind !== "reset";
+  $("#resend").textContent = cooldown > 0 ? t("resend_in").replace("{s}", cooldown) : t("resend");
+  $("#resend").disabled = cooldown > 0;
   document.querySelectorAll("#langSwitch button").forEach((b) => b.classList.toggle("active", b.dataset.lang === lang));
   document.querySelectorAll("#modeSwitch button").forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
 }
 
-function showError(key) {
-  $("#error").textContent = t("err_" + key) || t("err_invalid");
-  $("#error").hidden = false;
+// надёжность пароля: длина, буквы, цифры, разнообразие
+function strength(pw) {
+  const rules = { len: pw.length >= 8, letter: /\p{L}/u.test(pw), digit: /\d/.test(pw) };
+  let score = Object.values(rules).filter(Boolean).length;
+  if (score === 3 && (pw.length >= 12 || /[^\p{L}\d]/u.test(pw))) score = 4;
+  return { rules, score: pw ? Math.max(1, score) : 0 };
 }
 
-async function send(url, body) {
-  $("#submit").disabled = $("#guest").disabled = true;
-  $("#error").hidden = true;
-  try {
-    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) });
-    if (res.ok) { location.href = "/"; return; }
-    let detail = "invalid";
-    try { detail = (await res.json()).detail; } catch (_) {}
-    showError(typeof detail === "string" && T.ru["err_" + detail] ? detail : "invalid");
-  } catch (_) {
-    showError("net");
-  } finally {
-    $("#submit").disabled = $("#guest").disabled = false;
+function err(box, key) {
+  box.textContent = has("err_" + key) ? t("err_" + key) : t("err_invalid");
+  box.hidden = false;
+}
+
+async function post(url, body) {
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) });
+  let data = {};
+  try { data = await res.json(); } catch (_) {}
+  return { ok: res.ok, data, code: typeof data.detail === "string" ? data.detail : "invalid" };
+}
+
+function startCooldown() {
+  cooldown = 60;
+  clearInterval(timer);
+  timer = setInterval(() => { cooldown -= 1; if (cooldown <= 0) clearInterval(timer); render(); }, 1000);
+  render();
+}
+
+function openCode(kind, email, mail) {
+  codeKind = kind;
+  codeEmail = email;
+  boxes.forEach((i) => (i.value = ""));
+  $("#newPassword").value = "";
+  render();
+  show("paneCode");
+  if (mail === "console") { $("#codeInfo").textContent = t("console_note"); $("#codeInfo").hidden = false; }
+  startCooldown();
+}
+
+function busy(on) { document.querySelectorAll("button[type=submit], #guest").forEach((b) => (b.disabled = on)); }
+
+// ---------- вход / регистрация
+$("#mainForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const box = $("#mainErr");
+  box.hidden = true;
+  const email = $("#email").value.trim(), password = $("#password").value;
+  if (!email || !password || (mode === "register" && !$("#name").value.trim())) return err(box, "empty");
+  if (mode === "register") {
+    const s = strength(password);
+    if (!s.rules.len) return err(box, "password_short");
+    if (!s.rules.letter || !s.rules.digit) return err(box, "password_weak");
+    if (password !== $("#password2").value) return err(box, "mismatch");
   }
-}
+  busy(true);
+  try {
+    if (mode === "register") {
+      const r = await post("/api/auth/register", { name: $("#name").value.trim(), email, password, lang });
+      if (r.ok) return openCode("verify", r.data.email, r.data.mail);
+      err(box, r.code);
+    } else {
+      const r = await post("/api/auth/login", { email, password });
+      if (r.ok) { location.href = "/"; return; }
+      if (r.code === "not_verified") {
+        const s = await post("/api/auth/send-code", { email, kind: "verify", lang });
+        return openCode("verify", email, s.data.mail);
+      }
+      err(box, r.code);
+    }
+  } catch (_) { err(box, "net"); } finally { busy(false); }
+};
 
+// ---------- код из 6 цифр
+const boxes = [...document.querySelectorAll("#codeBoxes input")];
+boxes.forEach((input, i) => {
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/\D/g, "").slice(-1);
+    if (input.value && boxes[i + 1]) boxes[i + 1].focus();
+    if (boxes.every((b) => b.value) && codeKind === "verify") $("#codeForm").requestSubmit();
+  });
+  input.addEventListener("keydown", (e) => { if (e.key === "Backspace" && !input.value && boxes[i - 1]) boxes[i - 1].focus(); });
+  input.addEventListener("paste", (e) => {
+    const digits = (e.clipboardData.getData("text") || "").replace(/\D/g, "").slice(0, 6);
+    if (!digits) return;
+    e.preventDefault();
+    digits.split("").forEach((d, k) => { if (boxes[k]) boxes[k].value = d; });
+    (boxes[digits.length] || boxes[5]).focus();
+    if (digits.length === 6 && codeKind === "verify") $("#codeForm").requestSubmit();
+  });
+});
+
+$("#codeForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const box = $("#codeErr");
+  box.hidden = true;
+  const code = boxes.map((b) => b.value).join("");
+  if (code.length !== 6) return err(box, "code_invalid");
+  let r;
+  if (codeKind === "reset") {
+    const pw = $("#newPassword").value, s = strength(pw);
+    if (!s.rules.len) return err(box, "password_short");
+    if (!s.rules.letter || !s.rules.digit) return err(box, "password_weak");
+    busy(true);
+    r = await post("/api/auth/reset", { email: codeEmail, code, password: pw }).catch(() => ({ code: "net" }));
+  } else {
+    busy(true);
+    r = await post("/api/auth/verify", { email: codeEmail, code }).catch(() => ({ code: "net" }));
+  }
+  busy(false);
+  if (r.ok) { location.href = "/"; return; }
+  err(box, r.code);
+};
+
+$("#resend").onclick = async () => {
+  const r = await post("/api/auth/send-code", { email: codeEmail, kind: codeKind, lang }).catch(() => ({ code: "net" }));
+  if (r.ok) { $("#codeInfo").textContent = t("sent"); $("#codeInfo").hidden = false; startCooldown(); }
+  else err($("#codeErr"), r.code);
+};
+
+// ---------- забыли пароль
+$("#forgotLink").onclick = () => { $("#forgotEmail").value = $("#email").value; show("paneForgot"); };
+$("#forgotForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const email = $("#forgotEmail").value.trim();
+  if (!email) return err($("#forgotErr"), "empty");
+  busy(true);
+  const r = await post("/api/auth/send-code", { email, kind: "reset", lang }).catch(() => ({ code: "net" }));
+  busy(false);
+  if (!r.ok) return err($("#forgotErr"), r.code);
+  openCode("reset", email, r.data.mail);  // ответ одинаковый, даже если такого email нет
+};
+
+// ---------- прочее
+$("#guest").onclick = async () => {
+  busy(true);
+  const r = await post("/api/auth/guest").catch(() => ({ code: "net" }));
+  if (r.ok) { location.href = "/"; return; }
+  err($("#mainErr"), r.code);
+  busy(false);
+};
+$("#password").addEventListener("input", () => {
+  const s = strength($("#password").value);
+  $("#meter").dataset.s = s.score;
+  document.querySelectorAll("[data-rule]").forEach((li) => li.classList.toggle("ok", s.rules[li.dataset.rule]));
+});
+$("#newPassword").addEventListener("input", () => { $("#meter2").dataset.s = strength($("#newPassword").value).score; });
+document.querySelectorAll("[data-eye]").forEach((b) => (b.onclick = () => {
+  const input = $("#" + b.dataset.eye);
+  input.type = input.type === "password" ? "text" : "password";
+  render();
+}));
+$("#backLink").onclick = () => show(codeKind === "reset" ? "paneForgot" : "paneMain");
+$("#forgotBack").onclick = () => show("paneMain");
 $("#langSwitch").onclick = (e) => {
   if (!e.target.dataset.lang) return;
   lang = e.target.dataset.lang;
-  try { localStorage.setItem("docmind_lang", lang); } catch (_) {}
+  try { localStorage.setItem("mind_lang", lang); } catch (_) {}
   render();
 };
 $("#modeSwitch").onclick = (e) => {
   if (!e.target.dataset.mode) return;
   mode = e.target.dataset.mode;
-  $("#error").hidden = true;
+  $("#mainErr").hidden = true;
   render();
 };
-$("#eye").onclick = () => {
-  const p = $("#password");
-  p.type = p.type === "password" ? "text" : "password";
-  render();
-};
-$("#form").onsubmit = (e) => {
-  e.preventDefault();
-  const username = $("#username").value.trim(), password = $("#password").value;
-  if (!username || !password) return showError("empty");
-  if (mode === "register") send("/api/auth/register", { username, password, name: $("#name").value.trim() });
-  else send("/api/auth/login", { username, password });
-};
-$("#guest").onclick = () => send("/api/auth/guest");
 render();
-$("#username").focus();
+show("paneMain");
 </script>
 </body>
 </html>
