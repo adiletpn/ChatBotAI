@@ -253,6 +253,7 @@ async def answer_stream(question: str, owner: str, session_key: str,
         if not parts:
             text, cited = _extractive_answer(search_query + " " + expanded, sources, ranked_ns, lang)
             note = t("llm_error", lang)
+            text = text.replace("\n\n" + t("offline_note", lang), "")  # одна пометка вместо двух
             yield {"type": "delta", "text": f"⚠️ {note}\n\n{text}"}
             yield {"type": "done", "cited": cited, "lang": lang, "error": str(exc)[:300]}
             return
