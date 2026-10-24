@@ -1,4 +1,6 @@
 """Хранилище документов и фрагментов: JSON-файл на диске + поисковый индекс в памяти."""
+from __future__ import annotations
+
 import json
 import threading
 import time
