@@ -121,8 +121,6 @@
           <div class="msg-box err" id="mainErr" hidden></div>
           <button class="btn primary" id="mainSubmit" type="submit"></button>
         </form>
-        <div class="or" data-t="or"></div>
-        <button class="btn ghost guest" id="guest" type="button" data-t="guest"></button>
         <p class="fine" data-t="fine"></p>
       </div>
 
@@ -329,7 +327,7 @@ function openCode(kind, email, mail) {
   startCooldown();
 }
 
-function busy(on) { document.querySelectorAll("button[type=submit], #guest").forEach((b) => (b.disabled = on)); }
+function busy(on) { document.querySelectorAll("button[type=submit]").forEach((b) => (b.disabled = on)); }
 
 // ---------- вход / регистрация
 $("#mainForm").onsubmit = async (e) => {
@@ -423,13 +421,6 @@ $("#forgotForm").onsubmit = async (e) => {
 };
 
 // ---------- прочее
-$("#guest").onclick = async () => {
-  busy(true);
-  const r = await post("/api/auth/guest").catch(() => ({ code: "net" }));
-  if (r.ok) { location.href = "/"; return; }
-  err($("#mainErr"), r.code);
-  busy(false);
-};
 $("#password").addEventListener("input", () => {
   const s = strength($("#password").value);
   $("#meter").dataset.s = s.score;
