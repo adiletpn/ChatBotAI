@@ -674,3 +674,13 @@ textarea:focus-visible, .input:focus-visible, .code-boxes input:focus-visible { 
   .seg button { padding: 5px 11px; font-size: 12.5px; }
 }
 @media (max-width: 760px) { .welcome-mark { display: none; } .welcome { margin-top: 4vh; } }
+
+/* настройки на телефоне: шапка «Настройки ✕», под ней лента разделов */
+@media (max-width: 760px) {
+  .modal-card { padding-top: 52px; grid-template-rows: auto 1fr; }
+  .set-nav { padding: 8px 10px; gap: 4px; scrollbar-width: none; border-top: 1px solid var(--border); }
+  .set-nav::-webkit-scrollbar { display: none; }
+  .set-nav h3 { display: block; position: absolute; top: 0; left: 16px; height: 52px; line-height: 52px; margin: 0; font-size: 18px; }
+  .set-nav button { flex: none; padding: 7px 11px; font-size: 13px; }
+  .modal-close { top: 8px; right: 10px; box-shadow: none; background: var(--panel-2); width: 36px; height: 36px; border-radius: 50%; }
+}
