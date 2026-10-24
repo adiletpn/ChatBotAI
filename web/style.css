@@ -452,3 +452,5 @@ textarea::placeholder { color: var(--faint); }
   .set-body { padding: 18px 16px; }
   .sys-grid { grid-template-columns: 1fr; }
 }
+/* у полей ввода своя подсветка — системная рамка фокуса не нужна */
+textarea:focus-visible, .input:focus-visible, .code-boxes input:focus-visible { outline: none; }
