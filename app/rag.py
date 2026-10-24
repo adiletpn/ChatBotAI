@@ -190,11 +190,20 @@ def _cited(answer: str, valid: set[int]) -> list[int]:
     return found
 
 
+STYLE_RULES = {
+    "concise": "Keep the answer short: 1-3 sentences, or a very short list if essential.",
+    "balanced": "",
+    "detailed": "Give a thorough, well-structured answer that covers every relevant detail from the context.",
+}
+
+
 async def answer_stream(question: str, owner: str, session_key: str,
-                        doc_ids: list[str] | None = None) -> AsyncIterator[dict]:
-    """Генератор событий: {"type": "sources"|"delta"|"done"|"error", ...}"""
+                        doc_ids: list[str] | None = None, prefs: dict | None = None) -> AsyncIterator[dict]:
+    """Генератор событий: {"type": "sources"|"delta"|"done"|"error", ...}
+    prefs — настройки пользователя: answer_lang (auto|kk|ru|en), answer_style (concise|balanced|detailed)."""
+    prefs = prefs or {}
     question = question.strip()
-    lang = detect_lang(question)
+    lang = prefs.get("answer_lang") if prefs.get("answer_lang") in LANG_NAMES else detect_lang(question)
     docs = store.list(owner)
     if doc_ids:
         docs = [d for d in docs if d["id"] in set(doc_ids)] or docs
@@ -240,6 +249,8 @@ async def answer_stream(question: str, owner: str, session_key: str,
         f"[{s['n']}] ({s['doc_name']}{', ' + s['loc_label'] if s['loc_label'] else ''})\n{s['text']}" for s in sources
     )
     system = SYSTEM_PROMPT.format(lang_name=LANG_NAMES[lang], not_found=t("not_found", lang))
+    if STYLE_RULES.get(prefs.get("answer_style", "")):
+        system += "\n7. " + STYLE_RULES[prefs["answer_style"]]
     user_message = f"CONTEXT:\n{context_text}\n\nQUESTION: {question}"
     messages = [*past, {"role": "user", "content": user_message}]
 
