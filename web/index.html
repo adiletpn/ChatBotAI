@@ -4,30 +4,57 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DocMind AI</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f766e'/><path d='M9 7h9l5 5v13H9z' fill='white'/><circle cx='16' cy='18' r='3.2' fill='%230f766e'/></svg>">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-logo" viewBox="0 0 32 32"><path d="M16 3.5 26.8 9.75v12.5L16 28.5 5.2 22.25V9.75z" fill="currentColor"/><path d="M11.5 11h5.2a5 5 0 0 1 0 10h-5.2z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path class="ico" d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 4V6a1 1 0 0 1 1-1z"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path class="ico" d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2zM9 4v14M15 6v14"/></symbol>
+  <symbol id="i-quiz" viewBox="0 0 24 24"><path class="ico" d="m2.5 9 9.5-5 9.5 5-9.5 5zM6.5 11.2V16c3 2.2 8 2.2 11 0v-4.8M21.5 9v5"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path class="ico" d="M12 15V4m0 0L8 8m4-4 4 4M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path class="ico" d="M12 3.5 13.8 10.2 20.5 12 13.8 13.8 12 20.5 10.2 13.8 3.5 12 10.2 10.2z"/></symbol>
+  <symbol id="i-open" viewBox="0 0 24 24"><path class="ico" d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path class="ico" d="M4 7h16M10 11v6m4-6v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path class="ico" d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path class="ico" d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path class="ico" d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11z"/><circle class="ico" cx="12" cy="10" r="2.2"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle class="ico" cx="12" cy="12" r="9"/><path class="ico" d="M3 12h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3z"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path class="ico" d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><path class="ico" d="m20 11-8.2 8.2a5 5 0 0 1-7-7L13 4a3.3 3.3 0 0 1 4.7 4.7l-8.2 8.2a1.7 1.7 0 0 1-2.4-2.4L15 6.6"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect class="ico" x="9" y="3" width="6" height="11" rx="3"/><path class="ico" d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path class="ico" d="M12 19V5m0 0-6 6m6-6 6 6" stroke-width="2.2"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect class="ico" x="4" y="5" width="16" height="15" rx="2"/><path class="ico" d="M4 10h16M9 3v4M15 3v4"/></symbol>
+  <symbol id="i-hash" viewBox="0 0 24 24"><path class="ico" d="M5 9h15M4 15h15M10 4 8 20M16 4l-2 16"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><rect class="ico" x="4" y="4" width="16" height="16" rx="3"/><path class="ico" d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path class="ico" d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2zM4 20a2 2 0 0 0 2 2h13v-4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path class="ico" d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path class="ico" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path class="ico" d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+</svg>
+
 <div class="app">
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="logo">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M9 7h9l5 5v13H9z" fill="#fff"/><circle cx="16" cy="18" r="3.2" fill="currentColor"/></svg>
-      </div>
+      <div class="logo"><svg><use href="#i-logo"/></svg></div>
       <div>
-        <div class="brand-name">DocMind AI</div>
+        <div class="brand-name">DocMind</div>
         <div class="brand-sub" data-i18n="tagline"></div>
       </div>
-      <button class="icon-btn only-mobile" id="closeSidebar" aria-label="close">✕</button>
+      <button class="icon-btn only-mobile" id="closeSidebar" aria-label="close"><svg><use href="#i-close"/></svg></button>
     </div>
 
     <label class="dropzone" id="dropzone">
       <input type="file" id="fileInput" multiple hidden>
-      <div class="dz-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m0 0-4 4m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-      </div>
-      <div class="dz-title" data-i18n="upload_title"></div>
-      <div class="dz-hint">PDF · DOCX · PPTX · XLSX · TXT · HTML · JPG/PNG</div>
+      <span class="dz-icon"><svg><use href="#i-upload"/></svg></span>
+      <span>
+        <span class="dz-title" data-i18n="upload_title"></span><br>
+        <span class="dz-hint">PDF · DOCX · PPTX · XLSX · TXT · JPG</span>
+      </span>
     </label>
 
     <div class="section-head">
@@ -39,72 +66,63 @@
 
     <div class="sidebar-foot">
       <div class="status" id="status"></div>
+      <div class="user-card">
+        <div class="avatar-u" id="userAvatar">·</div>
+        <div class="user-name" id="userName"></div>
+        <button class="icon-btn" id="logoutBtn" data-i18n-title="logout" aria-label="logout"><svg><use href="#i-logout"/></svg></button>
+      </div>
     </div>
   </aside>
 
   <main class="main">
     <header class="topbar">
-      <button class="icon-btn only-mobile" id="openSidebar" aria-label="menu">☰</button>
+      <button class="icon-btn only-mobile" id="openSidebar" aria-label="menu"><svg><use href="#i-menu"/></svg></button>
       <nav class="tabs" id="tabs">
-        <button data-view="chat" class="active"><span class="t-ico">💬</span><span data-i18n="tab_chat"></span></button>
-        <button data-view="map"><span class="t-ico">🧭</span><span data-i18n="tab_map"></span></button>
-        <button data-view="quiz"><span class="t-ico">🎓</span><span data-i18n="tab_quiz"></span></button>
+        <button data-view="chat" class="active"><svg><use href="#i-chat"/></svg><span data-i18n="tab_chat"></span></button>
+        <button data-view="map"><svg><use href="#i-map"/></svg><span data-i18n="tab_map"></span></button>
+        <button data-view="quiz"><svg><use href="#i-quiz"/></svg><span data-i18n="tab_quiz"></span></button>
       </nav>
       <div class="spacer"></div>
       <div class="lang-switch" id="langSwitch">
         <button data-lang="kk">ҚАЗ</button><button data-lang="ru">РУС</button><button data-lang="en">ENG</button>
       </div>
-      <button class="icon-btn" id="clearChat" data-i18n-title="clear_chat" aria-label="clear">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>
-      </button>
+      <button class="icon-btn" id="clearChat" data-i18n-title="clear_chat" aria-label="clear"><svg><use href="#i-trash"/></svg></button>
     </header>
 
     <div class="view" id="viewChat">
-    <section class="chat" id="chat">
-      <div class="welcome" id="welcome">
-        <h1 data-i18n="welcome_title"></h1>
-        <p class="lead" data-i18n="welcome_text"></p>
-        <div class="features">
-          <div class="feature"><div class="f-ico">📄</div><b data-i18n="f1_t"></b><span data-i18n="f1_d"></span></div>
-          <div class="feature"><div class="f-ico">🔎</div><b data-i18n="f2_t"></b><span data-i18n="f2_d"></span></div>
-          <div class="feature"><div class="f-ico">🌐</div><b data-i18n="f3_t"></b><span data-i18n="f3_d"></span></div>
-          <div class="feature"><div class="f-ico">🖨️</div><b data-i18n="f4_t"></b><span data-i18n="f4_d"></span></div>
+      <section class="chat" id="chat">
+        <div class="welcome" id="welcome">
+          <div class="welcome-mark"><svg><use href="#i-logo"/></svg></div>
+          <h1 data-i18n="welcome_title"></h1>
+          <p class="lead" data-i18n="welcome_text"></p>
+          <div class="features">
+            <div class="feature"><svg class="f-ico"><use href="#i-file"/></svg><b data-i18n="f1_t"></b><span data-i18n="f1_d"></span></div>
+            <div class="feature"><svg class="f-ico"><use href="#i-pin"/></svg><b data-i18n="f2_t"></b><span data-i18n="f2_d"></span></div>
+            <div class="feature"><svg class="f-ico"><use href="#i-globe"/></svg><b data-i18n="f3_t"></b><span data-i18n="f3_d"></span></div>
+            <div class="feature"><svg class="f-ico"><use href="#i-scan"/></svg><b data-i18n="f4_t"></b><span data-i18n="f4_d"></span></div>
+          </div>
         </div>
-        <div class="steps">
-          <span>1</span><em data-i18n="step1"></em>
-          <span>2</span><em data-i18n="step2"></em>
-          <span>3</span><em data-i18n="step3"></em>
-        </div>
-      </div>
-      <div class="messages" id="messages"></div>
-    </section>
+        <div class="messages" id="messages"></div>
+      </section>
 
-    <form class="composer" id="composer">
-      <div class="scope" id="scope"></div>
-      <div class="suggestions" id="suggestions"></div>
-      <div class="input-row">
-        <button type="button" class="icon-btn attach" id="attachBtn" data-i18n-title="upload_title" aria-label="attach">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/></svg>
-        </button>
-        <textarea id="question" rows="1" data-i18n-placeholder="placeholder"></textarea>
-        <button type="button" class="icon-btn mic" id="micBtn" data-i18n-title="voice" aria-label="voice" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
-        </button>
-        <button type="submit" class="send" id="sendBtn" aria-label="send">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
-        </button>
-      </div>
-      <div class="disclaimer" data-i18n="disclaimer"></div>
-    </form>
+      <form class="composer" id="composer">
+        <div class="scope" id="scope"></div>
+        <div class="suggestions" id="suggestions"></div>
+        <div class="input-row">
+          <button type="button" class="icon-btn attach" id="attachBtn" data-i18n-title="upload_title" aria-label="attach"><svg><use href="#i-clip"/></svg></button>
+          <textarea id="question" rows="1" data-i18n-placeholder="placeholder"></textarea>
+          <button type="button" class="icon-btn mic" id="micBtn" data-i18n-title="voice" aria-label="voice" hidden><svg><use href="#i-mic"/></svg></button>
+          <button type="submit" class="send" id="sendBtn" aria-label="send"><svg><use href="#i-send"/></svg></button>
+        </div>
+        <div class="disclaimer" data-i18n="disclaimer"></div>
+      </form>
     </div>
 
     <div class="view page" id="viewMap" hidden>
       <div class="page-inner">
         <div class="page-head">
-          <div>
-            <h2 data-i18n="map_h"></h2>
-            <p class="muted" data-i18n="map_sub"></p>
-          </div>
+          <h2 data-i18n="map_h"></h2>
+          <p class="muted" data-i18n="map_sub"></p>
         </div>
         <div class="doc-picker" id="mapPicker"></div>
         <div id="mapBody"></div>
@@ -114,10 +132,8 @@
     <div class="view page" id="viewQuiz" hidden>
       <div class="page-inner">
         <div class="page-head">
-          <div>
-            <h2 data-i18n="quiz_h"></h2>
-            <p class="muted" data-i18n="quiz_sub"></p>
-          </div>
+          <h2 data-i18n="quiz_h"></h2>
+          <p class="muted" data-i18n="quiz_sub"></p>
         </div>
         <div class="doc-picker" id="quizPicker"></div>
         <div id="quizBody"></div>
@@ -128,11 +144,11 @@
   <aside class="evidence" id="evidence" aria-hidden="true">
     <div class="ev-head">
       <div class="ev-title">
-        <div class="ev-kicker">📍 <span data-i18n="evidence"></span></div>
+        <div class="ev-kicker" data-i18n="evidence"></div>
         <div class="ev-name" id="evName"></div>
       </div>
       <a class="ev-open" id="evOpen" target="_blank" data-i18n="open_doc"></a>
-      <button class="icon-btn" id="evClose" aria-label="close">✕</button>
+      <button class="icon-btn" id="evClose" aria-label="close"><svg><use href="#i-close"/></svg></button>
     </div>
     <div class="ev-body">
       <div class="ev-page" id="evPage"></div>
