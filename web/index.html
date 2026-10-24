@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DocMind AI</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f766e'/><path d='M9 7h9l5 5v13H9z' fill='white'/><circle cx='16' cy='18' r='3.2' fill='%230f766e'/></svg>">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M9 7h9l5 5v13H9z" fill="#fff"/><circle cx="16" cy="18" r="3.2" fill="currentColor"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">DocMind AI</div>
+        <div class="brand-sub" data-i18n="tagline"></div>
+      </div>
+      <button class="icon-btn only-mobile" id="closeSidebar" aria-label="close">✕</button>
+    </div>
+
+    <label class="dropzone" id="dropzone">
+      <input type="file" id="fileInput" multiple hidden>
+      <div class="dz-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m0 0-4 4m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+      </div>
+      <div class="dz-title" data-i18n="upload_title"></div>
+      <div class="dz-hint">PDF · DOCX · PPTX · XLSX · TXT · HTML · JPG/PNG</div>
+    </label>
+
+    <div class="section-head">
+      <span data-i18n="documents"></span>
+      <span class="count" id="docCount">0</span>
+    </div>
+    <div class="doc-empty" id="docEmpty" data-i18n="no_docs_hint"></div>
+    <div class="doc-list" id="docList"></div>
+
+    <div class="sidebar-foot">
+      <div class="status" id="status"></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn only-mobile" id="openSidebar" aria-label="menu">☰</button>
+      <nav class="tabs" id="tabs">
+        <button data-view="chat" class="active"><span class="t-ico">💬</span><span data-i18n="tab_chat"></span></button>
+        <button data-view="map"><span class="t-ico">🧭</span><span data-i18n="tab_map"></span></button>
+        <button data-view="quiz"><span class="t-ico">🎓</span><span data-i18n="tab_quiz"></span></button>
+      </nav>
+      <div class="spacer"></div>
+      <div class="lang-switch" id="langSwitch">
+        <button data-lang="kk">ҚАЗ</button><button data-lang="ru">РУС</button><button data-lang="en">ENG</button>
+      </div>
+      <button class="icon-btn" id="clearChat" data-i18n-title="clear_chat" aria-label="clear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>
+      </button>
+    </header>
+
+    <div class="view" id="viewChat">
+    <section class="chat" id="chat">
+      <div class="welcome" id="welcome">
+        <h1 data-i18n="welcome_title"></h1>
+        <p class="lead" data-i18n="welcome_text"></p>
+        <div class="features">
+          <div class="feature"><div class="f-ico">📄</div><b data-i18n="f1_t"></b><span data-i18n="f1_d"></span></div>
+          <div class="feature"><div class="f-ico">🔎</div><b data-i18n="f2_t"></b><span data-i18n="f2_d"></span></div>
+          <div class="feature"><div class="f-ico">🌐</div><b data-i18n="f3_t"></b><span data-i18n="f3_d"></span></div>
+          <div class="feature"><div class="f-ico">🖨️</div><b data-i18n="f4_t"></b><span data-i18n="f4_d"></span></div>
+        </div>
+        <div class="steps">
+          <span>1</span><em data-i18n="step1"></em>
+          <span>2</span><em data-i18n="step2"></em>
+          <span>3</span><em data-i18n="step3"></em>
+        </div>
+      </div>
+      <div class="messages" id="messages"></div>
+    </section>
+
+    <form class="composer" id="composer">
+      <div class="scope" id="scope"></div>
+      <div class="suggestions" id="suggestions"></div>
+      <div class="input-row">
+        <button type="button" class="icon-btn attach" id="attachBtn" data-i18n-title="upload_title" aria-label="attach">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/></svg>
+        </button>
+        <textarea id="question" rows="1" data-i18n-placeholder="placeholder"></textarea>
+        <button type="button" class="icon-btn mic" id="micBtn" data-i18n-title="voice" aria-label="voice" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+        </button>
+        <button type="submit" class="send" id="sendBtn" aria-label="send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </button>
+      </div>
+      <div class="disclaimer" data-i18n="disclaimer"></div>
+    </form>
+    </div>
+
+    <div class="view page" id="viewMap" hidden>
+      <div class="page-inner">
+        <div class="page-head">
+          <div>
+            <h2 data-i18n="map_h"></h2>
+            <p class="muted" data-i18n="map_sub"></p>
+          </div>
+        </div>
+        <div class="doc-picker" id="mapPicker"></div>
+        <div id="mapBody"></div>
+      </div>
+    </div>
+
+    <div class="view page" id="viewQuiz" hidden>
+      <div class="page-inner">
+        <div class="page-head">
+          <div>
+            <h2 data-i18n="quiz_h"></h2>
+            <p class="muted" data-i18n="quiz_sub"></p>
+          </div>
+        </div>
+        <div class="doc-picker" id="quizPicker"></div>
+        <div id="quizBody"></div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="evidence" id="evidence" aria-hidden="true">
+    <div class="ev-head">
+      <div class="ev-title">
+        <div class="ev-kicker">📍 <span data-i18n="evidence"></span></div>
+        <div class="ev-name" id="evName"></div>
+      </div>
+      <a class="ev-open" id="evOpen" target="_blank" data-i18n="open_doc"></a>
+      <button class="icon-btn" id="evClose" aria-label="close">✕</button>
+    </div>
+    <div class="ev-body">
+      <div class="ev-page" id="evPage"></div>
+      <div class="ev-quote" id="evQuote"></div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
