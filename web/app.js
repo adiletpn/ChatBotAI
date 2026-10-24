@@ -127,7 +127,7 @@ Object.assign(I18N.kk, {
   your_mistakes: "Қателерді талдау", correct_answer: "Дұрыс жауап", evidence: "Дәлел",
   trust_ok: "{n} дереккөзбен расталған", trust_none: "Құжатта дәлел табылмады",
   stat_pages: "бет", stat_dates: "мерзім", stat_numbers: "сан", stat_req: "талап", map_btn: "Карта",
-  logout: "Шығу", guest: "Қонақ режимі",
+  logout: "Шығу", llm_fail: "қосылмады", guest: "Қонақ режимі",
 });
 Object.assign(I18N.ru, {
   tab_chat: "Вопрос-ответ", tab_map: "Карта документа", tab_quiz: "Проверка знаний",
@@ -144,7 +144,7 @@ Object.assign(I18N.ru, {
   your_mistakes: "Разбор ошибок", correct_answer: "Правильный ответ", evidence: "Доказательство",
   trust_ok: "Подтверждено {n} источн.", trust_none: "Подтверждение в документе не найдено",
   stat_pages: "стр.", stat_dates: "сроков", stat_numbers: "цифр", stat_req: "требований", map_btn: "Карта",
-  logout: "Выйти", guest: "Гостевой режим",
+  logout: "Выйти", llm_fail: "нет связи", guest: "Гостевой режим",
 });
 Object.assign(I18N.en, {
   tab_chat: "Q&A", tab_map: "Document map", tab_quiz: "Knowledge check",
@@ -161,7 +161,7 @@ Object.assign(I18N.en, {
   your_mistakes: "Review of mistakes", correct_answer: "Correct answer", evidence: "Evidence",
   trust_ok: "Backed by {n} source(s)", trust_none: "No supporting evidence found",
   stat_pages: "pages", stat_dates: "dates", stat_numbers: "numbers", stat_req: "requirements", map_btn: "Map",
-  logout: "Log out", guest: "Guest mode",
+  logout: "Log out", llm_fail: "unreachable", guest: "Guest mode",
 });
 
 const $ = (s) => document.querySelector(s);
@@ -820,7 +820,7 @@ function renderStatus() {
   if (!s) return;
   const ocrOk = s.ocr && s.ocr !== "none";
   $("#status").innerHTML = `
-    <div><span class="dot ${s.llm_enabled ? "ok" : "warn"}"></span>${s.llm_enabled ? `${L("llm_on")}: ${esc(s.llm_model || "")}` : L("llm_off")}</div>
+    <div><span class="dot ${s.llm_enabled && s.llm_ok !== false ? "ok" : "warn"}"></span>${s.llm_enabled ? `${L("llm_on")}: ${esc(s.llm_model || "")}${s.llm_ok === false ? " — " + L("llm_fail") : ""}` : L("llm_off")}</div>
     <div><span class="dot ${ocrOk ? "ok" : ""}"></span>${ocrOk ? `${L("ocr_on")}: ${esc(s.ocr)}` : L("ocr_off")}</div>
     ${s.telegram ? `<div><span class="dot ok"></span>${L("tg")}</div>` : ""}`;
 }
@@ -914,7 +914,12 @@ function init() {
   $("#openSidebar").onclick = () => $("#sidebar").classList.add("open");
   $("#closeSidebar").onclick = () => $("#sidebar").classList.remove("open");
 
-  api("/api/status").then((s) => { state.status = s; renderStatus(); }).catch(() => {});
+  api("/api/status").then((s) => {
+    state.status = s;
+    renderStatus();
+    // реально проверяем, отвечает ли модель, чтобы статус не вводил в заблуждение
+    if (s.llm_enabled) api("/api/llm-check").then((c) => { s.llm_ok = c.ok; renderStatus(); }).catch(() => {});
+  }).catch(() => {});
   loadDocs().catch((e) => toast(e.message, true));
 }
 
