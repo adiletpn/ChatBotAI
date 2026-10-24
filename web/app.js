@@ -184,6 +184,10 @@ Object.assign(I18N.kk, {"gate_profile": "Профиль аккаунтпен қ�
 Object.assign(I18N.ru, {"gate_profile": "Профиль доступен после входа.", "gate_data": "Документы и чаты сохраняются после входа.", "gate_account": "Войдите или создайте аккаунт — это займёт минуту."});
 Object.assign(I18N.en, {"gate_profile": "Your profile is available after you sign in.", "gate_data": "Documents and chats are saved once you sign in.", "gate_account": "Sign in or create an account — it takes a minute."});
 
+Object.assign(I18N.kk, {"mm_model": "Модель", "mm_style": "Жауап стилі", "lite": "Mind Lite", "lite_d": "Құжаттар бойынша жылдам әрі нақты жауаптар", "free": "Тегін", "pro": "Mind Pro", "pro_d": "Үлкен құжаттар мен кестелерді терең талдау", "soon": "Жақында", "pro_toast": "Mind Pro әзірленуде — жақында қолжетімді болады", "concise_d": "1–3 сөйлем", "balanced_d": "Негізгі мәліметтері бар жауап", "detailed_d": "Барлық тармақтарымен толық"});
+Object.assign(I18N.ru, {"mm_model": "Модель", "mm_style": "Стиль ответа", "lite": "Mind Lite", "lite_d": "Быстрые и точные ответы по документам", "free": "Бесплатно", "pro": "Mind Pro", "pro_d": "Глубокий анализ больших документов и таблиц", "soon": "Скоро", "pro_toast": "Mind Pro в разработке — скоро будет доступна", "concise_d": "1–3 предложения", "balanced_d": "Ответ с ключевыми деталями", "detailed_d": "Подробно, со всеми пунктами"});
+Object.assign(I18N.en, {"mm_model": "Model", "mm_style": "Answer style", "lite": "Mind Lite", "lite_d": "Fast, accurate answers from your documents", "free": "Free", "pro": "Mind Pro", "pro_d": "Deep analysis of large documents and tables", "soon": "Soon", "pro_toast": "Mind Pro is in development — coming soon", "concise_d": "1–3 sentences", "balanced_d": "Answer with the key details", "detailed_d": "Thorough, covering every point"});
+
 const $ = (s) => document.querySelector(s);
 const state = {
   lang: pickLang(),
@@ -225,6 +229,7 @@ function applyI18n() {
   renderDocs();
   renderScope();
   renderUser();
+  if ($("#modelLabel")) renderModelPicker();
   if (state.view === "map") renderMap();
   if (state.view === "quiz") renderQuiz();
   if (!$("#settings").hidden) renderSettings();
@@ -904,7 +909,8 @@ function applyPrefs() {
   const p = prefs(), root = document.documentElement;
   if (p.theme === "system") delete root.dataset.theme; else root.dataset.theme = p.theme;
   root.dataset.accent = p.accent;
-  delete root.dataset.font;  // «Размер текста» временно отключён: увеличение ломало окно настроек
+  delete root.dataset.font;
+  if ($("#modelLabel")) renderModelPicker();  // «Размер текста» временно отключён: увеличение ломало окно настроек
   root.dataset.width = p.width;
   try { localStorage.setItem("mind_prefs", JSON.stringify({ theme: p.theme, accent: p.accent, font: p.font, width: p.width })); } catch (_) {}
   if (p.ui_lang !== "auto" && p.ui_lang !== state.lang) setLang(p.ui_lang);
@@ -1228,6 +1234,48 @@ async function clearChat() {
   if (await confirmDialog(L("del_chat_t"), L("irreversible"))) newChat();
 }
 
+/* ================= выбор модели и стиля ответа ================= */
+const STYLE_KEYS = { concise: "st_concise", balanced: "st_balanced", detailed: "st_detailed" };
+
+function renderModelPicker() {
+  const style = prefs().answer_style;
+  $("#modelLabel").innerHTML = `${L("lite")}<span class="mb-style"> · ${L(STYLE_KEYS[style] || "st_balanced")}</span>`;
+  const item = (attrs, title, desc, right, cls = "") =>
+    `<button type="button" class="mm-item ${cls}" ${attrs}><span class="mm-t"><b>${title}</b><span class="d">${desc}</span></span>${right}</button>`;
+  const check = `<svg class="ok"><use href="#i-check"/></svg>`;
+  $("#modelMenu").innerHTML =
+    `<div class="mm-head">${L("mm_model")}</div>` +
+    item('data-model="lite"', `${L("lite")} <span class="mm-badge">${L("free")}</span>`, L("lite_d"), check) +
+    item('data-model="pro"', `${L("pro")} <span class="mm-badge pro">PRO · ${L("soon")}</span>`, L("pro_d"), "", "soon") +
+    `<div class="mm-sep"></div><div class="mm-head">${L("mm_style")}</div>` +
+    Object.entries(STYLE_KEYS).map(([k, label]) =>
+      item(`data-style="${k}"`, L(label), L(k + "_d"), k === style ? check : "")).join("");
+}
+
+function toggleModelMenu(open) {
+  const menu = $("#modelMenu");
+  const show = open ?? menu.hidden;
+  menu.hidden = !show;
+  $("#modelBtn").setAttribute("aria-expanded", String(show));
+  if (show) renderModelPicker();
+}
+
+function setupModelPicker() {
+  renderModelPicker();
+  $("#modelBtn").onclick = (e) => { e.stopPropagation(); toggleModelMenu(); };
+  $("#modelMenu").onclick = (e) => {
+    e.stopPropagation();
+    const b = e.target.closest(".mm-item");
+    if (!b) return;
+    if (b.dataset.model === "pro") { toast(L("pro_toast")); return; }
+    if (b.dataset.style) savePrefs({ answer_style: b.dataset.style });
+    toggleModelMenu(false);
+    renderModelPicker();
+  };
+  document.addEventListener("click", () => toggleModelMenu(false));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") toggleModelMenu(false); });
+}
+
 /* ================= voice ================= */
 function setupVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1265,6 +1313,7 @@ function init() {
   const fileInput = $("#fileInput");
   fileInput.onchange = () => uploadFiles(fileInput.files);
   $("#attachBtn").onclick = () => (state.anon ? requireLogin("upload") : fileInput.click());
+  setupModelPicker();
   // гостю — приглашение войти ещё до окна выбора файла
   $("#dropzone").addEventListener("click", (e) => { if (state.anon) { e.preventDefault(); requireLogin("upload"); } });
 
