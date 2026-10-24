@@ -340,3 +340,59 @@ textarea::placeholder { color: var(--faint); }
 .doc-actions { display: none; opacity: 1; }
 .doc:hover .doc-actions, .doc.selected .doc-actions { display: flex; }
 @media (hover: none) { .doc-actions { display: flex; } }
+
+/* ================= фирменные элементы «Шаңырақ» ================= */
+/* Тёмная зона: боковая панель и панель на странице входа */
+.sidebar, .dark-scope {
+  --text: #e6edf5; --muted: #93a3b8; --faint: #5f7189;
+  --hover: rgba(255, 255, 255, .06); --panel: rgba(255, 255, 255, .07); --panel-2: rgba(255, 255, 255, .05);
+  --border: rgba(255, 255, 255, .12); --accent: #2cc4e6; --accent-soft: rgba(44, 196, 230, .14);
+  --shadow: 0 0 0 1px rgba(255, 255, 255, .08);
+  color: var(--text);
+}
+.sidebar { position: relative; background: var(--sidebar); }
+.sidebar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 240px; background: var(--ornament); opacity: .045; pointer-events: none; -webkit-mask-image: linear-gradient(to top, #000, transparent); mask-image: linear-gradient(to top, #000, transparent); }
+.sidebar > * { position: relative; z-index: 1; }
+.brand-sub { color: var(--gold); }
+.logo, .welcome-mark { color: var(--accent); }
+.doc-ext { background: rgba(255, 255, 255, .06); border-color: rgba(255, 255, 255, .1); }
+.doc-ext.pdf { color: #ff8c84; } .doc-ext.docx, .doc-ext.doc, .doc-ext.rtf, .doc-ext.odt { color: #8fb6ff; }
+.doc-ext.pptx { color: #ffb36b; } .doc-ext.xlsx, .doc-ext.csv { color: #7fdca8; } .doc-ext.img { color: #c9a6ff; }
+.badge { color: var(--gold); }
+.avatar-u { background: var(--gold); color: var(--ink); }
+.dropzone:hover, .dropzone.drag { border-color: var(--accent); }
+
+/* Типографика: геометрический гротеск, плотные жирные заголовки */
+.welcome h1, .page-head h2, .map-hero h3, .q-text, .result h3, .quiz-start h3, .brand-name, .ring .pct, .map-stats b, .tile .v { font-weight: 700; letter-spacing: -.025em; }
+.brand-name { letter-spacing: -.01em; }
+.q-text { font-weight: 600; }
+.tile .v { color: var(--accent); }
+.map-stats b { color: var(--accent); }
+
+/* Вопрос — тёмный пузырь, ответ — карточка с золотой полосой */
+.msg.user .bubble { background: var(--ink); color: #f4f7fa; border-radius: 14px 14px 4px 14px; }
+@media (prefers-color-scheme: dark) { .msg.user .bubble { background: #22334a; } }
+.msg.bot .bubble { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--gold); border-radius: 4px 14px 14px 14px; padding: 14px 18px; box-shadow: var(--shadow); }
+.avatar { width: 30px; height: 30px; }
+.avatar svg { width: 28px; height: 28px; }
+.cite { background: var(--accent-soft); color: var(--accent); }
+
+/* Поле ввода и кнопки */
+.input-row { border-radius: 14px; }
+.input-row:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow); }
+.send { background: var(--gold); color: var(--ink); border-radius: 10px; }
+.send:hover { background: #f0b92a; }
+.tabs button.active { background: var(--panel); box-shadow: var(--shadow); }
+.btn { background: var(--accent); }
+.btn:hover { background: var(--accent-hover); }
+.progress > div, .timeline li::before { background: linear-gradient(90deg, var(--accent), var(--gold)); }
+.panel h4 svg { color: var(--gold); }
+.feature .f-ico { color: var(--accent); }
+.feature { background: var(--panel); }
+
+/* Приветствие: тонкий орнамент за логотипом */
+.welcome-mark { position: relative; display: inline-grid; place-items: center; width: 88px; height: 88px; }
+.welcome-mark::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle, var(--accent-soft), transparent 70%); }
+.welcome-mark svg { width: 52px; height: 52px; position: relative; }
+.ev-kicker { color: var(--gold); }
+.ev-quote mark { background: var(--mark); }
