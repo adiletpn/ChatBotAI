@@ -59,11 +59,11 @@ SETTING_CHOICES = {
     "ui_lang": {"auto", "kk", "ru", "en"},
     "answer_lang": {"auto", "kk", "ru", "en"}, "answer_style": {"concise", "balanced", "detailed"},
 }
-LIMITS = {  # действие: (максимум, окно в секундах) — на один IP
-    "register": (5, 3600),
-    "login": (20, 600),
-    "guest": (10, 3600),
-    "code": (10, 3600),
+LIMITS = {  # действие: (максимум, окно в секундах) — на один IP (с запасом для общего Wi-Fi на площадке)
+    "register": (15, 3600),
+    "login": (40, 600),
+    "guest": (40, 3600),
+    "code": (20, 3600),
 }
 
 
