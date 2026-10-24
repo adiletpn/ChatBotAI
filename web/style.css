@@ -571,3 +571,21 @@ textarea:focus-visible, .input:focus-visible, .code-boxes input:focus-visible { 
 .brand > div:nth-child(1) { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .brand > div:nth-child(1) { align-items: flex-start; }
 .welcome-mark { margin-bottom: 22px; }
+
+/* ================= телефон: доработки ================= */
+.quiz-start h3, .map-hero h3 { overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .suggestions { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-bottom: 6px; padding-bottom: 2px; }
+  .suggestions::-webkit-scrollbar { display: none; }
+  .suggestions .chip { flex: none; white-space: nowrap; max-width: 78vw; overflow: hidden; text-overflow: ellipsis; }
+  .disclaimer { display: none; }
+  .composer .scope { display: none; }
+  .composer { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+  .set-nav { padding-right: 56px; }
+  .modal-close { top: 8px; right: 8px; z-index: 2; background: var(--solid); box-shadow: var(--shadow); }
+  .msg.bot .bubble { padding: 12px 14px; font-size: 15px; }
+  .evidence { top: 0; right: 0; bottom: 0; width: 100vw; border-radius: 0; }
+  .welcome-mark .wordmark, .welcome-mark svg.wordmark { height: 54px; }
+  .features { gap: 8px; }
+  .feature { padding: 12px; }
+}
