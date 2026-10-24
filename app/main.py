@@ -2,6 +2,9 @@
 import asyncio
 import json
 import logging
+import re
+from pathlib import Path
+from urllib.parse import quote
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
@@ -9,7 +12,7 @@ from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Resp
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import compare, insights, llm, rag
+from . import compare, export, insights, llm, rag
 from . import firebase_auth, mailer
 from .chats import chats
 from .auth import COOKIE, SESSION_DAYS, AuthError, limiter, public_user, users
@@ -416,6 +419,48 @@ async def compare_documents(a: str, b: str, request: Request, lang: str = "ru"):
     if a == b:
         raise HTTPException(400, "Выберите два разных документа")
     return await compare.compare(doc_a, doc_b, _lang(lang))
+
+
+class ExportRequest(BaseModel):
+    format: str = Field(pattern="^(pdf|docx)$")
+    kind: str = Field(pattern="^(answer|compare)$")
+    lang: str = "ru"
+    question: str = Field("", max_length=4000)
+    answer: str = Field("", max_length=60000)
+    sources: list[dict] = []
+    a: str = ""
+    b: str = ""
+
+
+@app.post("/api/export")
+async def export_file(body: ExportRequest, request: Request):
+    """Ответ или сравнение версий — файлом PDF/DOCX, чтобы отправить коллегам."""
+    owner = owner_of(request)
+    lang = _lang(body.lang)
+    if body.kind == "compare":
+        doc_a, doc_b = store.get(body.a, owner), store.get(body.b, owner)
+        if not (doc_a and doc_b) or body.a == body.b:
+            raise HTTPException(404, "Документ не найден")
+        title, blocks = export.compare_blocks(await compare.compare(doc_a, doc_b, lang), lang)
+        name = f"{Path(doc_a['name']).stem} vs {Path(doc_b['name']).stem}"
+    else:
+        sources = [{k: str(s.get(k, ""))[:2000] for k in ("n", "doc_name", "loc_label", "text")} for s in body.sources[:20]]
+        title, blocks = export.answer_blocks(body.question, body.answer, sources, lang)
+        name = "Mind AI — " + (body.question[:50].strip() or "answer")
+    data = await asyncio.to_thread(export.build, body.format, title, blocks, lang)
+    filename = re.sub(r'[\\/:*?"<>|\n]+', " ", name).strip() + "." + body.format
+    media = "application/pdf" if body.format == "pdf" else \
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    return Response(data, media_type=media,
+                    headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(filename)}"})
+
+
+@app.get("/api/documents/{doc_id}/cards")
+async def document_cards(doc_id: str, request: Request, lang: str = "ru", n: int = 10):
+    doc = store.get(doc_id, owner_of(request))
+    if not doc:
+        raise HTTPException(404, "Документ не найден")
+    return await insights.cards(doc, _lang(lang), max(5, min(n, 20)))
 
 
 @app.get("/api/chunk")

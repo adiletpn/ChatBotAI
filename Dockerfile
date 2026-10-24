@@ -5,9 +5,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     DATA_DIR=/data
 
-# Tesseract для распознавания сканов; языковые модели kaz/rus/eng лежат в папке tessdata/
+# Tesseract для распознавания сканов (языковые модели kaz/rus/eng лежат в папке tessdata/);
+# DejaVu — шрифт с казахскими буквами для экспорта ответов в PDF
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends tesseract-ocr \
+    && apt-get install -y --no-install-recommends tesseract-ocr fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

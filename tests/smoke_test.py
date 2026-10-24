@@ -208,6 +208,19 @@ async def main() -> None:
     quiz = r.json().get("questions", [])
     check("тест по документу", r.status_code == 200 and len(quiz) >= 2
           and all(q["options"][q["answer"]] in q["quote"] for q in quiz), str(quiz[:1])[:150])
+    r = client.get(f"/api/documents/{doc_id}/cards?lang=ru&n=5", headers=headers)
+    cards = r.json().get("cards", [])
+    check("карточки", r.status_code == 200 and len(cards) >= 2 and all(c["front"] and c["back"] for c in cards),
+          str(cards[:1])[:150])
+    for fmt, magic in (("pdf", b"%PDF"), ("docx", b"PK")):
+        r = client.post("/api/export", headers=headers, json={
+            "format": fmt, "kind": "answer", "lang": "kk", "question": "Каска мерзімі?",
+            "answer": "**24 ай** [1]\n\n| Құрал | Мерзім |\n|---|---|\n| Каска | 24 ай |\n\n- Қазақша әріптер: әғқңөұүһі",
+            "sources": [{"n": 1, "doc_name": "instr.docx", "loc_label": "бөлім 1", "text": "Каска — 24 месяца"}]})
+        check(f"экспорт ответа в {fmt.upper()}", r.status_code == 200 and r.content[:4].startswith(magic)
+              and "attachment" in r.headers.get("content-disposition", ""), r.text[:120] if r.status_code != 200 else "")
+    r = stranger.post("/api/export", json={"format": "pdf", "kind": "compare", "a": doc_id, "b": doc_id})
+    check("чужое сравнение не экспортируется", r.status_code == 404)
     with open(SAMPLES / "Innovation_AI_Hackathon_2026_Ereje.pdf", "rb") as f:
         pdf_id = client.post("/api/documents", headers=headers, files={"files": ("ereje.pdf", f)}).json()[0]["id"]
     chunk_id = f"{pdf_id}:0"

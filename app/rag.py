@@ -91,7 +91,7 @@ ru: <keywords in Russian>
 en: <keywords in English>
 Include synonyms and important terms (names, numbers) from the question."""
 
-SUMMARY_PROMPT = """You analyze a document. Respond in {lang_name}.
+SUMMARY_PROMPT = """You analyze a document. Respond in {lang_name}, even if the document is in another language.
 Return ONLY valid JSON of the form:
 {{"summary": "<3-5 sentences: what the document is, its purpose and key points>",
   "questions": ["<question 1>", "<question 2>", "<question 3>", "<question 4>"]}}
@@ -216,10 +216,11 @@ STYLE_RULES = {
 async def answer_stream(question: str, owner: str, session_key: str,
                         doc_ids: list[str] | None = None, prefs: dict | None = None) -> AsyncIterator[dict]:
     """Генератор событий: {"type": "sources"|"delta"|"done"|"error", ...}
-    prefs — настройки пользователя: answer_lang (auto|kk|ru|en), answer_style (concise|balanced|detailed)."""
+    prefs — настройки пользователя: answer_style (concise|balanced|detailed), answer_model (lite|pro).
+    Язык ответа — всегда язык вопроса."""
     prefs = prefs or {}
     question = question.strip()
-    lang = prefs.get("answer_lang") if prefs.get("answer_lang") in LANG_NAMES else detect_lang(question)
+    lang = detect_lang(question)
     docs = store.list(owner)
     if doc_ids:
         docs = [d for d in docs if d["id"] in set(doc_ids)] or docs
@@ -313,6 +314,36 @@ async def answer_stream(question: str, owner: str, session_key: str,
     if not cited:
         cited = ranked_ns[:3]
     yield {"type": "done", "cited": cited, "lang": lang}
+    if prefs.get("suggestions", True) and answer:
+        items = await _followups(question, answer, context_text, lang)
+        if items:
+            yield {"type": "followups", "items": items}
+
+
+# ---------------------------------------------------------------- подсказки следующего вопроса
+
+FOLLOWUP_PROMPT = """Suggest 3 short follow-up questions the user may want to ask next, in {lang_name}.
+They must continue the conversation naturally and be answerable from the CONTEXT (do not repeat the question).
+Each under 70 characters. Return ONLY a JSON array of 3 strings."""
+
+
+async def _followups(question: str, answer: str, context_text: str, lang: str) -> list[str]:
+    try:
+        reply = await asyncio.wait_for(llm.complete(
+            FOLLOWUP_PROMPT.format(lang_name=LANG_NAMES[lang]),
+            [{"role": "user", "content": f"CONTEXT:\n{context_text[:6000]}\n\nQUESTION: {question}\n\nANSWER: {answer[:2000]}"}],
+            max_tokens=300, temperature=0.5), timeout=25)
+        start, end = reply.find("["), reply.rfind("]")
+        items = json.loads(reply[start:end + 1]) if start != -1 and end > start else []
+    except (llm.LLMError, asyncio.TimeoutError, json.JSONDecodeError) as exc:
+        log.warning("Подсказки не удались: %s", exc)
+        return []
+    out = []
+    for item in items:
+        text = str(item).strip().strip('"')
+        if 5 < len(text) <= 120 and text.lower() != question.lower() and text not in out:
+            out.append(text)
+    return out[:3]
 
 
 # ---------------------------------------------------------------- Mind Pro: страницы как изображения
@@ -371,7 +402,7 @@ def _page_images(ranked: list[dict], sources: list[dict], lang: str) -> list[dic
 async def answer(question: str, owner: str, session_key: str, doc_ids: list[str] | None = None) -> dict:
     """Не потоковый вариант (для Telegram): собирает полный ответ."""
     text, sources, cited, lang = [], [], [], "ru"
-    async for event in answer_stream(question, owner, session_key, doc_ids):
+    async for event in answer_stream(question, owner, session_key, doc_ids, {"suggestions": False}):
         if event["type"] == "sources":
             sources = event["sources"]
         elif event["type"] == "delta":

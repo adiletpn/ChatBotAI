@@ -776,3 +776,36 @@ a.btn { text-decoration: none; display: inline-block; }
   .cmp-pick { gap: 8px; }
   .cmp-pick .btn { width: 100%; }
 }
+
+/* ---------- подсказки следующего вопроса ---------- */
+.followups { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 12px; }
+.followups button { display: flex; align-items: center; gap: 8px; text-align: left; border: 1px solid var(--border); background: var(--glass); backdrop-filter: blur(12px); border-radius: 12px; padding: 7px 12px; font-size: 13.5px; color: var(--text); max-width: 100%; transition: .15s; }
+.followups button:hover { border-color: var(--accent); background: var(--accent-soft); }
+.followups svg { width: 14px; height: 14px; color: var(--accent); flex: none; transform: rotate(-90deg); }
+
+/* ---------- экспорт сравнения ---------- */
+.cmp-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 4px 0 10px; }
+.cmp-head .cmp-h { margin: 0; }
+.cmp-export { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.cmp-export .btn { padding: 5px 12px; font-size: 13px; }
+
+/* ---------- карточки ---------- */
+.quiz-mode { margin: 16px 0 0; }
+.fc-wrap { max-width: 640px; margin: 0 auto; }
+.fc { display: block; width: 100%; min-height: 260px; margin: 14px 0; border: 0; padding: 0; background: none; perspective: 1400px; cursor: pointer; color: inherit; text-align: center; }
+.fc-inner { display: grid; min-height: 260px; transition: transform .45s cubic-bezier(.2, .7, .2, 1); transform-style: preserve-3d; }
+.fc.flipped .fc-inner { transform: rotateY(180deg); }
+.fc-face { grid-area: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px 30px; border-radius: 22px; background: var(--glass-strong); border: 1px solid var(--border); box-shadow: var(--shadow-lg); backface-visibility: hidden; -webkit-backface-visibility: hidden; position: relative; overflow: hidden; }
+.fc-face::before { content: ""; position: absolute; inset: 0 0 auto; height: 3px; background: var(--grad); }
+.fc-face b { font-family: var(--display); font-size: 20px; font-weight: 600; line-height: 1.4; letter-spacing: -.01em; }
+.fc-face small { color: var(--faint); font-size: 12.5px; line-height: 1.5; max-width: 480px; }
+.fc-back { transform: rotateY(180deg); }
+.fc-back b { color: var(--accent); }
+.fc-actions { display: flex; align-items: center; gap: 8px; }
+.fc-actions .spacer { flex: 1; }
+@media (max-width: 720px) {
+  .fc, .fc-inner { min-height: 220px; }
+  .fc-face b { font-size: 17px; }
+  .fc-actions .btn { flex: 1; }
+  .fc-actions .spacer { display: none; }
+}

@@ -117,7 +117,7 @@ Object.assign(I18N.kk, {
   map_h: "Құжат картасы",
   map_sub: "AI құжатты өзі талдайды: мерзімдер, негізгі сандар, талаптар және терминдер — әрқайсысы бетке сілтемесімен.",
   quiz_h: "Білімді тексеру",
-  quiz_sub: "Құжат бойынша тест: оқу материалын, нұсқаулықты немесе кез келген құжатты қаншалықты меңгергеніңізді тексеріңіз.",
+  quiz_sub: "Құжат бойынша тест пен карточкалар: оқу материалын, нұсқаулықты немесе кез келген құжатты қаншалықты меңгергеніңізді тексеріңіз.",
   timeline: "Хронология және мерзімдер", numbers: "Негізгі сандар", requirements: "Талаптар чек-парағы", terms: "Терминдер мен атаулар",
   nothing: "Табылмады", done_of: "орындалды", need_doc: "Құжатты жүктеу үшін басыңыз немесе файлды осында сүйреңіз", need_doc_t: "Құжат әлі жоқ",
   analyzing: "AI құжатты талдап жатыр…", generating: "Сұрақтар құрастырылуда…",
@@ -134,7 +134,7 @@ Object.assign(I18N.ru, {
   map_h: "Карта документа",
   map_sub: "AI сам разбирает документ: сроки, ключевые цифры, требования и термины — каждый пункт со ссылкой на страницу.",
   quiz_h: "Проверка знаний",
-  quiz_sub: "Тест по документу: проверьте, насколько хорошо усвоен учебный материал, инструкция или любой другой документ.",
+  quiz_sub: "Тест и карточки по документу: проверьте и закрепите, насколько хорошо усвоен учебный материал, инструкция или любой другой документ.",
   timeline: "Хронология и сроки", numbers: "Ключевые цифры", requirements: "Чек-лист требований", terms: "Термины и понятия",
   nothing: "Не найдено", done_of: "выполнено", need_doc: "Нажмите, чтобы загрузить документ, или перетащите файл сюда", need_doc_t: "Пока нет документов",
   analyzing: "AI анализирует документ…", generating: "Составляю вопросы…",
@@ -151,7 +151,7 @@ Object.assign(I18N.en, {
   map_h: "Document map",
   map_sub: "AI breaks the document down for you: deadlines, key numbers, requirements and terms — each linked to its page.",
   quiz_h: "Knowledge check",
-  quiz_sub: "A test based on the document: check how well study material, an instruction or any other document has been learned.",
+  quiz_sub: "A quiz and flashcards based on the document: check and reinforce how well study material, an instruction or any other document has been learned.",
   timeline: "Timeline & deadlines", numbers: "Key numbers", requirements: "Requirements checklist", terms: "Terms & names",
   nothing: "Nothing found", done_of: "done", need_doc: "Click to upload a document or drop a file here", need_doc_t: "No documents yet",
   analyzing: "AI is analyzing the document…", generating: "Generating questions…",
@@ -164,9 +164,9 @@ Object.assign(I18N.en, {
   logout: "Log out", llm_fail: "unreachable", guest: "Guest mode",
 });
 
-Object.assign(I18N.kk, {"dz_hint": "PDF, DOCX, PPTX, XLSX, сурет", "settings": "Баптаулар", "set_profile": "Профиль", "set_appearance": "Сыртқы түрі", "set_language": "Тіл", "set_ai": "AI жауаптары", "set_data": "Деректер", "set_system": "Жүйе туралы", "set_account": "Аккаунт", "profile_sub": "Сіз туралы ақпарат", "name": "Аты", "email": "Email", "save": "Сақтау", "saved": "Сақталды", "guest_note": "Сіз қонақ режиміндесіз. Деректерді сақтау үшін тіркеліңіз.", "appearance_sub": "Интерфейсті өзіңізге ыңғайлы етіңіз", "theme": "Тақырып", "theme_system": "Жүйелік", "theme_light": "Жарық", "theme_dark": "Қараңғы", "font_size": "Мәтін өлшемі", "font_size_d": "Барлық интерфейс үшін", "f_s": "Кіші", "f_m": "Орташа", "f_l": "Үлкен", "width": "Чат ені", "width_d": "Кең экрандар үшін", "w_normal": "Қалыпты", "w_wide": "Кең", "language_sub": "Интерфейс пен жауаптар тілі", "ui_lang": "Интерфейс тілі", "ui_lang_d": "Мәзір, батырмалар, хабарламалар", "answer_lang": "Жауап тілі", "answer_lang_d": "«Авто» — сұрақ қойылған тілде", "auto": "Авто", "ai_sub": "Mind AI қалай жауап береді", "style": "Жауап стилі", "style_d": "Жауап ұзындығы мен толықтығы", "st_concise": "Қысқа", "st_balanced": "Теңгерімді", "st_detailed": "Толық", "show_sources": "Дереккөздерді көрсету", "show_sources_d": "Жауап астындағы құжат пен бет сілтемелері", "show_trust": "Сенімділік белгісі", "show_trust_d": "«N дереккөзбен расталған»", "suggestions": "Сұрақ ұсыныстары", "suggestions_d": "Құжат жүктелгеннен кейін", "data_sub": "Құжаттар мен чат тарихы", "docs_count": "Жүктелген құжаттар", "export": "Чатты жүктеп алу", "export_d": "Бүкіл диалог .md файлына", "clear_hist": "Чат тарихын тазалау", "clear_hist_d": "Құжаттар сақталады", "delete_docs": "Барлық құжатты өшіру", "delete_docs_d": "Қайтару мүмкін емес", "confirm_all": "Барлық құжатты өшіру керек пе?", "done": "Дайын", "do_it": "Орындау", "system_sub": "Mind AI жұмысының техникалық күйі", "model": "AI моделі", "connected": "Қосулы", "disconnected": "Байланыс жоқ", "offline": "Офлайн режим", "check": "Тексеру", "checking": "Тексерілуде…", "ocr_card": "Сканерлерді тану", "ocr_none": "Қолжетімсіз", "telegram": "Telegram-бот", "tg_on": "Қосулы", "tg_off": "Қосылмаған", "formats": "Пішімдер", "version": "Нұсқа", "account_sub": "Қауіпсіздік және кіру", "change_pw": "Құпиясөзді өзгерту", "old_pw": "Ағымдағы құпиясөз", "new_pw": "Жаңа құпиясөз", "pw_rule": "Кемінде 8 таңба, әріптер мен сандар", "pw_changed": "Құпиясөз өзгертілді", "logout_d": "Осы құрылғыдан шығу", "danger": "Қауіпті аймақ", "delete_acc": "Аккаунтты өшіру", "delete_acc_d": "Барлық құжаттар мен деректер өшіріледі", "confirm_pw": "Растау үшін құпиясөзді енгізіңіз", "confirm_del": "Аккаунтты біржола өшіру керек пе?", "you": "Сіз", "llm_down": "AI моделімен байланыс жоқ — жауаптар офлайн режимде", "err_password_short": "Құпиясөз кемінде 8 таңба болуы керек", "err_password_weak": "Құпиясөзде әріптер мен сандар болуы керек", "err_invalid": "Құпиясөз қате", "err_name_invalid": "Атыңызды енгізіңіз"});
-Object.assign(I18N.ru, {"dz_hint": "PDF, DOCX, PPTX, XLSX, фото", "settings": "Настройки", "set_profile": "Профиль", "set_appearance": "Внешний вид", "set_language": "Язык", "set_ai": "Ответы ИИ", "set_data": "Данные", "set_system": "О системе", "set_account": "Аккаунт", "profile_sub": "Информация о вас", "name": "Имя", "email": "Email", "save": "Сохранить", "saved": "Сохранено", "guest_note": "Вы в гостевом режиме. Зарегистрируйтесь, чтобы сохранить данные.", "appearance_sub": "Настройте интерфейс под себя", "theme": "Тема", "theme_system": "Системная", "theme_light": "Светлая", "theme_dark": "Тёмная", "font_size": "Размер текста", "font_size_d": "Для всего интерфейса", "f_s": "Мелкий", "f_m": "Средний", "f_l": "Крупный", "width": "Ширина чата", "width_d": "Для широких экранов", "w_normal": "Обычная", "w_wide": "Широкая", "language_sub": "Язык интерфейса и ответов", "ui_lang": "Язык интерфейса", "ui_lang_d": "Меню, кнопки, уведомления", "answer_lang": "Язык ответов", "answer_lang_d": "«Авто» — на языке вопроса", "auto": "Авто", "ai_sub": "Как отвечает Mind AI", "style": "Стиль ответа", "style_d": "Длина и подробность ответов", "st_concise": "Кратко", "st_balanced": "Сбалансированно", "st_detailed": "Подробно", "show_sources": "Показывать источники", "show_sources_d": "Ссылки на документ и страницу под ответом", "show_trust": "Индикатор доверия", "show_trust_d": "«Подтверждено N источниками»", "suggestions": "Подсказки вопросов", "suggestions_d": "После загрузки документа", "data_sub": "Документы и история чата", "docs_count": "Загружено документов", "export": "Скачать чат", "export_d": "Весь диалог в файл .md", "clear_hist": "Очистить историю чата", "clear_hist_d": "Документы останутся", "delete_docs": "Удалить все документы", "delete_docs_d": "Действие нельзя отменить", "confirm_all": "Удалить все документы?", "done": "Готово", "do_it": "Выполнить", "system_sub": "Техническое состояние Mind AI", "model": "Модель ИИ", "connected": "Подключено", "disconnected": "Нет связи", "offline": "Офлайн-режим", "check": "Проверить", "checking": "Проверяю…", "ocr_card": "Распознавание сканов", "ocr_none": "Недоступно", "telegram": "Telegram-бот", "tg_on": "Подключён", "tg_off": "Не подключён", "formats": "Форматы", "version": "Версия", "account_sub": "Безопасность и вход", "change_pw": "Смена пароля", "old_pw": "Текущий пароль", "new_pw": "Новый пароль", "pw_rule": "Минимум 8 символов, буквы и цифры", "pw_changed": "Пароль изменён", "logout_d": "Выйти на этом устройстве", "danger": "Опасная зона", "delete_acc": "Удалить аккаунт", "delete_acc_d": "Все документы и данные будут удалены", "confirm_pw": "Введите пароль для подтверждения", "confirm_del": "Удалить аккаунт навсегда?", "you": "Вы", "llm_down": "Нет связи с моделью ИИ — ответы в офлайн-режиме", "err_password_short": "Пароль должен быть не короче 8 символов", "err_password_weak": "В пароле должны быть буквы и цифры", "err_invalid": "Неверный пароль", "err_name_invalid": "Введите имя"});
-Object.assign(I18N.en, {"dz_hint": "PDF, DOCX, PPTX, XLSX, photo", "settings": "Settings", "set_profile": "Profile", "set_appearance": "Appearance", "set_language": "Language", "set_ai": "AI answers", "set_data": "Data", "set_system": "System", "set_account": "Account", "profile_sub": "Information about you", "name": "Name", "email": "Email", "save": "Save", "saved": "Saved", "guest_note": "You are in guest mode. Sign up to keep your data.", "appearance_sub": "Make the interface yours", "theme": "Theme", "theme_system": "System", "theme_light": "Light", "theme_dark": "Dark", "font_size": "Text size", "font_size_d": "For the whole interface", "f_s": "Small", "f_m": "Medium", "f_l": "Large", "width": "Chat width", "width_d": "For wide screens", "w_normal": "Normal", "w_wide": "Wide", "language_sub": "Interface and answer language", "ui_lang": "Interface language", "ui_lang_d": "Menus, buttons, notifications", "answer_lang": "Answer language", "answer_lang_d": "“Auto” — same as the question", "auto": "Auto", "ai_sub": "How Mind AI answers", "style": "Answer style", "style_d": "Length and level of detail", "st_concise": "Concise", "st_balanced": "Balanced", "st_detailed": "Detailed", "show_sources": "Show sources", "show_sources_d": "Document and page links under answers", "show_trust": "Trust indicator", "show_trust_d": "“Backed by N sources”", "suggestions": "Question suggestions", "suggestions_d": "After a document is uploaded", "data_sub": "Documents and chat history", "docs_count": "Documents uploaded", "export": "Download chat", "export_d": "The whole conversation as .md", "clear_hist": "Clear chat history", "clear_hist_d": "Documents are kept", "delete_docs": "Delete all documents", "delete_docs_d": "This cannot be undone", "confirm_all": "Delete all documents?", "done": "Done", "do_it": "Run", "system_sub": "Technical status of Mind AI", "model": "AI model", "connected": "Connected", "disconnected": "Unreachable", "offline": "Offline mode", "check": "Check", "checking": "Checking…", "ocr_card": "Scan recognition", "ocr_none": "Unavailable", "telegram": "Telegram bot", "tg_on": "Connected", "tg_off": "Not connected", "formats": "Formats", "version": "Version", "account_sub": "Security and sign-in", "change_pw": "Change password", "old_pw": "Current password", "new_pw": "New password", "pw_rule": "At least 8 characters, letters and digits", "pw_changed": "Password changed", "logout_d": "Sign out on this device", "danger": "Danger zone", "delete_acc": "Delete account", "delete_acc_d": "All documents and data will be deleted", "confirm_pw": "Enter your password to confirm", "confirm_del": "Delete your account forever?", "you": "You", "llm_down": "AI model unreachable — answers in offline mode", "err_password_short": "Password must be at least 8 characters", "err_password_weak": "Password must contain letters and digits", "err_invalid": "Wrong password", "err_name_invalid": "Enter your name"});
+Object.assign(I18N.kk, {"dz_hint": "PDF, DOCX, PPTX, XLSX, сурет", "settings": "Баптаулар", "set_profile": "Профиль", "set_appearance": "Сыртқы түрі", "set_language": "Тіл", "set_ai": "AI жауаптары", "set_data": "Деректер", "set_system": "Жүйе туралы", "set_account": "Аккаунт", "profile_sub": "Сіз туралы ақпарат", "name": "Аты", "email": "Email", "save": "Сақтау", "saved": "Сақталды", "guest_note": "Сіз қонақ режиміндесіз. Деректерді сақтау үшін тіркеліңіз.", "appearance_sub": "Интерфейсті өзіңізге ыңғайлы етіңіз", "theme": "Тақырып", "theme_system": "Жүйелік", "theme_light": "Жарық", "theme_dark": "Қараңғы", "font_size": "Мәтін өлшемі", "font_size_d": "Барлық интерфейс үшін", "f_s": "Кіші", "f_m": "Орташа", "f_l": "Үлкен", "width": "Чат ені", "width_d": "Кең экрандар үшін", "w_normal": "Қалыпты", "w_wide": "Кең", "language_sub": "Бір баптау — бүкіл Mind AI үшін", "ui_lang": "Тіл", "ui_lang_d": "Мәзір, құжат картасы мен тесттер. Чатта бот сұрағыңыз қойылған тілде жауап береді", "answer_lang": "Жауап тілі", "answer_lang_d": "«Авто» — сұрақ қойылған тілде", "auto": "Авто", "ai_sub": "Mind AI қалай жауап береді", "style": "Жауап стилі", "style_d": "Жауап ұзындығы мен толықтығы", "st_concise": "Қысқа", "st_balanced": "Теңгерімді", "st_detailed": "Толық", "show_sources": "Дереккөздерді көрсету", "show_sources_d": "Жауап астындағы құжат пен бет сілтемелері", "show_trust": "Сенімділік белгісі", "show_trust_d": "«N дереккөзбен расталған»", "suggestions": "Сұрақ ұсыныстары", "suggestions_d": "Құжат жүктелгеннен кейін", "data_sub": "Құжаттар мен чат тарихы", "docs_count": "Жүктелген құжаттар", "export": "Чатты жүктеп алу", "export_d": "Бүкіл диалог .md файлына", "clear_hist": "Чат тарихын тазалау", "clear_hist_d": "Құжаттар сақталады", "delete_docs": "Барлық құжатты өшіру", "delete_docs_d": "Қайтару мүмкін емес", "confirm_all": "Барлық құжатты өшіру керек пе?", "done": "Дайын", "do_it": "Орындау", "system_sub": "Mind AI жұмысының техникалық күйі", "model": "AI моделі", "connected": "Қосулы", "disconnected": "Байланыс жоқ", "offline": "Офлайн режим", "check": "Тексеру", "checking": "Тексерілуде…", "ocr_card": "Сканерлерді тану", "ocr_none": "Қолжетімсіз", "telegram": "Telegram-бот", "tg_on": "Қосулы", "tg_off": "Қосылмаған", "formats": "Пішімдер", "version": "Нұсқа", "account_sub": "Қауіпсіздік және кіру", "change_pw": "Құпиясөзді өзгерту", "old_pw": "Ағымдағы құпиясөз", "new_pw": "Жаңа құпиясөз", "pw_rule": "Кемінде 8 таңба, әріптер мен сандар", "pw_changed": "Құпиясөз өзгертілді", "logout_d": "Осы құрылғыдан шығу", "danger": "Қауіпті аймақ", "delete_acc": "Аккаунтты өшіру", "delete_acc_d": "Барлық құжаттар мен деректер өшіріледі", "confirm_pw": "Растау үшін құпиясөзді енгізіңіз", "confirm_del": "Аккаунтты біржола өшіру керек пе?", "you": "Сіз", "llm_down": "AI моделімен байланыс жоқ — жауаптар офлайн режимде", "err_password_short": "Құпиясөз кемінде 8 таңба болуы керек", "err_password_weak": "Құпиясөзде әріптер мен сандар болуы керек", "err_invalid": "Құпиясөз қате", "err_name_invalid": "Атыңызды енгізіңіз"});
+Object.assign(I18N.ru, {"dz_hint": "PDF, DOCX, PPTX, XLSX, фото", "settings": "Настройки", "set_profile": "Профиль", "set_appearance": "Внешний вид", "set_language": "Язык", "set_ai": "Ответы ИИ", "set_data": "Данные", "set_system": "О системе", "set_account": "Аккаунт", "profile_sub": "Информация о вас", "name": "Имя", "email": "Email", "save": "Сохранить", "saved": "Сохранено", "guest_note": "Вы в гостевом режиме. Зарегистрируйтесь, чтобы сохранить данные.", "appearance_sub": "Настройте интерфейс под себя", "theme": "Тема", "theme_system": "Системная", "theme_light": "Светлая", "theme_dark": "Тёмная", "font_size": "Размер текста", "font_size_d": "Для всего интерфейса", "f_s": "Мелкий", "f_m": "Средний", "f_l": "Крупный", "width": "Ширина чата", "width_d": "Для широких экранов", "w_normal": "Обычная", "w_wide": "Широкая", "language_sub": "Одна настройка — для всего Mind AI", "ui_lang": "Язык", "ui_lang_d": "Меню, карта документа и тесты. В чате бот отвечает на языке вашего вопроса", "answer_lang": "Язык ответов", "answer_lang_d": "«Авто» — на языке вопроса", "auto": "Авто", "ai_sub": "Как отвечает Mind AI", "style": "Стиль ответа", "style_d": "Длина и подробность ответов", "st_concise": "Кратко", "st_balanced": "Сбалансированно", "st_detailed": "Подробно", "show_sources": "Показывать источники", "show_sources_d": "Ссылки на документ и страницу под ответом", "show_trust": "Индикатор доверия", "show_trust_d": "«Подтверждено N источниками»", "suggestions": "Подсказки вопросов", "suggestions_d": "После загрузки документа", "data_sub": "Документы и история чата", "docs_count": "Загружено документов", "export": "Скачать чат", "export_d": "Весь диалог в файл .md", "clear_hist": "Очистить историю чата", "clear_hist_d": "Документы останутся", "delete_docs": "Удалить все документы", "delete_docs_d": "Действие нельзя отменить", "confirm_all": "Удалить все документы?", "done": "Готово", "do_it": "Выполнить", "system_sub": "Техническое состояние Mind AI", "model": "Модель ИИ", "connected": "Подключено", "disconnected": "Нет связи", "offline": "Офлайн-режим", "check": "Проверить", "checking": "Проверяю…", "ocr_card": "Распознавание сканов", "ocr_none": "Недоступно", "telegram": "Telegram-бот", "tg_on": "Подключён", "tg_off": "Не подключён", "formats": "Форматы", "version": "Версия", "account_sub": "Безопасность и вход", "change_pw": "Смена пароля", "old_pw": "Текущий пароль", "new_pw": "Новый пароль", "pw_rule": "Минимум 8 символов, буквы и цифры", "pw_changed": "Пароль изменён", "logout_d": "Выйти на этом устройстве", "danger": "Опасная зона", "delete_acc": "Удалить аккаунт", "delete_acc_d": "Все документы и данные будут удалены", "confirm_pw": "Введите пароль для подтверждения", "confirm_del": "Удалить аккаунт навсегда?", "you": "Вы", "llm_down": "Нет связи с моделью ИИ — ответы в офлайн-режиме", "err_password_short": "Пароль должен быть не короче 8 символов", "err_password_weak": "В пароле должны быть буквы и цифры", "err_invalid": "Неверный пароль", "err_name_invalid": "Введите имя"});
+Object.assign(I18N.en, {"dz_hint": "PDF, DOCX, PPTX, XLSX, photo", "settings": "Settings", "set_profile": "Profile", "set_appearance": "Appearance", "set_language": "Language", "set_ai": "AI answers", "set_data": "Data", "set_system": "System", "set_account": "Account", "profile_sub": "Information about you", "name": "Name", "email": "Email", "save": "Save", "saved": "Saved", "guest_note": "You are in guest mode. Sign up to keep your data.", "appearance_sub": "Make the interface yours", "theme": "Theme", "theme_system": "System", "theme_light": "Light", "theme_dark": "Dark", "font_size": "Text size", "font_size_d": "For the whole interface", "f_s": "Small", "f_m": "Medium", "f_l": "Large", "width": "Chat width", "width_d": "For wide screens", "w_normal": "Normal", "w_wide": "Wide", "language_sub": "One setting for all of Mind AI", "ui_lang": "Language", "ui_lang_d": "Menus, document map and quizzes. In chat the bot answers in the language of your question", "answer_lang": "Answer language", "answer_lang_d": "“Auto” — same as the question", "auto": "Auto", "ai_sub": "How Mind AI answers", "style": "Answer style", "style_d": "Length and level of detail", "st_concise": "Concise", "st_balanced": "Balanced", "st_detailed": "Detailed", "show_sources": "Show sources", "show_sources_d": "Document and page links under answers", "show_trust": "Trust indicator", "show_trust_d": "“Backed by N sources”", "suggestions": "Question suggestions", "suggestions_d": "After a document is uploaded", "data_sub": "Documents and chat history", "docs_count": "Documents uploaded", "export": "Download chat", "export_d": "The whole conversation as .md", "clear_hist": "Clear chat history", "clear_hist_d": "Documents are kept", "delete_docs": "Delete all documents", "delete_docs_d": "This cannot be undone", "confirm_all": "Delete all documents?", "done": "Done", "do_it": "Run", "system_sub": "Technical status of Mind AI", "model": "AI model", "connected": "Connected", "disconnected": "Unreachable", "offline": "Offline mode", "check": "Check", "checking": "Checking…", "ocr_card": "Scan recognition", "ocr_none": "Unavailable", "telegram": "Telegram bot", "tg_on": "Connected", "tg_off": "Not connected", "formats": "Formats", "version": "Version", "account_sub": "Security and sign-in", "change_pw": "Change password", "old_pw": "Current password", "new_pw": "New password", "pw_rule": "At least 8 characters, letters and digits", "pw_changed": "Password changed", "logout_d": "Sign out on this device", "danger": "Danger zone", "delete_acc": "Delete account", "delete_acc_d": "All documents and data will be deleted", "confirm_pw": "Enter your password to confirm", "confirm_del": "Delete your account forever?", "you": "You", "llm_down": "AI model unreachable — answers in offline mode", "err_password_short": "Password must be at least 8 characters", "err_password_weak": "Password must contain letters and digits", "err_invalid": "Wrong password", "err_name_invalid": "Enter your name"});
 
 Object.assign(I18N.kk, {"theme_sepia": "Қағаз", "theme_midnight": "Түнгі", "accent": "Акцент түсі", "accent_d": "Батырмалар мен сілтемелер", "ac_graphite": "Графит", "ac_indigo": "Индиго", "ac_emerald": "Изумруд", "ac_ocean": "Мұхит", "ac_amber": "Янтарь", "ac_rose": "Раушан"});
 Object.assign(I18N.ru, {"theme_sepia": "Бумага", "theme_midnight": "Полночь", "accent": "Акцентный цвет", "accent_d": "Кнопки и ссылки", "ac_graphite": "Графит", "ac_indigo": "Индиго", "ac_emerald": "Изумруд", "ac_ocean": "Океан", "ac_amber": "Янтарь", "ac_rose": "Роза"});
@@ -190,6 +190,9 @@ Object.assign(I18N.en, {"mm_model": "Model", "mm_style": "Answer style", "lite":
 Object.assign(I18N.kk, {"pro_d": "Беттерді «көреді»: PDF-тағы кестелер, графиктер мен сызбалар", "vision_seen": "Mind Pro беттерді қарады", "tab_cmp": "Салыстыру", "cmp_h": "Нұсқаларды салыстыру", "cmp_sub": "Келісімшарттың, ереженің немесе нұсқаулықтың екі нұсқасын жүктеңіз — не қосылғанын, өшірілгенін және өзгергенін көресіз.", "cmp_old": "Бұрынғы", "cmp_new": "Жаңа", "cmp_go": "Салыстыру", "cmp_need": "Салыстыру үшін құжаттың екі нұсқасын жүктеңіз", "cmp_added": "қосылды", "cmp_removed": "өшірілді", "cmp_changed": "өзгерді", "cmp_similar": "сәйкестік", "cmp_same": "Құжаттардың мәтіні бірдей", "cmp_points": "Негізгі өзгерістер", "cmp_attention": "Назар аударыңыз", "cmp_all": "Барлық өзгерістер", "comparing": "Нұсқаларды салыстырып жатырмын…", "cmp_pick2": "Екі түрлі құжатты таңдаңыз", "cmp_trunc": "Алғашқы 300 өзгеріс көрсетілген"});
 Object.assign(I18N.ru, {"pro_d": "«Видит» страницы: таблицы, графики и схемы в PDF", "vision_seen": "Mind Pro посмотрел страницы", "tab_cmp": "Сравнение", "cmp_h": "Сравнение версий", "cmp_sub": "Загрузите две версии договора, регламента или инструкции — и увидите, что добавили, удалили и изменили.", "cmp_old": "Было", "cmp_new": "Стало", "cmp_go": "Сравнить", "cmp_need": "Загрузите две версии документа, чтобы сравнить их", "cmp_added": "добавлено", "cmp_removed": "удалено", "cmp_changed": "изменено", "cmp_similar": "совпадение", "cmp_same": "Тексты документов совпадают", "cmp_points": "Главные изменения", "cmp_attention": "Обратите внимание", "cmp_all": "Все изменения", "comparing": "Сравниваю версии…", "cmp_pick2": "Выберите два разных документа", "cmp_trunc": "Показаны первые 300 изменений"});
 Object.assign(I18N.en, {"pro_d": "“Sees” the pages: tables, charts and diagrams in PDFs", "vision_seen": "Mind Pro looked at the pages", "tab_cmp": "Compare", "cmp_h": "Compare versions", "cmp_sub": "Upload two versions of a contract, policy or instruction — and see what was added, removed and changed.", "cmp_old": "Before", "cmp_new": "After", "cmp_go": "Compare", "cmp_need": "Upload two versions of a document to compare them", "cmp_added": "added", "cmp_removed": "removed", "cmp_changed": "changed", "cmp_similar": "match", "cmp_same": "The documents have the same text", "cmp_points": "Key changes", "cmp_attention": "Pay attention", "cmp_all": "All changes", "comparing": "Comparing versions…", "cmp_pick2": "Choose two different documents", "cmp_trunc": "Showing the first 300 changes"});
+Object.assign(I18N.kk, {"exporting": "Файл дайындалуда…", "export_as": "Жүктеп алу", "mode_quiz": "Тест", "mode_cards": "Карточкалар", "cards_intro": "Карточкалар саны", "cards_start": "Карточкаларды бастау", "cards_gen": "Карточкалар жасалуда…", "flip": "Жауапты көру үшін басыңыз", "again": "Қайталау", "know": "Білемін", "card_n": "Карточка", "left": "қалды", "cards_done": "Барлық карточка меңгерілді!", "cards_stat": "Бірден білдіңіз: {k} / {n}", "cards_again": "Қайтадан", "new_cards": "Жаңа карточкалар", "quiz_new_note": "Әр жолы — жаңа сұрақтар"});
+Object.assign(I18N.ru, {"exporting": "Готовлю файл…", "export_as": "Скачать", "mode_quiz": "Тест", "mode_cards": "Карточки", "cards_intro": "Количество карточек", "cards_start": "Начать карточки", "cards_gen": "Создаю карточки…", "flip": "Нажмите, чтобы увидеть ответ", "again": "Повторить", "know": "Знаю", "card_n": "Карточка", "left": "осталось", "cards_done": "Все карточки выучены!", "cards_stat": "Знали сразу: {k} из {n}", "cards_again": "Пройти снова", "new_cards": "Новые карточки", "quiz_new_note": "Каждый раз — новые вопросы"});
+Object.assign(I18N.en, {"exporting": "Preparing the file…", "export_as": "Download", "mode_quiz": "Quiz", "mode_cards": "Flashcards", "cards_intro": "Number of cards", "cards_start": "Start flashcards", "cards_gen": "Creating flashcards…", "flip": "Tap to see the answer", "again": "Again", "know": "I know it", "card_n": "Card", "left": "left", "cards_done": "All cards learned!", "cards_stat": "Known at once: {k} of {n}", "cards_again": "Go again", "new_cards": "New cards", "quiz_new_note": "New questions every time"});
 
 const $ = (s) => document.querySelector(s);
 const state = {
@@ -201,7 +204,8 @@ const state = {
   view: "chat",
   mapDoc: null,
   mapCache: {},
-  cmpA: null, cmpB: null, cmp: null,  // сравнение версий: выбранные документы и последний результат
+  cmpA: null, cmpB: null, cmp: null,
+  quizMode: "quiz", cards: null, cardsN: 10,  // режим вкладки «Проверка знаний»: тест или карточки  // сравнение версий: выбранные документы и последний результат
   quizDoc: null,
   quiz: null,
   quizN: 5,
@@ -238,6 +242,7 @@ function applyI18n() {
   if (state.view === "quiz") renderQuiz();
   if (state.view === "compare") renderCompare();
   if (!$("#settings").hidden) renderSettings();
+  if (state.log.length && !state.busy) renderLog([...state.log]);
 }
 
 /* ================= API ================= */
@@ -259,6 +264,20 @@ function toast(text, isError = false) {
 
 /* ================= markdown ================= */
 const icon = (name) => `<svg><use href="#i-${name}"/></svg>`;
+
+// «стр. 2» / «бет 2» / «p. 2» — на текущем языке интерфейса (сервер присылает подпись на языке ответа)
+const LOC_NAMES = {
+  page: { kk: "бет", ru: "стр.", en: "p." }, slide: { kk: "слайд", ru: "слайд", en: "slide" },
+  sheet: { kk: "парақ", ru: "лист", en: "sheet" }, section: { kk: "бөлім", ru: "раздел", en: "section" },
+  image: { kk: "сурет", ru: "изображение", en: "image" },
+};
+function locLabel(item) {
+  const loc = item && item.loc;
+  if (!loc) return (item && item.loc_label) || "";
+  const names = LOC_NAMES[loc.type] || LOC_NAMES.section;
+  if (loc.type === "image") return names[state.lang];
+  return loc.value === null || loc.value === undefined || loc.value === "" ? "" : `${names[state.lang]} ${loc.value}`;
+}
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 function inline(s) {
@@ -507,7 +526,7 @@ function renderSources(body, sources, cited, evidenceQuery) {
     b.type = "button";
     b.className = "src-chip";
     b.dataset.n = s.n;
-    b.innerHTML = `<span class="n">${s.n}</span><span class="t">${esc(s.doc_name)}${s.loc_label ? " · " + esc(s.loc_label) : ""}</span>`;
+    b.innerHTML = `<span class="n">${s.n}</span><span class="t">${esc(s.doc_name)}${locLabel(s) ? " · " + esc(locLabel(s)) : ""}</span>`;
     b.onclick = () => open(s.n);
     chips.appendChild(b);
   }
@@ -547,7 +566,7 @@ async function openEvidence(chunkId, query) {
   $("#evQuote").innerHTML = "";
   try {
     const info = await api(`/api/chunk?chunk=${encodeURIComponent(chunkId)}&lang=${state.lang}`);
-    $("#evName").textContent = `${info.doc_name}${info.loc_label ? " · " + info.loc_label : ""}`;
+    $("#evName").textContent = `${info.doc_name}${locLabel(info) ? " · " + locLabel(info) : ""}`;
     $("#evOpen").href = fileUrl(info.doc_id, info.loc);
     $("#evQuote").innerHTML = highlightText(info.text, query);
     if (!info.has_page) { $("#evPage").innerHTML = ""; return; }
@@ -567,16 +586,22 @@ function closeEvidence() {
   $("#scrim").classList.remove("show");
 }
 
-function addTools(body, getText) {
+function addTools(body, msg, question) {
   const tools = document.createElement("div");
   tools.className = "msg-tools";
-  const copy = document.createElement("button");
-  copy.type = "button";
-  copy.textContent = L("copy");
-  copy.onclick = async () => {
-    try { await navigator.clipboard.writeText(getText()); toast(L("copied")); } catch (_) {}
+  const button = (label, onclick) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = label;
+    b.onclick = onclick;
+    tools.appendChild(b);
   };
-  tools.appendChild(copy);
+  button(L("copy"), async () => {
+    try { await navigator.clipboard.writeText(msg.text); toast(L("copied")); } catch (_) {}
+  });
+  const exp = (format) => () => downloadExport({ format, kind: "answer", question: question || "", answer: msg.text, sources: msg.sources || [] });
+  button("PDF", exp("pdf"));
+  button("Word", exp("docx"));
   body.appendChild(tools);
 }
 
@@ -585,7 +610,7 @@ function addVisionNote(body, pages) {
   const note = document.createElement("div");
   note.className = "vision-note";
   note.innerHTML = `${icon("eye")}<span>${L("vision_seen")}:</span>` + pages.map((p) =>
-    `<a href="${fileUrl(p.doc_id, p.loc)}" target="_blank" rel="noopener">${esc(p.loc_label || p.doc_name)}</a>`).join("");
+    `<a href="${fileUrl(p.doc_id, p.loc)}" target="_blank" rel="noopener">${esc(locLabel(p) || p.doc_name)}</a>`).join("");
   body.insertBefore(note, body.querySelector(".bubble"));
 }
 
@@ -597,6 +622,7 @@ async function ask(question) {
   $("#sendBtn").disabled = true;
   hideWelcome();
   $("#suggestions").innerHTML = "";
+  document.querySelectorAll("#messages .followups").forEach((el) => el.remove());
   addUserMessage(question);
   state.log.push({ role: "user", text: question });
   const { body } = addBotMessage();
@@ -604,8 +630,23 @@ async function ask(question) {
   bubble.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
   scrollDown();
 
-  let text = "", sources = [], cited = [], frame = 0;
+  let text = "", sources = [], cited = [], frame = 0, finished = false;
   const paint = () => { frame = 0; bubble.innerHTML = md(text); scrollDown(); };
+  // ответ готов на событии «done» — подсказки следующего вопроса приходят чуть позже, не держим ввод
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    if (frame) cancelAnimationFrame(frame);
+    paint();
+    renderSources(body, sources, cited, question + " " + text.slice(0, 300));
+    const byN = Object.fromEntries(sources.map((x) => [x.n, x]));
+    const entry = { role: "bot", text, sources: cited.map((n) => byN[n]).filter(Boolean) };
+    state.log.push(entry);
+    addTools(body, entry, question);
+    state.busy = false;
+    $("#sendBtn").disabled = false;
+    scrollDown();
+  };
 
   try {
     const res = await fetch("/api/ask", {
@@ -632,23 +673,62 @@ async function ask(question) {
         else if (ev.type === "sources") sources = ev.sources;
         else if (ev.type === "vision") addVisionNote(body, ev.pages);
         else if (ev.type === "delta") { text += ev.text; if (!frame) frame = requestAnimationFrame(paint); }
-        else if (ev.type === "done") cited = ev.cited || [];
+        else if (ev.type === "done") { cited = ev.cited || []; finish(); }
+        else if (ev.type === "followups") addFollowups(body, ev.items);
         else if (ev.type === "error") toast(`${L("error")}: ${ev.message}`, true);
       }
     }
-    if (frame) cancelAnimationFrame(frame);
-    paint();
-    renderSources(body, sources, cited, question + " " + text.slice(0, 300));
-    const byN = Object.fromEntries(sources.map((x) => [x.n, x]));
-    state.log.push({ role: "bot", text, sources: cited.map((n) => byN[n]).filter(Boolean) });
-    loadChats();
-    addTools(body, () => text);
+    finish();
+    loadChats();  // после конца потока — сервер к этому моменту сохранил ответ в чат
   } catch (e) {
-    bubble.textContent = `${L("error")}: ${e.message}`;
+    if (!finished) bubble.textContent = `${L("error")}: ${e.message}`;
   } finally {
-    state.busy = false;
-    $("#sendBtn").disabled = false;
+    if (!finished) {
+      state.busy = false;
+      $("#sendBtn").disabled = false;
+    }
     scrollDown();
+  }
+}
+
+// Подсказки следующего вопроса — только под последним ответом
+function addFollowups(body, items) {
+  if (!items || !items.length || body !== $("#messages").lastElementChild?.querySelector(".body")) return;
+  document.querySelectorAll("#messages .followups").forEach((el) => el.remove());
+  const box = document.createElement("div");
+  box.className = "followups";
+  for (const q of items) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = `${icon("chev")}<span>${esc(q)}</span>`;
+    b.onclick = () => ask(q);
+    box.appendChild(b);
+  }
+  body.appendChild(box);
+  scrollDown();
+}
+
+/* ---------- экспорт в PDF / DOCX ---------- */
+async function downloadExport(payload) {
+  if (state.anon) return requireLogin("any");
+  toast(L("exporting"));
+  try {
+    const res = await fetch("/api/export", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lang: state.lang, ...payload }),
+    });
+    if (res.status === 401) return requireLogin("any");
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.status);
+    const cd = res.headers.get("Content-Disposition") || "";
+    const name = decodeURIComponent((cd.match(/filename\*=UTF-8''([^;]+)/) || [])[1] || `mind-ai.${payload.format}`);
+    const url = URL.createObjectURL(await res.blob());
+    const a = Object.assign(document.createElement("a"), { href: url, download: name });
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  } catch (e) {
+    toast(`${L("error")}: ${e.message}`, true);
   }
 }
 
@@ -694,7 +774,7 @@ function renderPicker(selector, key, onChange) {
 const emptyState = () => `<button type="button" class="empty-state" data-upload><div class="big">${icon("upload")}</div><b>${L("need_doc_t")}</b>${L("need_doc")}</button>`;
 const loadingState = (text) => `<div class="loading"><span class="spinner"></span>${text}</div>`;
 const locLink = (item) => (item.chunk_id
-  ? ` <button class="loc-link" data-chunk="${esc(item.chunk_id)}" data-q="${esc(item.quote || "")}">${esc(item.loc_label || L("evidence"))}</button>`
+  ? ` <button class="loc-link" data-chunk="${esc(item.chunk_id)}" data-q="${esc(item.quote || "")}">${esc(locLabel(item) || L("evidence"))}</button>`
   : "");
 
 /* ---------- карта документа ---------- */
@@ -833,17 +913,29 @@ function paintCompare(r) {
       ${sm.points.length ? `<div class="panel"><h4>${icon("spark")}${L("cmp_points")}</h4>${list(sm.points, "cmp-points")}</div>` : ""}
       ${sm.attention.length ? `<div class="panel warn"><h4>${icon("pin")}${L("cmp_attention")}</h4>${list(sm.attention, "cmp-points")}</div>` : ""}
     </div>` : ""}
-    <h4 class="cmp-h">${L("cmp_all")} · ${st.total}</h4>
+    <div class="cmp-head"><h4 class="cmp-h">${L("cmp_all")} · ${st.total}</h4>
+      <div class="cmp-export"><span>${L("export_as")}:</span><button type="button" class="btn ghost" data-fmt="pdf">PDF</button><button type="button" class="btn ghost" data-fmt="docx">Word</button></div></div>
     <div class="cmp-list">${r.changes.map(change).join("")}</div>
     ${r.truncated ? `<p class="muted">${L("cmp_trunc")}</p>` : ""}`;
+  $("#cmpBody").querySelectorAll("[data-fmt]").forEach((b) => (b.onclick = () =>
+    downloadExport({ format: b.dataset.fmt, kind: "compare", a: r.a.id, b: r.b.id })));
 }
 
 /* ---------- проверка знаний ---------- */
+function renderQuizMode() {
+  const box = $("#quizMode");
+  box.innerHTML = [["quiz", L("mode_quiz")], ["cards", L("mode_cards")]].map(([k, label]) =>
+    `<button type="button" data-mode="${k}" class="${state.quizMode === k ? "active" : ""}">${label}</button>`).join("");
+  box.querySelectorAll("button").forEach((b) => (b.onclick = () => { state.quizMode = b.dataset.mode; renderQuiz(); }));
+}
+
 function renderQuiz() {
-  renderPicker("#quizPicker", "quizDoc", () => { state.quiz = null; renderQuiz(); });
+  renderQuizMode();
+  renderPicker("#quizPicker", "quizDoc", () => { state.quiz = null; state.cards = null; renderQuiz(); });
   const body = $("#quizBody");
   const doc = currentDoc("quizDoc");
   if (!doc) { body.innerHTML = emptyState(); return; }
+  if (state.quizMode === "cards") return renderCards(doc);
   const qz = state.quiz && state.quiz.docId === doc.id ? state.quiz : null;
   if (!qz) return paintQuizStart(doc);
   if (qz.loading) { body.innerHTML = loadingState(L("generating")); return; }
@@ -856,7 +948,7 @@ function paintQuizStart(doc) {
     <div class="quiz-start">
       <div class="big">${icon("quiz")}</div>
       <h3>${esc(doc.name)}</h3>
-      <div class="muted">${L("quiz_intro")}</div>
+      <div class="muted">${L("quiz_intro")} · ${L("quiz_new_note")}</div>
       <div class="seg">${[5, 7, 10].map((n) => `<button type="button" data-n="${n}" class="${n === state.quizN ? "active" : ""}">${n}</button>`).join("")}</div>
       <div><button class="btn" id="quizGo">${L("quiz_start")}</button></div>
     </div>`;
@@ -935,6 +1027,92 @@ function paintQuizResult(doc, qz) {
     </div>`;
   $("#qRetry").onclick = () => { qz.i = 0; qz.answers = []; renderQuiz(); };
   $("#qNew").onclick = () => startQuiz(doc);
+}
+
+/* ---------- карточки для запоминания ---------- */
+function renderCards(doc) {
+  const body = $("#quizBody");
+  const cs = state.cards && state.cards.docId === doc.id ? state.cards : null;
+  if (!cs) {
+    body.innerHTML = `
+      <div class="quiz-start">
+        <div class="big">${icon("book")}</div>
+        <h3>${esc(doc.name)}</h3>
+        <div class="muted">${L("cards_intro")}</div>
+        <div class="seg">${[6, 10, 15].map((n) => `<button type="button" data-n="${n}" class="${n === state.cardsN ? "active" : ""}">${n}</button>`).join("")}</div>
+        <div><button class="btn" id="cardsGo">${L("cards_start")}</button></div>
+      </div>`;
+    body.querySelectorAll(".seg button").forEach((b) => (b.onclick = () => { state.cardsN = +b.dataset.n; renderCards(doc); }));
+    $("#cardsGo").onclick = () => startCards(doc);
+    return;
+  }
+  if (cs.loading) { body.innerHTML = loadingState(L("cards_gen")); return; }
+  if (!cs.queue.length) return paintCardsDone(doc, cs);
+  const card = cs.cards[cs.queue[0]];
+  const done = cs.cards.length - cs.queue.length;
+  body.innerHTML = `
+    <div class="fc-wrap">
+      <div class="q-top"><span>${L("card_n")} ${done + 1} / ${cs.cards.length}</span><span>${cs.queue.length} ${L("left")}</span></div>
+      <div class="progress"><div style="width:${(done / cs.cards.length) * 100}%"></div></div>
+      <button type="button" class="fc ${cs.flipped ? "flipped" : ""}" id="fcCard" aria-live="polite">
+        <span class="fc-inner">
+          <span class="fc-face fc-front"><b>${esc(card.front)}</b><small>${L("flip")}</small></span>
+          <span class="fc-face fc-back"><b>${esc(card.back)}</b>${card.quote ? `<small>«${esc(card.quote)}»</small>` : ""}</span>
+        </span>
+      </button>
+      <div class="fc-actions" ${cs.flipped ? "" : "hidden"}>
+        ${locLink(card)}
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost" id="fcAgain">${L("again")}</button>
+        <button type="button" class="btn" id="fcKnow">${L("know")}</button>
+      </div>
+    </div>`;
+  $("#fcCard").onclick = () => { cs.flipped = !cs.flipped; renderCards(doc); };
+  const next = (known) => {
+    const i = cs.queue.shift();
+    if (known) { if (!cs.missed.has(i)) cs.knownFirst += 1; }
+    else { cs.missed.add(i); cs.queue.push(i); }
+    cs.flipped = false;
+    renderCards(doc);
+  };
+  if (cs.flipped) {
+    $("#fcAgain").onclick = () => next(false);
+    $("#fcKnow").onclick = () => next(true);
+  }
+}
+
+async function startCards(doc) {
+  state.cards = { docId: doc.id, loading: true };
+  renderQuiz();
+  try {
+    const data = await api(`/api/documents/${doc.id}/cards?lang=${state.lang}&n=${state.cardsN}`);
+    if (!state.cards || state.cards.docId !== doc.id) return;
+    const cards = data.cards || [];
+    if (!cards.length) { state.cards = null; $("#quizBody").innerHTML = `<div class="empty-state">${L("nothing")}</div>`; return; }
+    state.cards = { docId: doc.id, cards, queue: cards.map((_, i) => i), missed: new Set(), knownFirst: 0, flipped: false };
+  } catch (e) {
+    state.cards = null;
+    toast(`${L("error")}: ${e.message}`, true);
+  }
+  if (state.view === "quiz" && state.quizMode === "cards") renderQuiz();
+}
+
+function paintCardsDone(doc, cs) {
+  $("#quizBody").innerHTML = `
+    <div class="quiz-start">
+      <div class="big">${icon("check")}</div>
+      <h3>${L("cards_done")}</h3>
+      <div class="muted">${L("cards_stat").replace("{k}", cs.knownFirst).replace("{n}", cs.cards.length)} · ${esc(doc.name)}</div>
+      <div class="q-actions" style="justify-content:center;gap:8px">
+        <button class="btn ghost" type="button" id="fcRetry">${L("cards_again")}</button>
+        <button class="btn" type="button" id="fcNew">${L("new_cards")}</button>
+      </div>
+    </div>`;
+  $("#fcRetry").onclick = () => {
+    Object.assign(cs, { queue: cs.cards.map((_, i) => i), missed: new Set(), knownFirst: 0, flipped: false });
+    renderCards(doc);
+  };
+  $("#fcNew").onclick = () => startCards(doc);
 }
 
 /* ================= пользователь ================= */
@@ -1086,8 +1264,7 @@ const TABS = {
   language() {
     const opts = [["auto", L("auto")], ["kk", "Қазақша"], ["ru", "Русский"], ["en", "English"]];
     return head("language") + `<div class="set-group">
-      ${segRow("ui_lang", L("ui_lang"), L("ui_lang_d"), opts)}
-      ${segRow("answer_lang", L("answer_lang"), L("answer_lang_d"), opts)}</div>`;
+      ${segRow("ui_lang", L("ui_lang"), L("ui_lang_d"), opts)}</div>`;
   },
   ai() {
     return head("ai") + `<div class="set-group">
@@ -1286,15 +1463,13 @@ function newChat() {
   $("#question").focus();
 }
 
-async function openChat(id) {
-  if (state.busy) return;
-  const chat = await api(`/api/chats/${id}`).catch(() => null);
-  if (!chat) { await loadChats(); return; }
-  state.chatId = id;
+// Рисует диалог заново — при открытии чата и при смене языка (подписи «Копировать», «стр.» и т.п.)
+function renderLog(log) {
   resetChatView();
+  if (!log.length) return;
   hideWelcome();
   let lastQuestion = "";
-  for (const m of chat.messages) {
+  for (const m of log) {
     if (m.role === "user") {
       addUserMessage(m.text);
       lastQuestion = m.text;
@@ -1303,10 +1478,18 @@ async function openChat(id) {
       body.querySelector(".bubble").innerHTML = md(m.text);
       const sources = m.sources || [];
       renderSources(body, sources, sources.map((x) => x.n), lastQuestion + " " + m.text.slice(0, 300));
-      addTools(body, () => m.text);
+      addTools(body, m, lastQuestion);
     }
-    state.log.push({ role: m.role, text: m.text, sources: m.sources });
+    state.log.push(m);
   }
+}
+
+async function openChat(id) {
+  if (state.busy) return;
+  const chat = await api(`/api/chats/${id}`).catch(() => null);
+  if (!chat) { await loadChats(); return; }
+  state.chatId = id;
+  renderLog(chat.messages.map((m) => ({ role: m.role, text: m.text, sources: m.sources })));
   renderChats();
   setView("chat");
   scrollDown();
