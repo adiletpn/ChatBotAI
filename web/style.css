@@ -558,3 +558,16 @@ textarea:focus-visible, .input:focus-visible, .code-boxes input:focus-visible { 
 .brand .logo-ai { font-size: 17px; margin-bottom: 3px; }
 .auth-brand .logo-ai { font-size: 19px; margin-bottom: 4px; }
 .welcome-mark .logo-ai { font-size: 36px; margin-bottom: 6px; }
+
+/* единый логотип «mind AI»: рукопись + гротеск на одной базовой линии, одним цветом */
+.wordmark { aspect-ratio: 2686 / 831; width: auto; flex: none; color: var(--text); }
+.brand .wordmark { height: 30px; }
+.auth-brand .wordmark { height: 36px; }
+.welcome-mark .wordmark { height: 66px; }
+
+.wordmark { aspect-ratio: 2769 / 831; }
+.welcome-mark .wordmark, .welcome-mark svg.wordmark { width: auto; height: 70px; }
+.brand { align-items: flex-start; }
+.brand > div:nth-child(1) { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.brand > div:nth-child(1) { align-items: flex-start; }
+.welcome-mark { margin-bottom: 22px; }
