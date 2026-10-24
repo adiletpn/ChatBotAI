@@ -176,6 +176,10 @@ Object.assign(I18N.kk, {"chats": "Чаттар", "new_chat": "Жаңа чат", 
 Object.assign(I18N.ru, {"chats": "Чаты", "new_chat": "Новый чат", "no_chats": "Чатов пока нет — задайте вопрос", "cancel": "Отмена", "del_chat_t": "Удалить этот чат?", "del_chat_d": "Чат «{t}» будет удалён без возможности восстановления.", "del_doc_t": "Удалить документ?", "del_doc_d": "«{t}» и все его фрагменты будут удалены.", "del_all_docs_t": "Удалить все документы?", "del_all_chats_t": "Удалить все чаты?", "irreversible": "Это действие нельзя отменить.", "del_acc_t": "Удалить аккаунт?", "clear_hist": "Удалить все чаты", "clear_hist_d": "Документы останутся", "chat_deleted": "Чат удалён", "untitled": "Новый чат"});
 Object.assign(I18N.en, {"chats": "Chats", "new_chat": "New chat", "no_chats": "No chats yet — ask a question", "cancel": "Cancel", "del_chat_t": "Delete this chat?", "del_chat_d": "The chat “{t}” will be permanently deleted.", "del_doc_t": "Delete the document?", "del_doc_d": "“{t}” and all its fragments will be deleted.", "del_all_docs_t": "Delete all documents?", "del_all_chats_t": "Delete all chats?", "irreversible": "This cannot be undone.", "del_acc_t": "Delete your account?", "clear_hist": "Delete all chats", "clear_hist_d": "Documents are kept", "chat_deleted": "Chat deleted", "untitled": "New chat"});
 
+Object.assign(I18N.kk, {"gate_t": "Жалғастыру үшін кіріңіз", "gate_ask": "Сұрақ қою үшін кіріңіз немесе аккаунт құрыңыз — бұл бір минут алады.", "gate_upload": "Құжат жүктеу үшін кіріңіз немесе аккаунт құрыңыз — бұл бір минут алады.", "gate_any": "Бұл мүмкіндік тек аккаунтпен қолжетімді.", "sign_in": "Кіру", "sign_up": "Аккаунт құру", "later": "Кейінірек", "anon": "Қонақ", "anon_hint": "Кіру немесе тіркелу"});
+Object.assign(I18N.ru, {"gate_t": "Войдите, чтобы продолжить", "gate_ask": "Чтобы задать вопрос, войдите или создайте аккаунт — это займёт минуту.", "gate_upload": "Чтобы загрузить документ, войдите или создайте аккаунт — это займёт минуту.", "gate_any": "Эта возможность доступна после входа.", "sign_in": "Войти", "sign_up": "Создать аккаунт", "later": "Позже", "anon": "Гость", "anon_hint": "Войти или зарегистрироваться"});
+Object.assign(I18N.en, {"gate_t": "Sign in to continue", "gate_ask": "To ask a question, sign in or create an account — it takes a minute.", "gate_upload": "To upload a document, sign in or create an account — it takes a minute.", "gate_any": "This is available after you sign in.", "sign_in": "Sign in", "sign_up": "Create account", "later": "Later", "anon": "Guest", "anon_hint": "Sign in or sign up"});
+
 const $ = (s) => document.querySelector(s);
 const state = {
   lang: pickLang(),
@@ -225,7 +229,7 @@ function applyI18n() {
 /* ================= API ================= */
 async function api(path, options = {}) {
   const res = await fetch(path, options);
-  if (res.status === 401) { location.href = "/login"; throw new Error("401"); }
+  if (res.status === 401) { requireLogin("any"); throw new Error("401"); }
   if (!res.ok) throw new Error((await res.text()) || res.statusText);
   return res.json();
 }
@@ -364,6 +368,7 @@ async function loadDocs() {
 
 async function uploadFiles(files) {
   if (!files.length) return;
+  if (state.anon) return requireLogin("upload");
   const names = [...files].map((f) => f.name);
   const dz = $("#dropzone");
   dz.classList.add("busy");
@@ -563,6 +568,7 @@ function addTools(body, getText) {
 async function ask(question) {
   question = question.trim();
   if (!question || state.busy) return;
+  if (state.anon) return requireLogin("ask", question);
   state.busy = true;
   $("#sendBtn").disabled = true;
   hideWelcome();
@@ -583,7 +589,7 @@ async function ask(question) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question, doc_ids: state.selected.size ? [...state.selected] : null, chat_id: state.chatId }),
     });
-    if (res.status === 401) { location.href = "/login"; return; }
+    if (res.status === 401) { requireLogin("ask", question); return; }
     if (!res.ok || !res.body) throw new Error(await res.text());
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
@@ -829,8 +835,34 @@ function paintQuizResult(doc, qz) {
 }
 
 /* ================= пользователь ================= */
+// гость видит интерфейс; вопрос, загрузка и данные — только после входа
+function requireLogin(reason, pendingQuestion) {
+  if (pendingQuestion) { try { sessionStorage.setItem("mind_pending_q", pendingQuestion); } catch (_) {} }
+  if (document.querySelector(".confirm")) return;
+  const text = { ask: L("gate_ask"), upload: L("gate_upload") }[reason] || L("gate_any");
+  const wrap = document.createElement("div");
+  wrap.className = "confirm";
+  wrap.innerHTML = `<div class="confirm-card" role="dialog" aria-modal="true">
+    <h3>${esc(L("gate_t"))}</h3><p>${esc(text)}</p>
+    <div class="row-actions"><button type="button" class="btn ghost" data-go="later">${L("later")}</button>
+    <button type="button" class="btn ghost" data-go="register">${L("sign_up")}</button>
+    <button type="button" class="btn" data-go="login">${L("sign_in")}</button></div></div>`;
+  wrap.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-go]");
+    if (b && b.dataset.go !== "later") { location.href = b.dataset.go === "register" ? "/login?mode=register" : "/login"; return; }
+    if (b || e.target === wrap) wrap.remove();
+  });
+  document.body.appendChild(wrap);
+  wrap.querySelector('[data-go="login"]').focus();
+}
+
 function renderUser() {
   const u = state.user;
+  if (state.anon) {
+    $("#userAvatar").textContent = "?";
+    $("#userName").innerHTML = `${L("anon")}<small>${L("anon_hint")}</small>`;
+    return;
+  }
   if (!u) return;
   $("#userAvatar").textContent = (u.guest ? "G" : (u.name || "?").trim()[0]) || "?";
   $("#userName").innerHTML = u.guest ? `${L("guest")}<small>${L("settings")}</small>` : `${esc(u.name)}<small>${esc(u.email)}</small>`;
@@ -1214,7 +1246,9 @@ function init() {
 
   const fileInput = $("#fileInput");
   fileInput.onchange = () => uploadFiles(fileInput.files);
-  $("#attachBtn").onclick = () => fileInput.click();
+  $("#attachBtn").onclick = () => (state.anon ? requireLogin("upload") : fileInput.click());
+  // гостю — приглашение войти ещё до окна выбора файла
+  $("#dropzone").addEventListener("click", (e) => { if (state.anon) { e.preventDefault(); requireLogin("upload"); } });
 
   // Drag & drop — на всё окно
   const dz = $("#dropzone");
@@ -1246,15 +1280,26 @@ function init() {
   document.addEventListener("click", (e) => {
     const link = e.target.closest(".loc-link");
     if (link) openEvidence(link.dataset.chunk, link.dataset.q);
-    if (e.target.closest("[data-upload]")) $("#fileInput").click();
+    if (e.target.closest("[data-upload]")) (state.anon ? requireLogin("upload") : $("#fileInput").click());
   });
 
-  $("#userCard").onclick = () => openSettings();
+  $("#userCard").onclick = () => (state.anon ? (location.href = "/login") : openSettings());
   $("#setClose").onclick = closeSettings;
   $("#settings").onclick = (e) => { if (e.target.id === "settings") closeSettings(); };
   $("#setNav").onclick = (e) => { const b = e.target.closest("button"); if (b) { state.setTab = b.dataset.tab; renderSettings(); } };
   bindSettings();
-  api("/api/auth/me").then((u) => { state.user = u; renderUser(); applyPrefs(); }).catch(() => {});
+  // вошёл ли пользователь: гостю показываем интерфейс без данных
+  fetch("/api/auth/me").then(async (res) => {
+    if (!res.ok) { state.anon = true; renderUser(); renderDocs(); renderChats(); return; }
+    state.user = await res.json();
+    renderUser();
+    applyPrefs();
+    loadDocs().catch((e) => toast(e.message, true));
+    loadChats();
+    let pending = null;  // вопрос, набранный до входа, возвращаем в поле ввода
+    try { pending = sessionStorage.getItem("mind_pending_q"); sessionStorage.removeItem("mind_pending_q"); } catch (_) {}
+    if (pending) { $("#question").value = pending; autosize(); $("#question").focus(); }
+  }).catch(() => {});
 
   $("#openSidebar").onclick = () => $("#sidebar").classList.add("open");
   $("#closeSidebar").onclick = () => $("#sidebar").classList.remove("open");
@@ -1264,8 +1309,6 @@ function init() {
     // реально проверяем модель; если связи нет — одно уведомление вместо постоянной строки
     if (s.llm_enabled) api("/api/llm-check").then((c) => { s.llm_ok = c.ok; if (!c.ok) toast(L("llm_down"), true); }).catch(() => {});
   }).catch(() => {});
-  loadDocs().catch((e) => toast(e.message, true));
-  loadChats();
 }
 
 init();
