@@ -684,3 +684,30 @@ textarea:focus-visible, .input:focus-visible, .code-boxes input:focus-visible { 
   .set-nav button { flex: none; padding: 7px 11px; font-size: 13px; }
   .modal-close { top: 8px; right: 10px; box-shadow: none; background: var(--panel-2); width: 36px; height: 36px; border-radius: 50%; }
 }
+
+/* ================= сохранённые чаты ================= */
+.new-chat { display: flex; align-items: center; gap: 9px; width: 100%; border: 1px solid var(--border-strong); background: var(--solid); border-radius: 12px; padding: 9px 12px; font-weight: 600; font-size: 14px; transition: .15s; }
+.new-chat:hover { border-color: var(--accent); }
+.new-chat svg { color: var(--accent); }
+.side-scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: 0 -4px; padding: 0 4px; }
+.side-scroll .doc-list { flex: none; overflow: visible; }
+.side-scroll .section-head { position: sticky; top: 0; z-index: 1; padding-top: 4px; padding-bottom: 2px; background: transparent; }
+.chat-list { display: flex; flex-direction: column; gap: 1px; }
+.chat-item { display: flex; align-items: center; gap: 6px; border-radius: 10px; padding: 7px 6px 7px 10px; cursor: pointer; transition: background .12s; }
+.chat-item:hover { background: var(--hover); }
+.chat-item.active { background: var(--accent-soft); }
+.chat-item .ct { flex: 1; min-width: 0; }
+.chat-item .ct b { display: block; font-weight: 500; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-item .ct small { color: var(--faint); font-size: 11px; }
+.chat-item .del { border: 0; background: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: var(--faint); opacity: 0; transition: .12s; flex: none; }
+.chat-item:hover .del, .chat-item.active .del { opacity: 1; }
+.chat-item .del:hover { color: var(--bad); background: var(--bad-soft); }
+.chat-item .del svg { width: 15px; height: 15px; }
+@media (hover: none) { .chat-item .del { opacity: 1; } }
+
+/* ================= окно подтверждения ================= */
+.confirm { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 20px; background: rgba(10, 11, 19, .35); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); animation: fadein .15s ease; }
+.confirm-card { width: min(400px, 100%); border-radius: 20px; padding: 22px; background: var(--glass-strong); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid var(--border); box-shadow: var(--shadow-lg); animation: pop .2s cubic-bezier(.2, .8, .2, 1); }
+.confirm-card h3 { font-family: var(--display); font-size: 18px; font-weight: 700; letter-spacing: -.01em; margin: 0 0 6px; }
+.confirm-card p { color: var(--muted); font-size: 14px; margin: 0 0 18px; overflow-wrap: anywhere; }
+.confirm-card .row-actions { justify-content: flex-end; }
