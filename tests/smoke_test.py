@@ -241,6 +241,27 @@ async def main() -> None:
     r = client.delete(f"/api/documents/{doc_id}", headers=headers)
     check("удаление", r.status_code == 200 and client.get("/api/documents", headers=headers).json() == [])
 
+    print("Лимиты и бессмысленные запросы:")
+    from app.guard import is_junk
+    check("фильтр бессмыслицы", all(map(is_junk, ["р", "???", "фывфыв", "аааааа", "asdfgh"]))
+          and not any(map(is_junk, ["Пролонгация?", "Финал қашан?", "СИЗ нормы", "What is NLP?"])))
+    left_before = client.get("/api/auth/me").json()["quota"]["ask"]["left"]
+    r = client.post("/api/ask", json={"question": "р"})
+    check("«р» не уходит в модель — предупреждение", r.status_code == 400 and r.json()["detail"]["code"] == "junk")
+    me = client.get("/api/auth/me").json()
+    left = me["quota"]["ask"]["left"]
+    check("бессмыслица не тратит лимит", left == left_before < settings.free_daily_questions, str(me["quota"]))
+    saved = settings.free_daily_questions
+    settings.free_daily_questions = settings.free_daily_questions - left  # лимит исчерпан
+    r = client.post("/api/ask", json={"question": "Какой номер пожарной службы?"})
+    check("дневной лимит → 429", r.status_code == 429 and r.json()["detail"]["code"] == "daily_limit", r.text[:120])
+    settings.free_daily_questions = saved
+    for _ in range(settings.junk_block_after - 1):
+        client.post("/api/ask", json={"question": "фывфыв"})
+    r = client.post("/api/ask", json={"question": "Какой номер пожарной службы?"})
+    check("после 5 бессмыслиц — вопросы заблокированы", r.status_code == 403 and r.json()["detail"]["code"] == "blocked")
+    check("блокировка не задевает других", stranger.post("/api/ask", json={"question": "Финал қашан?"}).status_code == 200)
+
     print("\nИТОГ:", "все проверки пройдены ✅" if not failures else f"ошибок: {failures} ❌")
     sys.exit(1 if failures else 0)
 

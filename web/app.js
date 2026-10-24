@@ -211,6 +211,12 @@ Object.assign(I18N.en, {"th_read": "Reading the question", "th_search": "Searchi
 Object.assign(I18N.kk, {"fix_mistakes": "Қателерді түзету", "cards_hard": "Қиындарын қайталау"});
 Object.assign(I18N.ru, {"fix_mistakes": "Исправить ошибки", "cards_hard": "Повторить трудные"});
 Object.assign(I18N.en, {"fix_mistakes": "Fix mistakes", "cards_hard": "Review the hard ones"});
+Object.assign(I18N.kk, {"left_today": "бүгін {n} сұрақ қалды", "junk_1": "Бұл құжат бойынша сұраққа ұқсамайды. Не білгіңіз келетінін жазыңыз — мысалы: «Қандай мерзімдер көрсетілген?» Мұндай хабарламалар лимитті жұмсамайды.", "junk_warn": "Ескерту: мағынасыз сұраулар Mind AI пайдалану ережелерін бұзады. Тағы {left} рет қайталанса — ережеге сәйкес сұрақтарға қолжетімділік 24 сағатқа шектеледі, ал қайталанған бұзушылықтарда аккаунт бұғатталуы мүмкін.", "blocked": "Мағынасыз сұраулар қайталанғандықтан, Mind AI пайдалану ережелеріне сәйкес сұрақтарға қолжетімділік {time} дейін шектелді. Қайталанған бұзушылықтарда аккаунт бұғатталуы мүмкін.", "limit_ask": "Бүгінгі тегін сұрақтар лимиті ({n}) таусылды. Жаңа сұрақтар — ертең 00:00-ден бастап. Mind Pro шектеулерді алып тастайды — жақында.", "limit_gen": "Бүгінгі тегін генерациялар лимиті ({n}: тест, карточка, карта, салыстыру) таусылды. Ертең қайта қолжетімді болады.", "lite_limit": "Күніне {q} сұрақ және {g} генерация (тест, карточка, карта, салыстыру)", "rules_t": "Пайдалану ережелері", "rules": "Жүктелген құжаттар бойынша сұрақ қойыңыз. Мағынасыз және спам-сұраулар үшін алдымен ескерту беріледі, содан кейін сұрақтар 24 сағатқа шектеледі; қайталанған бұзушылықтарда аккаунт бұғатталуы мүмкін."});
+Object.assign(I18N.ru, {"left_today": "осталось {n} вопр. на сегодня", "junk_1": "Похоже, это не вопрос по документу. Напишите, что хотите узнать, — например: «Какие сроки указаны?» Такие сообщения не тратят ваш лимит.", "junk_warn": "Предупреждение: бессмысленные запросы нарушают правила использования Mind AI. Ещё {left} — и в соответствии с правилами доступ к вопросам будет ограничен на 24 часа, а при повторных нарушениях аккаунт может быть заблокирован.", "blocked": "Из-за повторяющихся бессмысленных запросов доступ к вопросам ограничен до {time} в соответствии с правилами использования Mind AI. При повторных нарушениях аккаунт может быть заблокирован.", "limit_ask": "Дневной лимит бесплатных вопросов ({n}) исчерпан. Новые вопросы — завтра с 00:00. Mind Pro снимет ограничения — скоро.", "limit_gen": "Дневной лимит бесплатных генераций ({n}: тест, карточки, карта, сравнение) исчерпан. Снова доступно завтра.", "lite_limit": "{q} вопросов и {g} генераций в день (тест, карточки, карта, сравнение)", "rules_t": "Правила использования", "rules": "Задавайте вопросы по загруженным документам. За бессмысленные и спам-запросы сначала — предупреждение, затем вопросы ограничиваются на 24 часа; при повторных нарушениях аккаунт может быть заблокирован."});
+Object.assign(I18N.en, {"left_today": "{n} questions left today", "junk_1": "That doesn’t look like a question about your documents. Write what you want to know — e.g. “What deadlines are listed?” Messages like this don’t use your limit.", "junk_warn": "Warning: meaningless requests violate the Mind AI terms of use. {left} more — and under the terms, questions will be restricted for 24 hours; repeated violations may lead to the account being blocked.", "blocked": "Because of repeated meaningless requests, questions are restricted until {time} under the Mind AI terms of use. Repeated violations may lead to the account being blocked.", "limit_ask": "Today’s free question limit ({n}) is used up. New questions — tomorrow from 00:00. Mind Pro removes the limits — coming soon.", "limit_gen": "Today’s free generation limit ({n}: quiz, flashcards, map, comparison) is used up. Available again tomorrow.", "lite_limit": "{q} questions and {g} generations per day (quiz, flashcards, map, comparison)", "rules_t": "Terms of use", "rules": "Ask questions about your uploaded documents. Meaningless and spam requests get a warning first, then questions are restricted for 24 hours; repeated violations may lead to the account being blocked."});
+Object.assign(I18N.kk, {"pro_f": ["«Көру»: PDF беттеріндегі кестелерді, графиктер мен сызбаларды оқиды", "Екі есе көп контекст — үлкен құжаттарды терең талдау", "Күндізгі лимиттерсіз", "Қай беттерді қарағанын көрсетеді", "Жаңа мүмкіндіктерге ерте қолжетімділік"]});
+Object.assign(I18N.ru, {"pro_f": ["«Зрение»: читает таблицы, графики и схемы прямо со страниц PDF", "Вдвое больше контекста — глубокий анализ больших документов", "Без дневных лимитов", "Показывает, какие страницы просмотрел", "Ранний доступ к новым функциям"]});
+Object.assign(I18N.en, {"pro_f": ["“Vision”: reads tables, charts and diagrams right from PDF pages", "Twice the context — deep analysis of large documents", "No daily limits", "Shows which pages it looked at", "Early access to new features"]});
 
 const $ = (s) => document.querySelector(s);
 const state = {
@@ -264,14 +270,28 @@ function applyI18n() {
 }
 
 /* ================= API ================= */
+// Ответы сервера о лимитах и нарушениях → понятный текст
+function limitText(detail) {
+  if (!detail || typeof detail !== "object") return null;
+  if (detail.code === "daily_limit") return L(detail.kind === "ask" ? "limit_ask" : "limit_gen").replace("{n}", detail.limit);
+  if (detail.code === "blocked") return L("blocked").replace("{time}", new Date(detail.until * 1000).toLocaleString(state.lang === "en" ? "en-GB" : "ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }));
+  if (detail.code === "junk") {
+    if (detail.until) return limitText({ code: "blocked", until: detail.until });
+    const left = detail.block_after - detail.strikes;
+    return detail.strikes >= 3 ? L("junk_warn").replace("{left}", left) : L("junk_1");
+  }
+  return null;
+}
+
 async function api(path, options = {}) {
   const res = await fetch(path, options);
   if (res.status === 401) { requireLogin("any"); throw new Error("401"); }
-  if (res.status === 429) throw new Error(L("too_many_req"));
   if (!res.ok) {
     const text = await res.text();
     let detail = text;
     try { detail = JSON.parse(text).detail || text; } catch (_) {}
+    if (limitText(detail)) throw new Error(limitText(detail));
+    if (res.status === 429) throw new Error(L("too_many_req"));
     throw new Error(typeof detail === "string" ? detail : res.statusText);
   }
   return res.json();
@@ -403,9 +423,11 @@ function renderDocs(pending = []) {
 
 function renderScope() {
   const sel = state.docs.filter((d) => state.selected.has(d.id));
-  $("#scope").innerHTML = sel.length
+  const q = state.user && state.user.quota && state.user.quota.ask;
+  const left = q && q.limit !== null ? ` · <span class="quota ${q.left <= 3 ? "low" : ""}">${L("left_today").replace("{n}", q.left)}</span>` : "";
+  $("#scope").innerHTML = (sel.length
     ? `${L("scope_sel")} <b>${sel.map((d) => esc(d.name)).join(", ")}</b>`
-    : `${L("scope_all")} · ${state.docs.length}`;
+    : `${L("scope_all")} · ${state.docs.length}`) + left;
 }
 
 function toggleSelect(id) {
@@ -724,8 +746,29 @@ async function ask(question) {
       body: JSON.stringify({ question, doc_ids: state.selected.size ? [...state.selected] : null, chat_id: state.chatId }),
     });
     if (res.status === 401) { requireLogin("ask", question); return; }
-    if (res.status === 429) throw new Error(L("too_many_req"));
-    if (!res.ok || !res.body) throw new Error(await res.text());
+    if (!res.ok || !res.body) {
+      const raw = await res.text();
+      let detail = raw;
+      try { detail = JSON.parse(raw).detail; } catch (_) {}
+      const notice = limitText(detail);
+      if (notice) {  // бессмыслица, блокировка или дневной лимит — ответ модели не запрашивался
+        finished = true;
+        think.finish();
+        body.querySelector(".think").remove();
+        state.log.pop();
+        bubble.hidden = false;
+        bubble.classList.add("notice", detail.code === "junk" && detail.strikes < 3 ? "soft" : "hard");
+        bubble.textContent = notice;
+        state.busy = false;
+        $("#sendBtn").disabled = false;
+        if (detail.code === "daily_limit" && state.user && state.user.quota) {
+          state.user.quota.ask.left = 0;
+          renderScope();
+        }
+        return;
+      }
+      throw new Error(res.status === 429 ? L("too_many_req") : raw);
+    }
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buf = "";
@@ -740,6 +783,7 @@ async function ask(question) {
         if (!line.startsWith("data:")) continue;
         const ev = JSON.parse(line.slice(5));
         if (ev.type === "chat") { state.chatId = ev.id; }
+        else if (ev.type === "quota") { if (state.user) { state.user.quota = ev; renderScope(); } }
         else if (ev.type === "status") {
           think.step(L(ev.step === "search" ? "th_search" : "th_write"));
           if (ev.step === "write") think.hints();
@@ -1394,12 +1438,15 @@ const TABS = {
   },
   plan() {
     const pro = hasPro();
-    const list = (key) => `<ul>${L(key).map((f) => `<li>${icon("tick")}<span>${esc(f)}</span></li>`).join("")}</ul>`;
+    const quota = (state.user && state.user.quota) || {};
+    const liteLimit = quota.ask && quota.ask.limit !== null && quota.generate
+      ? [L("lite_limit").replace("{q}", quota.ask.limit).replace("{g}", quota.generate.limit)] : [];
+    const list = (key, extra = []) => `<ul>${[...L(key), ...extra].map((f) => `<li>${icon("tick")}<span>${esc(f)}</span></li>`).join("")}</ul>`;
     return head("plan") + `<div class="plans">
       <div class="plan ${pro ? "" : "current"}">
         <div class="plan-top"><b>${L("lite")}</b>${pro ? "" : `<span class="mm-badge">${L("plan_current")}</span>`}</div>
         <div class="plan-price">${L("plan_free_price")}</div>
-        ${list("lite_f")}
+        ${list("lite_f", liteLimit)}
       </div>
       <div class="plan pro ${pro ? "current" : ""}">
         <div class="plan-top"><b>${L("pro")}</b><span class="mm-badge pro">${pro ? L("plan_current") : "PRO · " + L("soon")}</span></div>
@@ -1407,7 +1454,8 @@ const TABS = {
         <div class="plan-plus">${L("plan_plus")}</div>
         ${list("pro_f")}
         ${pro ? "" : `<button type="button" class="btn" disabled>${L("plan_soon")}</button>`}
-      </div></div>`;
+      </div></div>
+      <div class="set-group rules"><div class="set-row"><div class="lbl"><b>${icon("shield")} ${L("rules_t")}</b><span>${L("rules")}</span></div></div></div>`;
   },
   data() {
     if (state.anon) return head("data") + gateBlock("gate_data");

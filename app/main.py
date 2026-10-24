@@ -15,7 +15,8 @@ from pydantic import BaseModel, Field
 from . import compare, export, insights, llm, rag
 from . import firebase_auth, mailer
 from .chats import chats
-from .auth import COOKIE, SESSION_DAYS, AuthError, limiter, public_user, users
+from .auth import COOKIE, SESSION_DAYS, AuthError, QuotaError, limiter, public_user, users
+from .guard import is_junk
 from .config import settings
 from .lang import format_loc
 from .ocr import ocr_engine
@@ -94,6 +95,18 @@ def spend(action: str, owner: str) -> None:
         limiter.hit(action, owner)
     except AuthError:
         raise HTTPException(429, "Слишком много запросов — подождите немного") from None
+
+
+def daily(request: Request, kind: str) -> None:
+    """Дневной лимит бесплатного тарифа: kind = ask (вопросы) | generate (тест, карточки, карта, сравнение)."""
+    user = current_user(request)
+    if not user:
+        raise HTTPException(401, "Требуется вход")
+    try:
+        users.use(user, kind)
+    except QuotaError:
+        raise HTTPException(429, {"code": "daily_limit", "kind": kind, "limit": users.limit(user, kind),
+                                  "resets": users.quota(user)["resets"]}) from None
 
 
 def auth_error(exc: AuthError, status: int = 400) -> HTTPException:
@@ -408,6 +421,7 @@ async def document_insights(doc_id: str, request: Request, lang: str = "ru"):
         raise HTTPException(404, "Документ не найден")
     if not doc.get("cache", {}).get(f"insights2:{_lang(lang)}"):  # готовую карту отдаём без лимита
         spend("generate", doc["owner"])
+        daily(request, "generate")
     return await insights.insights(doc, _lang(lang))
 
 
@@ -417,6 +431,7 @@ async def document_quiz(doc_id: str, request: Request, lang: str = "ru", n: int 
     if not doc:
         raise HTTPException(404, "Документ не найден")
     spend("generate", doc["owner"])
+    daily(request, "generate")
     return await insights.quiz(doc, _lang(lang), max(3, min(n, 10)))
 
 
@@ -430,6 +445,8 @@ async def compare_documents(a: str, b: str, request: Request, lang: str = "ru"):
     if a == b:
         raise HTTPException(400, "Выберите два разных документа")
     spend("generate", owner)
+    if (doc_a["id"], doc_b["id"], _lang(lang)) not in compare._cache:  # готовое сравнение — без лимита
+        daily(request, "generate")
     return await compare.compare(doc_a, doc_b, _lang(lang))
 
 
@@ -474,6 +491,7 @@ async def document_cards(doc_id: str, request: Request, lang: str = "ru", n: int
     if not doc:
         raise HTTPException(404, "Документ не найден")
     spend("generate", doc["owner"])
+    daily(request, "generate")
     return await insights.cards(doc, _lang(lang), max(5, min(n, 20)))
 
 
@@ -512,8 +530,16 @@ class AskRequest(BaseModel):
 @app.post("/api/ask")
 async def ask(body: AskRequest, request: Request):
     owner = owner_of(request)
-    spend("ask", owner)
     user = current_user(request) or {}
+    until = users.blocked_until(user)
+    if until:
+        raise HTTPException(403, {"code": "blocked", "until": until})
+    if is_junk(body.question):  # бессмыслица не уходит в модель и не тратит лимит, но считается нарушением
+        strikes = users.strike(user)
+        raise HTTPException(400, {"code": "junk", "strikes": strikes, "block_after": settings.junk_block_after,
+                                  "until": users.blocked_until(user)})
+    spend("ask", owner)
+    daily(request, "ask")
     prefs = dict(user.get("settings", {}))
     if user.get("plan") != "pro":  # Mind Pro — по подписке (пока не продаётся): остальным всегда Lite
         prefs["answer_model"] = "lite"
@@ -522,6 +548,7 @@ async def ask(body: AskRequest, request: Request):
         return f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
 
     async def events():
+        yield sse({"type": "quota", **users.quota(user)})  # остаток дневного лимита — для подписи под полем ввода
         chat = chats.get(body.chat_id, owner) if body.chat_id else None
         if not chat:
             chat = chats.create(owner)

@@ -45,6 +45,11 @@ class Settings:
     # Mind Pro: модель со «зрением» смотрит на страницы PDF (таблицы, графики, схемы)
     vision_model = os.getenv("VISION_MODEL", "qwen/qwen3-vl-plus:free").strip()
     pro_pages = _int("PRO_PAGES", 3)
+    # Бесплатный тариф: сколько вопросов и генераций (тест, карточки, карта, сравнение) в сутки
+    free_daily_questions = _int("FREE_DAILY_QUESTIONS", 20)
+    free_daily_generations = _int("FREE_DAILY_GENERATIONS", 10)
+    # Бессмысленные запросы: после стольких за сутки вопросы блокируются на 24 часа
+    junk_block_after = _int("JUNK_BLOCK_AFTER", 5)
     # Семантический поиск: локальная модель эмбеддингов в дополнение к BM25
     semantic_search = _bool("SEMANTIC_SEARCH", True)
 

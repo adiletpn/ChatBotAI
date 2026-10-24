@@ -856,3 +856,12 @@ a.btn { text-decoration: none; display: inline-block; }
 .staged-t.in { animation: rise .3s ease both; }
 .staged-bar { height: 4px; border-radius: 99px; background: var(--panel-2); overflow: hidden; }
 .staged-bar i { display: block; height: 100%; width: 0; background: var(--grad); border-radius: 99px; transition: width .3s linear; }
+
+/* ---------- лимиты и предупреждения ---------- */
+.quota { color: var(--muted); }
+.quota.low { color: var(--warn); font-weight: 600; }
+.bubble.notice { border-left: 3px solid var(--warn); background: var(--warn-soft); color: var(--text); }
+.bubble.notice.hard { border-left-color: var(--bad); background: var(--bad-soft); }
+.set-group.rules { margin-top: 14px; }
+.set-group.rules .lbl b { display: flex; align-items: center; gap: 6px; }
+.set-group.rules .lbl b svg { width: 16px; height: 16px; color: var(--muted); }

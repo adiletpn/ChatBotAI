@@ -79,6 +79,8 @@ SYSTEM_PROMPT = """You are Mind AI — an intelligent assistant that answers que
 Rules:
 1. Use ONLY the information from the numbered CONTEXT fragments. Never invent facts, numbers, dates or names.
 2. If the context does not contain the answer, say honestly: "{not_found}" — and briefly suggest what the documents do cover.
+   If the question is unclear, too short or meaningless, do NOT summarize the documents: in ONE short sentence ask
+   the user to clarify, and cite nothing.
 3. Answer in {lang_name} — the language of the user's question — even if the documents are written in another language. Translate faithfully, keep names, numbers and dates exact.
 4. Cite sources: after every statement put the fragment number in square brackets, e.g. [1] or [2][4]. Cite only fragments you actually used.
 5. Start with the direct answer, then add details. Use short paragraphs, bullet lists or markdown tables when it improves clarity. Be precise and easy to understand.
@@ -312,9 +314,8 @@ async def answer_stream(question: str, owner: str, session_key: str,
 
     answer = "".join(parts).strip()
     history.add(session_key, question, answer)
+    # модель не сослалась ни на что (приветствие, «уточните вопрос») — значит, и подтверждения нет
     cited = _cited(answer, {s["n"] for s in sources})
-    if not cited:
-        cited = ranked_ns[:3]
     yield {"type": "done", "cited": cited, "lang": lang}
     if prefs.get("suggestions", True) and answer:
         items = await _followups(question, answer, context_text, lang)

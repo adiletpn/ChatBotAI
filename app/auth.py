@@ -111,6 +111,19 @@ def check_password(password: str, email: str = "") -> None:
         raise AuthError("password_weak")
 
 
+class QuotaError(Exception):
+    """Дневной лимит бесплатного тарифа исчерпан."""
+
+
+def _today() -> str:
+    return time.strftime("%Y-%m-%d", time.gmtime(time.time() + 5 * 3600))  # сутки по времени Казахстана (UTC+5)
+
+
+def _tomorrow_ts() -> float:
+    now = time.time() + 5 * 3600
+    return now - now % 86400 + 86400 - 5 * 3600
+
+
 class RateLimiter:
     def __init__(self):
         self.events: dict[tuple[str, str], deque] = defaultdict(deque)
@@ -314,6 +327,54 @@ class UserStore:
             user["name"] = name
             self._save()
 
+    # ------------------------------------------------------------ дневной лимит и нарушения
+
+    def _usage(self, user: dict) -> dict:
+        usage = user.get("usage") or {}
+        if usage.get("date") != _today():  # новые сутки — счётчики с нуля
+            usage = {"date": _today(), "ask": 0, "generate": 0, "junk": 0}
+            user["usage"] = usage
+        return usage
+
+    @staticmethod
+    def limit(user: dict, kind: str) -> int | None:
+        if user.get("plan") == "pro":
+            return None  # у Mind Pro дневных лимитов нет
+        return settings.free_daily_questions if kind == "ask" else settings.free_daily_generations
+
+    def use(self, user: dict, kind: str) -> None:
+        """Списывает один запрос из дневного лимита; QuotaError — если лимит исчерпан."""
+        with self.lock:
+            usage, limit = self._usage(user), self.limit(user, kind)
+            if limit is not None and usage[kind] >= limit:
+                raise QuotaError(kind)
+            usage[kind] += 1
+            self._save()
+
+    def quota(self, user: dict) -> dict:
+        with self.lock:
+            usage = self._usage(user)
+        out = {"resets": _tomorrow_ts()}
+        for kind in ("ask", "generate"):
+            limit = self.limit(user, kind)
+            out[kind] = {"limit": limit, "left": None if limit is None else max(0, limit - usage[kind])}
+        return out
+
+    def blocked_until(self, user: dict) -> float:
+        until = user.get("blocked_until", 0)
+        return until if until > time.time() else 0
+
+    def strike(self, user: dict) -> int:
+        """Бессмысленный запрос. Возвращает их число за сутки; на JUNK_BLOCK_AFTER — блокировка вопросов на 24 ч."""
+        with self.lock:
+            usage = self._usage(user)
+            usage["junk"] = usage.get("junk", 0) + 1
+            if usage["junk"] >= settings.junk_block_after:
+                user["blocked_until"] = time.time() + 86400
+                user["blocks"] = user.get("blocks", 0) + 1
+            self._save()
+            return usage["junk"]
+
     def update_settings(self, user: dict, values: dict) -> dict:
         with self.lock:
             current = {**DEFAULT_SETTINGS, **user.get("settings", {})}
@@ -358,6 +419,7 @@ def public_user(user: dict) -> dict:
         "id": user["id"], "name": user["name"], "email": user.get("email", ""), "guest": user.get("guest", False),
         "provider": "firebase" if user.get("firebase_uid") and not user.get("hash") else "password",
         "plan": user.get("plan", "free"),  # free | pro — Mind Pro будет по подписке
+        "quota": users.quota(user),
         "settings": {**DEFAULT_SETTINGS, **user.get("settings", {})},
     }
 
