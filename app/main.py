@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from . import insights, llm, rag
-from . import mailer
+from . import firebase_auth, mailer
 from .chats import chats
 from .auth import COOKIE, SESSION_DAYS, AuthError, limiter, public_user, users
 from .config import settings
@@ -188,6 +188,42 @@ async def login(body: LoginBody, request: Request):
     return _signed_in(user, request)
 
 
+class FirebaseBody(BaseModel):
+    id_token: str = Field(max_length=4096)
+    name: str = Field(default="", max_length=80)
+
+
+@app.get("/api/auth/config")
+async def auth_config():
+    return {"firebase": firebase_auth.public_config()}
+
+
+@app.post("/api/auth/check-email")
+async def check_email(body: EmailBody, request: Request):
+    """Проверка до регистрации в Firebase: формат, одноразовые ящики, Gmail-алиасы."""
+    try:
+        limiter.hit("register", client_ip(request))
+        users.email_available(body.email)
+    except AuthError as exc:
+        raise auth_error(exc, 429 if str(exc) == "too_many" else 400)
+    return {"ok": True}
+
+
+@app.post("/api/auth/firebase")
+async def firebase_login(body: FirebaseBody, request: Request):
+    if not firebase_auth.enabled():
+        raise HTTPException(404, "firebase_disabled")
+    try:
+        limiter.hit("login", client_ip(request))
+        claims = await asyncio.to_thread(firebase_auth.verify, body.id_token)
+        user = users.firebase_login(claims["user_id"], claims["email"], body.name or claims.get("name", ""))
+    except AuthError as exc:
+        raise auth_error(exc, 429 if str(exc) == "too_many" else 400)
+    except ValueError as exc:
+        raise HTTPException(401, "not_verified" if "not_verified" in str(exc) else "invalid")
+    return _signed_in(user, request)
+
+
 @app.post("/api/auth/logout")
 async def logout(request: Request):
     users.drop_session(request.cookies.get(COOKIE))
@@ -256,7 +292,7 @@ async def change_password(body: PasswordBody, request: Request):
 @app.post("/api/profile/delete")
 async def delete_account(body: DeleteAccountBody, request: Request):
     user = _require_user(request)
-    if not user.get("guest"):
+    if not user.get("guest") and user.get("hash"):  # у аккаунтов Firebase/Google локального пароля нет
         try:
             await asyncio.to_thread(users.login, user["email"], body.password)
         except AuthError:
