@@ -490,7 +490,7 @@ function stems(text) {
 // Подсвечивает предложения фрагмента, на которых основан ответ (та же логика, что на сервере)
 function highlightText(text, query) {
   const q = new Set(stems(query));
-  const parts = text.replace(/\n/g, " ").split(/(?<=[.!?…;])\s+/);
+  const parts = text.replace(/(^|\n)#{1,6} /g, "$1").replace(/\n/g, " ").split(/(?<=[.!?…;])\s+/);
   const scores = parts.map((p) => stems(p).filter((t) => q.has(t)).length);
   const best = Math.max(0, ...scores);
   return parts.map((p, i) => (best > 0 && scores[i] >= Math.max(1, best * 0.5) ? `<mark>${esc(p)}</mark>` : esc(p))).join(" ");
