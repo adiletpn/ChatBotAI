@@ -15,6 +15,7 @@ os.environ["LLM_API_KEY"] = ""  # проверяем офлайн-режим
 os.environ["TELEGRAM_BOT_TOKEN"] = ""
 os.environ["SMTP_HOST"] = ""  # коды — в консоль, настоящие письма в тестах не шлём
 os.environ["SMTP_USER"] = ""
+os.environ["BREVO_API_KEY"] = ""
 
 from fastapi.testclient import TestClient  # noqa: E402
 
