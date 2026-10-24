@@ -188,15 +188,6 @@ async def login(body: LoginBody, request: Request):
     return _signed_in(user, request)
 
 
-@app.post("/api/auth/guest")
-async def guest(request: Request):
-    try:
-        limiter.hit("guest", client_ip(request))
-    except AuthError as exc:
-        raise auth_error(exc, 429)
-    return _signed_in(users.guest(), request)
-
-
 @app.post("/api/auth/logout")
 async def logout(request: Request):
     users.drop_session(request.cookies.get(COOKIE))

@@ -62,7 +62,6 @@ SETTING_CHOICES = {
 LIMITS = {  # действие: (максимум, окно в секундах) — на один IP (с запасом для общего Wi-Fi на площадке)
     "register": (15, 3600),
     "login": (40, 600),
-    "guest": (40, 3600),
     "code": (20, 3600),
 }
 
@@ -127,7 +126,8 @@ class UserStore:
         if path.exists():
             data = json.loads(path.read_text("utf-8"))
             # аккаунты старого формата (без email) не переносим
-            self.users = {k: u for k, u in data.get("users", {}).items() if "email" in u or u.get("guest")}
+            # гостевой режим отключён: остаются только аккаунты с email
+            self.users = {k: u for k, u in data.get("users", {}).items() if "email" in u and not u.get("guest")}
             self.sessions = {k: s for k, s in data.get("sessions", {}).items() if s["user_id"] in self.users}
 
     def _save(self) -> None:
@@ -261,14 +261,6 @@ class UserStore:
         self.sessions = {k: s for k, s in self.sessions.items() if s["user_id"] != user["id"]}
         self._save()
 
-    def guest(self) -> dict:
-        user = {"id": secrets.token_hex(8), "name": "Guest", "guest": True, "verified": True,
-                "created": time.time(), "settings": dict(DEFAULT_SETTINGS)}
-        with self.lock:
-            self.users[user["id"]] = user
-            self._save()
-        return user
-
     def delete(self, user: dict) -> None:
         with self.lock:
             self.users.pop(user["id"], None)
@@ -315,7 +307,7 @@ class UserStore:
         if not session or session["expires"] < time.time():
             return None
         user = self.users.get(session["user_id"])
-        return user if user and user.get("verified") else None
+        return user if user and user.get("verified") and not user.get("guest") else None
 
     def drop_session(self, token: str | None) -> None:
         if token:
