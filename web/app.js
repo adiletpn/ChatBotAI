@@ -168,6 +168,10 @@ Object.assign(I18N.kk, {"dz_hint": "PDF, DOCX, PPTX, XLSX, сурет", "setting
 Object.assign(I18N.ru, {"dz_hint": "PDF, DOCX, PPTX, XLSX, фото", "settings": "Настройки", "set_profile": "Профиль", "set_appearance": "Внешний вид", "set_language": "Язык", "set_ai": "Ответы ИИ", "set_data": "Данные", "set_system": "О системе", "set_account": "Аккаунт", "profile_sub": "Информация о вас", "name": "Имя", "email": "Email", "save": "Сохранить", "saved": "Сохранено", "guest_note": "Вы в гостевом режиме. Зарегистрируйтесь, чтобы сохранить данные.", "appearance_sub": "Настройте интерфейс под себя", "theme": "Тема", "theme_system": "Системная", "theme_light": "Светлая", "theme_dark": "Тёмная", "font_size": "Размер текста", "font_size_d": "Для всего интерфейса", "f_s": "Мелкий", "f_m": "Средний", "f_l": "Крупный", "width": "Ширина чата", "width_d": "Для широких экранов", "w_normal": "Обычная", "w_wide": "Широкая", "language_sub": "Язык интерфейса и ответов", "ui_lang": "Язык интерфейса", "ui_lang_d": "Меню, кнопки, уведомления", "answer_lang": "Язык ответов", "answer_lang_d": "«Авто» — на языке вопроса", "auto": "Авто", "ai_sub": "Как отвечает Mind AI", "style": "Стиль ответа", "style_d": "Длина и подробность ответов", "st_concise": "Кратко", "st_balanced": "Сбалансированно", "st_detailed": "Подробно", "show_sources": "Показывать источники", "show_sources_d": "Ссылки на документ и страницу под ответом", "show_trust": "Индикатор доверия", "show_trust_d": "«Подтверждено N источниками»", "suggestions": "Подсказки вопросов", "suggestions_d": "После загрузки документа", "data_sub": "Документы и история чата", "docs_count": "Загружено документов", "export": "Скачать чат", "export_d": "Весь диалог в файл .md", "clear_hist": "Очистить историю чата", "clear_hist_d": "Документы останутся", "delete_docs": "Удалить все документы", "delete_docs_d": "Действие нельзя отменить", "confirm_all": "Удалить все документы?", "done": "Готово", "do_it": "Выполнить", "system_sub": "Техническое состояние Mind AI", "model": "Модель ИИ", "connected": "Подключено", "disconnected": "Нет связи", "offline": "Офлайн-режим", "check": "Проверить", "checking": "Проверяю…", "ocr_card": "Распознавание сканов", "ocr_none": "Недоступно", "telegram": "Telegram-бот", "tg_on": "Подключён", "tg_off": "Не подключён", "formats": "Форматы", "version": "Версия", "account_sub": "Безопасность и вход", "change_pw": "Смена пароля", "old_pw": "Текущий пароль", "new_pw": "Новый пароль", "pw_rule": "Минимум 8 символов, буквы и цифры", "pw_changed": "Пароль изменён", "logout_d": "Выйти на этом устройстве", "danger": "Опасная зона", "delete_acc": "Удалить аккаунт", "delete_acc_d": "Все документы и данные будут удалены", "confirm_pw": "Введите пароль для подтверждения", "confirm_del": "Удалить аккаунт навсегда?", "you": "Вы", "llm_down": "Нет связи с моделью ИИ — ответы в офлайн-режиме", "err_password_short": "Пароль должен быть не короче 8 символов", "err_password_weak": "В пароле должны быть буквы и цифры", "err_invalid": "Неверный пароль", "err_name_invalid": "Введите имя"});
 Object.assign(I18N.en, {"dz_hint": "PDF, DOCX, PPTX, XLSX, photo", "settings": "Settings", "set_profile": "Profile", "set_appearance": "Appearance", "set_language": "Language", "set_ai": "AI answers", "set_data": "Data", "set_system": "System", "set_account": "Account", "profile_sub": "Information about you", "name": "Name", "email": "Email", "save": "Save", "saved": "Saved", "guest_note": "You are in guest mode. Sign up to keep your data.", "appearance_sub": "Make the interface yours", "theme": "Theme", "theme_system": "System", "theme_light": "Light", "theme_dark": "Dark", "font_size": "Text size", "font_size_d": "For the whole interface", "f_s": "Small", "f_m": "Medium", "f_l": "Large", "width": "Chat width", "width_d": "For wide screens", "w_normal": "Normal", "w_wide": "Wide", "language_sub": "Interface and answer language", "ui_lang": "Interface language", "ui_lang_d": "Menus, buttons, notifications", "answer_lang": "Answer language", "answer_lang_d": "“Auto” — same as the question", "auto": "Auto", "ai_sub": "How Mind AI answers", "style": "Answer style", "style_d": "Length and level of detail", "st_concise": "Concise", "st_balanced": "Balanced", "st_detailed": "Detailed", "show_sources": "Show sources", "show_sources_d": "Document and page links under answers", "show_trust": "Trust indicator", "show_trust_d": "“Backed by N sources”", "suggestions": "Question suggestions", "suggestions_d": "After a document is uploaded", "data_sub": "Documents and chat history", "docs_count": "Documents uploaded", "export": "Download chat", "export_d": "The whole conversation as .md", "clear_hist": "Clear chat history", "clear_hist_d": "Documents are kept", "delete_docs": "Delete all documents", "delete_docs_d": "This cannot be undone", "confirm_all": "Delete all documents?", "done": "Done", "do_it": "Run", "system_sub": "Technical status of Mind AI", "model": "AI model", "connected": "Connected", "disconnected": "Unreachable", "offline": "Offline mode", "check": "Check", "checking": "Checking…", "ocr_card": "Scan recognition", "ocr_none": "Unavailable", "telegram": "Telegram bot", "tg_on": "Connected", "tg_off": "Not connected", "formats": "Formats", "version": "Version", "account_sub": "Security and sign-in", "change_pw": "Change password", "old_pw": "Current password", "new_pw": "New password", "pw_rule": "At least 8 characters, letters and digits", "pw_changed": "Password changed", "logout_d": "Sign out on this device", "danger": "Danger zone", "delete_acc": "Delete account", "delete_acc_d": "All documents and data will be deleted", "confirm_pw": "Enter your password to confirm", "confirm_del": "Delete your account forever?", "you": "You", "llm_down": "AI model unreachable — answers in offline mode", "err_password_short": "Password must be at least 8 characters", "err_password_weak": "Password must contain letters and digits", "err_invalid": "Wrong password", "err_name_invalid": "Enter your name"});
 
+Object.assign(I18N.kk, {"theme_sepia": "Қағаз", "theme_midnight": "Түнгі", "accent": "Акцент түсі", "accent_d": "Батырмалар мен сілтемелер", "ac_graphite": "Графит", "ac_indigo": "Индиго", "ac_emerald": "Изумруд", "ac_ocean": "Мұхит", "ac_amber": "Янтарь", "ac_rose": "Раушан"});
+Object.assign(I18N.ru, {"theme_sepia": "Бумага", "theme_midnight": "Полночь", "accent": "Акцентный цвет", "accent_d": "Кнопки и ссылки", "ac_graphite": "Графит", "ac_indigo": "Индиго", "ac_emerald": "Изумруд", "ac_ocean": "Океан", "ac_amber": "Янтарь", "ac_rose": "Роза"});
+Object.assign(I18N.en, {"theme_sepia": "Paper", "theme_midnight": "Midnight", "accent": "Accent color", "accent_d": "Buttons and links", "ac_graphite": "Graphite", "ac_indigo": "Indigo", "ac_emerald": "Emerald", "ac_ocean": "Ocean", "ac_amber": "Amber", "ac_rose": "Rose"});
+
 const $ = (s) => document.querySelector(s);
 const state = {
   lang: pickLang(),
@@ -831,7 +835,7 @@ async function logout() {
 
 /* ================= настройки ================= */
 const DEFAULT_PREFS = {
-  theme: "system", font: "m", width: "normal", ui_lang: "auto", answer_lang: "auto",
+  theme: "system", accent: "indigo", font: "m", width: "normal", ui_lang: "auto", answer_lang: "auto",
   answer_style: "balanced", show_sources: true, show_trust: true, suggestions: true,
 };
 const prefs = () => ({ ...DEFAULT_PREFS, ...((state.user && state.user.settings) || {}) });
@@ -852,9 +856,10 @@ function navLang() {
 function applyPrefs() {
   const p = prefs(), root = document.documentElement;
   if (p.theme === "system") delete root.dataset.theme; else root.dataset.theme = p.theme;
+  root.dataset.accent = p.accent;
   root.dataset.font = p.font;
   root.dataset.width = p.width;
-  try { localStorage.setItem("mind_prefs", JSON.stringify({ theme: p.theme, font: p.font, width: p.width })); } catch (_) {}
+  try { localStorage.setItem("mind_prefs", JSON.stringify({ theme: p.theme, accent: p.accent, font: p.font, width: p.width })); } catch (_) {}
   if (p.ui_lang !== "auto" && p.ui_lang !== state.lang) setLang(p.ui_lang);
 }
 
@@ -893,6 +898,8 @@ const actionRow = (act, title, desc, label, cls = "ghost") => `
     <button type="button" class="btn ${cls}" data-act="${act}">${label}</button></div>`;
 const head = (tab) => `<h2>${L("set_" + tab)}</h2><p class="sub">${L(tab + "_sub")}</p>`;
 
+const ACCENTS = { graphite: "#3f3f46", indigo: "#6366f1", emerald: "#10a26b", ocean: "#0e8fd6", amber: "#d4880f", rose: "#e0466a" };
+
 const TABS = {
   profile() {
     const u = state.user || {};
@@ -911,8 +918,11 @@ const TABS = {
     const p = prefs();
     return head("appearance") + `
       <div class="set-group"><div class="set-row" style="padding-bottom:0"><div class="lbl"><b>${L("theme")}</b></div></div>
-        <div class="theme-cards">${["system", "light", "dark"].map((t) => `
-          <button type="button" class="theme-card ${p.theme === t ? "active" : ""}" data-pref="theme" data-val="${t}"><div class="pv ${t}"></div>${L("theme_" + t)}</button>`).join("")}</div></div>
+        <div class="theme-cards">${["system", "light", "dark", "sepia", "midnight"].map((t) => `
+          <button type="button" class="theme-card ${p.theme === t ? "active" : ""}" data-pref="theme" data-val="${t}"><div class="pv ${t}"></div>${L("theme_" + t)}</button>`).join("")}</div>
+        <div class="set-row"><div class="lbl"><b>${L("accent")}</b><span>${L("accent_d")}</span></div>
+          <div class="accents">${Object.entries(ACCENTS).map(([k, c]) => `
+            <button type="button" title="${L("ac_" + k)}" aria-label="${L("ac_" + k)}" data-pref="accent" data-val="${k}" class="${p.accent === k ? "active" : ""}" style="background:${c}"></button>`).join("")}</div></div></div>
       <div class="set-group">
         ${segRow("font", L("font_size"), L("font_size_d"), [["s", L("f_s")], ["m", L("f_m")], ["l", L("f_l")]])}
         ${segRow("width", L("width"), L("width_d"), [["normal", L("w_normal")], ["wide", L("w_wide")]])}</div>`;
