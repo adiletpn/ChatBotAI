@@ -180,6 +180,10 @@ Object.assign(I18N.kk, {"gate_t": "Жалғастыру үшін кіріңіз"
 Object.assign(I18N.ru, {"gate_t": "Войдите, чтобы продолжить", "gate_ask": "Чтобы задать вопрос, войдите или создайте аккаунт — это займёт минуту.", "gate_upload": "Чтобы загрузить документ, войдите или создайте аккаунт — это займёт минуту.", "gate_any": "Эта возможность доступна после входа.", "sign_in": "Войти", "sign_up": "Создать аккаунт", "later": "Позже", "anon": "Гость", "anon_hint": "Войти или зарегистрироваться"});
 Object.assign(I18N.en, {"gate_t": "Sign in to continue", "gate_ask": "To ask a question, sign in or create an account — it takes a minute.", "gate_upload": "To upload a document, sign in or create an account — it takes a minute.", "gate_any": "This is available after you sign in.", "sign_in": "Sign in", "sign_up": "Create account", "later": "Later", "anon": "Guest", "anon_hint": "Sign in or sign up"});
 
+Object.assign(I18N.kk, {"gate_profile": "Профиль аккаунтпен қолжетімді.", "gate_data": "Құжаттар мен чаттар кіргеннен кейін сақталады.", "gate_account": "Кіріңіз немесе аккаунт құрыңыз — бір минут алады."});
+Object.assign(I18N.ru, {"gate_profile": "Профиль доступен после входа.", "gate_data": "Документы и чаты сохраняются после входа.", "gate_account": "Войдите или создайте аккаунт — это займёт минуту."});
+Object.assign(I18N.en, {"gate_profile": "Your profile is available after you sign in.", "gate_data": "Documents and chats are saved once you sign in.", "gate_account": "Sign in or create an account — it takes a minute."});
+
 const $ = (s) => document.querySelector(s);
 const state = {
   lang: pickLang(),
@@ -878,7 +882,10 @@ const DEFAULT_PREFS = {
   theme: "system", accent: "indigo", font: "m", width: "normal", ui_lang: "auto", answer_lang: "auto",
   answer_style: "balanced", show_sources: true, show_trust: true, suggestions: true,
 };
-const prefs = () => ({ ...DEFAULT_PREFS, ...((state.user && state.user.settings) || {}) });
+function guestPrefs() {
+  try { return JSON.parse(localStorage.getItem("mind_guest_prefs") || "{}"); } catch (_) { return {}; }
+}
+const prefs = () => ({ ...DEFAULT_PREFS, ...(state.user ? state.user.settings || {} : guestPrefs()) });
 const jsonPost = (path, body, method = "POST") =>
   api(path, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
@@ -904,7 +911,13 @@ function applyPrefs() {
 }
 
 async function savePrefs(patch) {
-  if (!state.user) return;
+  if (!state.user) {  // гость: настройки хранятся в браузере, после входа переносятся в аккаунт
+    try { localStorage.setItem("mind_guest_prefs", JSON.stringify({ ...guestPrefs(), ...patch })); } catch (_) {}
+    applyPrefs();
+    if ("ui_lang" in patch) setLang(patch.ui_lang);
+    renderSettings();
+    return;
+  }
   state.user.settings = { ...prefs(), ...patch };
   applyPrefs();
   if ("ui_lang" in patch) setLang(patch.ui_lang);
@@ -940,8 +953,12 @@ const head = (tab) => `<h2>${L("set_" + tab)}</h2><p class="sub">${L(tab + "_sub
 
 const ACCENTS = { graphite: "#3f3f46", indigo: "#6366f1", emerald: "#10a26b", ocean: "#0e8fd6", amber: "#d4880f", rose: "#e0466a" };
 
+const gateBlock = (key) => `<div class="set-group"><div class="set-row"><div class="lbl"><b>${L("gate_t")}</b><span>${L(key)}</span></div>
+  <div class="row-actions"><a class="btn ghost" href="/login?mode=register">${L("sign_up")}</a><a class="btn" href="/login">${L("sign_in")}</a></div></div></div>`;
+
 const TABS = {
   profile() {
+    if (state.anon) return head("profile") + gateBlock("gate_profile");
     const u = state.user || {};
     return head("profile") + `
       <div class="set-group"><div class="set-row">
@@ -982,6 +999,7 @@ const TABS = {
       ${toggleRow("suggestions", L("suggestions"), L("suggestions_d"))}</div>`;
   },
   data() {
+    if (state.anon) return head("data") + gateBlock("gate_data");
     return head("data") + `
       <div class="set-group"><div class="set-row"><div class="lbl"><b>${L("docs_count")}</b></div>
         <span style="font-family:var(--display);font-size:22px;font-weight:700">${state.docs.length}</span></div></div>
@@ -1013,6 +1031,7 @@ const TABS = {
           .map((f) => `<span class="pill">${f.slice(1).toUpperCase()}</span>`).join("")}</div></div></div>`;
   },
   account() {
+    if (state.anon) return head("account") + gateBlock("gate_account");
     const u = state.user || {};
     return head("account") + (u.guest || u.provider === "firebase" ? "" : `
       <div class="set-group" style="padding:16px"><b style="display:block;margin-bottom:12px">${L("change_pw")}</b>
@@ -1026,7 +1045,7 @@ const TABS = {
 };
 
 function renderSettings() {
-  if (!state.user || $("#settings").hidden) return;
+  if ((!state.user && !state.anon) || $("#settings").hidden) return;
   document.querySelectorAll("#setNav button").forEach((b) => b.classList.toggle("active", b.dataset.tab === state.setTab));
   $("#setBody").innerHTML = TABS[state.setTab]();
 }
@@ -1283,15 +1302,21 @@ function init() {
     if (e.target.closest("[data-upload]")) (state.anon ? requireLogin("upload") : $("#fileInput").click());
   });
 
-  $("#userCard").onclick = () => (state.anon ? (location.href = "/login") : openSettings());
+  $("#userCard").onclick = () => openSettings(state.anon ? "appearance" : undefined);
   $("#setClose").onclick = closeSettings;
   $("#settings").onclick = (e) => { if (e.target.id === "settings") closeSettings(); };
   $("#setNav").onclick = (e) => { const b = e.target.closest("button"); if (b) { state.setTab = b.dataset.tab; renderSettings(); } };
   bindSettings();
   // вошёл ли пользователь: гостю показываем интерфейс без данных
   fetch("/api/auth/me").then(async (res) => {
-    if (!res.ok) { state.anon = true; renderUser(); renderDocs(); renderChats(); return; }
+    if (!res.ok) { state.anon = true; renderUser(); renderDocs(); renderChats(); applyPrefs(); return; }
     state.user = await res.json();
+    // настройки, выбранные гостем до входа, переносим в аккаунт
+    const gp = guestPrefs();
+    if (Object.keys(gp).length) {
+      try { localStorage.removeItem("mind_guest_prefs"); } catch (_) {}
+      jsonPost("/api/settings", gp, "PUT").then((st) => { state.user.settings = st; applyPrefs(); }).catch(() => {});
+    }
     renderUser();
     applyPrefs();
     loadDocs().catch((e) => toast(e.message, true));
