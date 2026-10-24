@@ -123,7 +123,11 @@ async def main() -> None:
     check("настройки сохраняются", r.status_code == 200 and r.json()["theme"] == "dark" and r.json()["show_trust"] is False
           and "theme_bad" not in r.json())
     stranger.post("/api/auth/logout")
-    check("гостевой вход", stranger.post("/api/auth/guest").json()["guest"] is True)
+    check("гостевой вход отключён", stranger.post("/api/auth/guest").status_code in (404, 405))
+    other = {"name": "Бауыржан", "email": "baur@example.com", "password": "other2026x"}
+    stranger.post("/api/auth/register", json=other)
+    code = [m["code"] for m in mailer.outbox if m["to"] == other["email"]][-1]
+    check("второй пользователь", stranger.post("/api/auth/verify", json={"email": other["email"], "code": code}).status_code == 200)
     r = client.get("/api/status")
     check("/api/status", r.status_code == 200 and r.json()["llm_enabled"] is False)
     with open(SAMPLES / "Instrukciya_po_ohrane_truda.docx", "rb") as f:
