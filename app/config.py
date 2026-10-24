@@ -52,6 +52,9 @@ class Settings:
     smtp_user = os.getenv("SMTP_USER", "").strip()
     smtp_password = os.getenv("SMTP_PASSWORD", "").strip()
     smtp_from = os.getenv("SMTP_FROM", "").strip()
+    # Brevo — отправка писем по HTTP (бесплатно 300 писем/день); нужна там, где хостинг закрывает SMTP
+    brevo_api_key = os.getenv("BREVO_API_KEY", "").strip()
+    mail_from_email = os.getenv("MAIL_FROM_EMAIL", "").strip()
 
     # Сервер
     host = os.getenv("HOST", "0.0.0.0")

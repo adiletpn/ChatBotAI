@@ -1,10 +1,14 @@
 """Отправка писем с кодами подтверждения.
 
-Если в .env задан SMTP (например, Gmail с паролем приложения) — письмо уходит на почту.
+Способы отправки (по приоритету):
+  * Brevo (HTTP API) — BREVO_API_KEY. Работает на хостингах, где закрыт SMTP (например, Railway);
+  * SMTP (например, Gmail с паролем приложения) — SMTP_HOST/SMTP_USER.
 Иначе (режим разработки) код печатается в консоль сервера и сохраняется в outbox для автотестов.
 """
 import logging
 import smtplib
+
+import httpx
 import ssl
 from email.message import EmailMessage
 
@@ -32,7 +36,17 @@ BODIES = {
 
 
 def mode() -> str:
+    if settings.brevo_api_key:
+        return "brevo"
     return "smtp" if settings.smtp_host and settings.smtp_user else "console"
+
+
+def _sender() -> tuple[str, str]:
+    """(имя, email) отправителя из SMTP_FROM вида «Mind AI <почта>» или из MAIL_FROM_EMAIL."""
+    raw = settings.smtp_from or ""
+    if "<" in raw and ">" in raw:
+        return raw.split("<")[0].strip() or "Mind AI", raw.split("<")[1].split(">")[0].strip()
+    return "Mind AI", settings.mail_from_email or settings.smtp_user or raw
 
 
 def send_code(to: str, kind: str, code: str, name: str, lang: str = "ru") -> None:
@@ -44,17 +58,26 @@ def send_code(to: str, kind: str, code: str, name: str, lang: str = "ru") -> Non
         del outbox[:-50]
         log.warning("📧 [режим разработки] %s для %s: КОД %s", kind, to, code)
         return
+    if mode() == "brevo":
+        name, email = _sender()
+        r = httpx.post("https://api.brevo.com/v3/smtp/email", timeout=20,
+                       headers={"api-key": settings.brevo_api_key, "accept": "application/json"},
+                       json={"sender": {"name": name, "email": email}, "to": [{"email": to}],
+                             "subject": subject, "textContent": body})
+        if r.status_code >= 400:
+            raise RuntimeError(f"Brevo HTTP {r.status_code}: {r.text[:200]}")
+        return
     msg = EmailMessage()
     msg["From"] = settings.smtp_from or settings.smtp_user
     msg["To"] = to
     msg["Subject"] = subject
     msg.set_content(body)
     if settings.smtp_port == 465:
-        with smtplib.SMTP_SSL(settings.smtp_host, 465, context=ssl.create_default_context(), timeout=20) as s:
+        with smtplib.SMTP_SSL(settings.smtp_host, 465, context=ssl.create_default_context(), timeout=10) as s:
             s.login(settings.smtp_user, settings.smtp_password)
             s.send_message(msg)
     else:
-        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=20) as s:
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as s:
             s.starttls(context=ssl.create_default_context())
             s.login(settings.smtp_user, settings.smtp_password)
             s.send_message(msg)
