@@ -10,7 +10,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from . import insights, llm, rag
-from .auth import COOKIE, SESSION_DAYS, AuthError, public_user, users
+from . import mailer
+from .auth import COOKIE, SESSION_DAYS, AuthError, limiter, public_user, users
 from .config import settings
 from .lang import format_loc
 from .ocr import ocr_engine
@@ -72,10 +73,47 @@ async def login_page(request: Request):
 
 # ---------------------------------------------------------------- аккаунты
 
-class Credentials(BaseModel):
-    username: str = Field(max_length=64)
+def client_ip(request: Request) -> str:
+    """IP клиента. Заголовки прокси учитываем, только если запрос пришёл с локального туннеля."""
+    host = request.client.host if request.client else "?"
+    if host in ("127.0.0.1", "::1"):
+        forwarded = request.headers.get("cf-connecting-ip") or request.headers.get("x-forwarded-for", "")
+        if forwarded:
+            return forwarded.split(",")[0].strip()
+    return host
+
+
+def auth_error(exc: AuthError, status: int = 400) -> HTTPException:
+    return HTTPException(status, str(exc))
+
+
+class RegisterBody(BaseModel):
+    name: str = Field(max_length=80)
+    email: str = Field(max_length=120)
     password: str = Field(max_length=128)
-    name: str = Field(default="", max_length=60)
+    lang: str = "ru"
+
+
+class LoginBody(BaseModel):
+    email: str = Field(max_length=120)
+    password: str = Field(max_length=128)
+
+
+class CodeBody(BaseModel):
+    email: str = Field(max_length=120)
+    code: str = Field(max_length=12)
+
+
+class EmailBody(BaseModel):
+    email: str = Field(max_length=120)
+    kind: str = "verify"
+    lang: str = "ru"
+
+
+class ResetBody(BaseModel):
+    email: str = Field(max_length=120)
+    code: str = Field(max_length=12)
+    password: str = Field(max_length=128)
 
 
 def _signed_in(user: dict, request: Request) -> JSONResponse:
@@ -85,27 +123,76 @@ def _signed_in(user: dict, request: Request) -> JSONResponse:
     return resp
 
 
-@app.post("/api/auth/register")
-async def register(body: Credentials, request: Request):
+async def _send(user: dict, kind: str, code: str, lang: str) -> None:
     try:
-        user = await asyncio.to_thread(users.register, body.username, body.password, body.name)
+        await asyncio.to_thread(mailer.send_code, user["email"], kind, code, user["name"], lang)
+    except Exception:  # noqa: BLE001
+        log.exception("Не удалось отправить письмо")
+        raise HTTPException(502, "mail_failed")
+
+
+@app.post("/api/auth/register")
+async def register(body: RegisterBody, request: Request):
+    try:
+        limiter.hit("register", client_ip(request))
+        user, code = await asyncio.to_thread(users.register, body.name, body.email, body.password)
     except AuthError as exc:
-        raise HTTPException(400, str(exc))
+        raise auth_error(exc, 429 if str(exc) == "too_many" else 400)
+    await _send(user, "verify", code, body.lang)
+    return {"need_verify": True, "email": user["email"], "mail": mailer.mode()}
+
+
+@app.post("/api/auth/verify")
+async def verify(body: CodeBody, request: Request):
+    try:
+        limiter.hit("code", client_ip(request))
+        user = users.verify_email(body.email, body.code)
+    except AuthError as exc:
+        raise auth_error(exc)
+    return _signed_in(user, request)
+
+
+@app.post("/api/auth/send-code")
+async def send_code(body: EmailBody, request: Request):
+    """Повторный код подтверждения или код сброса пароля. Всегда отвечает ok — не раскрываем, есть ли email."""
+    try:
+        limiter.hit("code", client_ip(request))
+        found = users.resend(body.email, "reset" if body.kind == "reset" else "verify")
+    except AuthError as exc:
+        raise auth_error(exc, 429)
+    if found:
+        await _send(found[0], body.kind, found[1], body.lang)
+    return {"ok": True, "mail": mailer.mode()}
+
+
+@app.post("/api/auth/reset")
+async def reset(body: ResetBody, request: Request):
+    try:
+        limiter.hit("code", client_ip(request))
+        user = await asyncio.to_thread(users.reset_password, body.email, body.code, body.password)
+    except AuthError as exc:
+        raise auth_error(exc)
     return _signed_in(user, request)
 
 
 @app.post("/api/auth/login")
-async def login(body: Credentials, request: Request):
+async def login(body: LoginBody, request: Request):
     try:
-        user = await asyncio.to_thread(users.verify, body.username, body.password)
-    except AuthError:
-        await asyncio.sleep(0.5)  # замедляем перебор паролей
-        raise HTTPException(401, "invalid")
+        limiter.hit("login", client_ip(request))
+        user = await asyncio.to_thread(users.login, body.email, body.password)
+    except AuthError as exc:
+        if str(exc) == "invalid":
+            await asyncio.sleep(0.5)  # замедляем перебор паролей
+        raise auth_error(exc, {"invalid": 401, "not_verified": 403, "locked": 423, "too_many": 429}.get(str(exc), 400))
     return _signed_in(user, request)
 
 
 @app.post("/api/auth/guest")
 async def guest(request: Request):
+    try:
+        limiter.hit("guest", client_ip(request))
+    except AuthError as exc:
+        raise auth_error(exc, 429)
     return _signed_in(users.guest(), request)
 
 
@@ -125,6 +212,77 @@ async def me(request: Request):
     return public_user(user)
 
 
+# ---------------------------------------------------------------- профиль и настройки
+
+class ProfileBody(BaseModel):
+    name: str = Field(max_length=80)
+
+
+class PasswordBody(BaseModel):
+    old: str = Field(max_length=128)
+    new: str = Field(max_length=128)
+
+
+class DeleteAccountBody(BaseModel):
+    password: str = Field(default="", max_length=128)
+
+
+def _require_user(request: Request) -> dict:
+    user = current_user(request)
+    if not user:
+        raise HTTPException(401, "Требуется вход")
+    return user
+
+
+@app.put("/api/settings")
+async def save_settings(values: dict, request: Request):
+    return users.update_settings(_require_user(request), values)
+
+
+@app.put("/api/profile")
+async def save_profile(body: ProfileBody, request: Request):
+    user = _require_user(request)
+    try:
+        users.update_profile(user, body.name)
+    except AuthError as exc:
+        raise auth_error(exc)
+    return public_user(user)
+
+
+@app.post("/api/profile/password")
+async def change_password(body: PasswordBody, request: Request):
+    user = _require_user(request)
+    if user.get("guest"):
+        raise HTTPException(400, "guest")
+    try:
+        await asyncio.to_thread(users.change_password, user, body.old, body.new)
+    except AuthError as exc:
+        raise auth_error(exc)
+    return _signed_in(user, request)  # старые сессии закрыты, текущей выдаём новую
+
+
+@app.post("/api/profile/delete")
+async def delete_account(body: DeleteAccountBody, request: Request):
+    user = _require_user(request)
+    if not user.get("guest"):
+        try:
+            await asyncio.to_thread(users.login, user["email"], body.password)
+        except AuthError:
+            raise HTTPException(401, "invalid")
+    owner = f"user:{user['id']}"
+    store.delete_owner(owner)
+    rag.history.clear(owner)
+    users.delete(user)
+    resp = JSONResponse({"ok": True})
+    resp.delete_cookie(COOKIE)
+    return resp
+
+
+@app.delete("/api/documents")
+async def delete_all_documents(request: Request):
+    return {"deleted": store.delete_owner(owner_of(request))}
+
+
 @app.get("/api/status")
 async def status():
     return {
@@ -134,6 +292,8 @@ async def status():
         "llm_model": settings.llm_model if settings.llm_enabled else None,
         "ocr": ocr_engine(),
         "telegram": bool(settings.telegram_token),
+        "mail": mailer.mode(),
+        "version": "1.0",
         "formats": sorted(SUPPORTED_EXT),
         "max_upload_mb": settings.max_upload_mb,
     }
@@ -249,10 +409,11 @@ class AskRequest(BaseModel):
 @app.post("/api/ask")
 async def ask(body: AskRequest, request: Request):
     owner = owner_of(request)
+    prefs = (current_user(request) or {}).get("settings", {})
 
     async def events():
         try:
-            async for event in rag.answer_stream(body.question, owner, owner, body.doc_ids):
+            async for event in rag.answer_stream(body.question, owner, owner, body.doc_ids, prefs):
                 yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
         except Exception as exc:  # noqa: BLE001
             log.exception("Ошибка ответа")
