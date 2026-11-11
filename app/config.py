@@ -43,7 +43,12 @@ class Settings:
     query_expansion = _bool("QUERY_EXPANSION", True)
     vision_ocr = _bool("VISION_OCR", False)
     # Mind Pro: модель со «зрением» смотрит на страницы PDF (таблицы, графики, схемы)
-    vision_model = os.getenv("VISION_MODEL", "qwen/qwen3-vl-plus:free").strip()
+    vision_model = os.getenv("VISION_MODEL", "mistralai/mistral-large-2512").strip()
+    # Запасные модели: если основная пропала из каталога, перегружена или молчит — пробуем следующую.
+    # (Бесплатные модели у прокси меняются: так в ноябре 2026 исчезли все qwen/*.)
+    llm_fallback_models = [m.strip() for m in os.getenv(
+        "LLM_FALLBACK_MODELS", "mistralai/mistral-large-2512,mistralai/mistral-medium-3.5,mistralai/mistral-small-2603"
+    ).split(",") if m.strip()]
     pro_pages = _int("PRO_PAGES", 3)
     # Бесплатный тариф: сколько вопросов и генераций (тест, карточки, карта, сравнение) в сутки
     free_daily_questions = _int("FREE_DAILY_QUESTIONS", 20)

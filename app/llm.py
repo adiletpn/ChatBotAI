@@ -7,6 +7,8 @@
 """
 import base64
 import json
+import logging
+import time
 from typing import AsyncIterator
 
 import httpx
@@ -14,8 +16,33 @@ import httpx
 from .config import settings
 
 
+log = logging.getLogger(__name__)
+
+
 class LLMError(RuntimeError):
     pass
+
+
+# ---------------------------------------------------------------- цепочка моделей
+
+_dead: dict[str, float] = {}  # модель → до какого времени её не пробовать (пропала из каталога)
+DEAD_FOR = 1800
+
+
+def _chain(model: str | None = None) -> list[str]:
+    """Основная модель, затем запасные; модели, которых нет в каталоге, пропускаем полчаса."""
+    first = model or settings.llm_model
+    chain = [first] + [m for m in settings.llm_fallback_models if m != first]
+    alive = [m for m in chain if _dead.get(m, 0) < time.time()]
+    return alive or chain
+
+
+def _failed(model: str, error: str) -> None:
+    text = error.lower()
+    if "http 404" in text or "does not exist" in text or "not found" in text:
+        _dead[model] = time.time() + DEAD_FOR
+    log.warning("Модель %s не ответила (%s) — пробую запасную", model, error[:160])
+
 
 
 def _headers() -> dict:
@@ -77,11 +104,9 @@ def _extract_delta(event: dict) -> str:
     return (choices[0].get("delta") or {}).get("content") or ""
 
 
-async def stream_chat(system: str, messages: list[dict], max_tokens: int | None = None,
-                      temperature: float | None = None, model: str | None = None) -> AsyncIterator[str]:
-    """Отдаёт ответ модели по кусочкам. Если сервер не умеет stream — отдаёт ответ целиком."""
-    payload = _payload(system, messages, True, max_tokens, temperature, model)
-    timeout = httpx.Timeout(settings.llm_timeout, connect=15)
+async def _stream_once(payload: dict) -> AsyncIterator[str]:
+    # read — пауза между кусочками ответа: «зависшую» модель бросаем через 45 с, а не через 2 минуты
+    timeout = httpx.Timeout(settings.llm_timeout, connect=10, read=min(45.0, settings.llm_timeout))
     async with httpx.AsyncClient(timeout=timeout) as client:
         try:
             async with client.stream("POST", _url(), headers=_headers(), json=payload) as resp:
@@ -116,19 +141,44 @@ async def stream_chat(system: str, messages: list[dict], max_tokens: int | None 
             raise LLMError(f"{type(exc).__name__}: {exc}") from exc
 
 
+async def stream_chat(system: str, messages: list[dict], max_tokens: int | None = None,
+                      temperature: float | None = None, model: str | None = None) -> AsyncIterator[str]:
+    """Отдаёт ответ модели по кусочкам. Если модель недоступна до первого слова — переходит к запасной."""
+    error = None
+    for name in _chain(model):
+        started = False
+        try:
+            async for delta in _stream_once(_payload(system, messages, True, max_tokens, temperature, name)):
+                started = True
+                yield delta
+            return
+        except LLMError as exc:
+            if started:  # ответ уже печатается — подменить модель посреди текста нельзя
+                raise
+            _failed(name, str(exc))
+            error = exc
+    raise error or LLMError("Нет доступных моделей")
+
+
 async def complete(system: str, messages: list[dict], max_tokens: int | None = None,
                    temperature: float | None = None) -> str:
-    """Обычный (не потоковый) запрос — для служебных задач: перевод запроса, резюме."""
-    payload = _payload(system, messages, False, max_tokens, temperature)
-    timeout = httpx.Timeout(settings.llm_timeout, connect=15)
-    try:
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            resp = await client.post(_url(), headers=_headers(), json=payload)
-    except httpx.HTTPError as exc:
-        raise LLMError(f"{type(exc).__name__}: {exc}") from exc
-    if resp.status_code >= 400:
-        raise LLMError(f"HTTP {resp.status_code}: {resp.text[:500]}")
-    return _extract_text(resp.json()).strip()
+    """Обычный (не потоковый) запрос — для служебных задач: перевод запроса, резюме, тест."""
+    timeout = httpx.Timeout(settings.llm_timeout, connect=10)
+    error = None
+    for name in _chain():
+        payload = _payload(system, messages, False, max_tokens, temperature, name)
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                resp = await client.post(_url(), headers=_headers(), json=payload)
+            if resp.status_code >= 400:
+                raise LLMError(f"HTTP {resp.status_code}: {resp.text[:500]}")
+            return _extract_text(resp.json()).strip()
+        except httpx.HTTPError as exc:
+            error = LLMError(f"{type(exc).__name__}: {exc}")
+        except LLMError as exc:
+            error = exc
+        _failed(name, str(error))
+    raise error or LLMError("Нет доступных моделей")
 
 
 VISION_PROMPT = (
@@ -159,12 +209,19 @@ def vision_transcribe(png_bytes: bytes) -> str:
             {"type": "text", "text": VISION_PROMPT},
             {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}},
         ]
-    payload = _payload("You are a precise OCR engine.", [{"role": "user", "content": content}], False, 4000, 0)
-    with httpx.Client(timeout=httpx.Timeout(settings.llm_timeout, connect=15)) as client:
-        resp = client.post(_url(), headers=_headers(), json=payload)
-    if resp.status_code >= 400:
-        raise LLMError(f"HTTP {resp.status_code}: {resp.text[:300]}")
-    return _extract_text(resp.json()).strip()
+    error = None
+    for name in _chain(settings.vision_model):
+        payload = _payload("You are a precise OCR engine.", [{"role": "user", "content": content}], False, 4000, 0, name)
+        try:
+            with httpx.Client(timeout=httpx.Timeout(settings.llm_timeout, connect=10)) as client:
+                resp = client.post(_url(), headers=_headers(), json=payload)
+            if resp.status_code < 400:
+                return _extract_text(resp.json()).strip()
+            error = LLMError(f"HTTP {resp.status_code}: {resp.text[:300]}")
+        except httpx.HTTPError as exc:
+            error = LLMError(f"{type(exc).__name__}: {exc}")
+        _failed(name, str(error))
+    raise error or LLMError("Нет доступных моделей")
 
 
 async def check() -> dict:

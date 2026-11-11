@@ -108,7 +108,7 @@ async def _expand_query(question: str) -> str:
     try:
         text = await asyncio.wait_for(
             llm.complete(EXPAND_PROMPT, [{"role": "user", "content": question}], max_tokens=200, temperature=0),
-            timeout=25,
+            timeout=8,  # перевод — подсказка для поиска, а не повод заставлять человека ждать
         )
         return re.sub(r"^(kk|ru|en)\s*:\s*", "", text, flags=re.M)
     except (llm.LLMError, asyncio.TimeoutError) as exc:
@@ -240,12 +240,15 @@ async def answer_stream(question: str, owner: str, session_key: str,
     search_query = question
     if past and len(tokenize(question)) <= 2:
         search_query = past[-2]["content"] + " " + question
-    expanded = await _expand_query(search_query)
+    total_chars = sum(d["chars"] for d in docs)
+    # перевод запроса на 3 языка — лишний запрос к модели (~0,5–2 с). Не нужен, если модель и так видит
+    # документ целиком или если документы на языке вопроса, а поиск по смыслу уже работает
+    same_lang = semantic.ready and all(d.get("lang") == lang for d in docs)
+    expanded = "" if total_chars <= settings.full_context_chars or same_lang else await _expand_query(search_query)
     pro = prefs.get("answer_model") == "pro" and settings.llm_enabled
     top_k = settings.top_k * 2 if pro else settings.top_k  # Mind Pro читает вдвое больше фрагментов
     # каждый перевод — отдельный запрос: эмбеддинг смешанной строки на трёх языках теряет смысл
     hits = _search([search_query, *expanded.splitlines()], allowed, top_k)
-    total_chars = sum(d["chars"] for d in docs)
 
     if total_chars <= settings.full_context_chars:
         context = all_chunks  # документ небольшой — модель видит его целиком
