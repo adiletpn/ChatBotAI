@@ -82,7 +82,8 @@ Rules:
    If the question is unclear, too short or meaningless, do NOT summarize the documents: in ONE short sentence ask
    the user to clarify, and cite nothing.
 3. Answer in {lang_name} — the language of the user's question — even if the documents are written in another language. Translate faithfully, keep names, numbers and dates exact.
-4. Cite sources: after every statement put the fragment number in square brackets, e.g. [1] or [2][4]. Cite only fragments you actually used.
+4. Cite sources: after every statement put the CONTEXT fragment number in square brackets, e.g. [1] or [2][4]. Cite only fragments you actually used.
+   Use ONLY these fragment numbers — never the document's own clause numbers (write "пункт 3.3 [2]", not "[3.3]").
 5. Start with the direct answer, then add details. Use short paragraphs, bullet lists or markdown tables when it improves clarity. Be precise and easy to understand.
 6. If the question is about the whole document (summary, structure, main points), synthesize from all fragments."""
 
@@ -198,13 +199,22 @@ def _extractive_answer(query: str, sources: list[dict], ranked_ns: list[int], la
 
 # ---------------------------------------------------------------- ответ
 
-def _cited(answer: str, valid: set[int]) -> list[int]:
+def _cited(answer: str, sources: list[dict]) -> list[int]:
+    valid = {s["n"] for s in sources}
     found = []
     for m in re.findall(r"\[(\d+(?:\s*[,;]\s*\d+)*)\]", answer):
         for part in re.split(r"[,;]", m):
             n = int(part)
             if n in valid and n not in found:
                 found.append(n)
+    # модель иногда ссылается на номер пункта документа («[3.3]») вместо номера фрагмента —
+    # находим фрагмент, где есть этот пункт, чтобы источник под ответом не пропал
+    for clause in re.findall(r"\[(\d{1,2}(?:\.\d{1,2})+)\]", answer):
+        pattern = re.compile(rf"(?:^|\s){re.escape(clause)}\.?\s")
+        for s in sources:
+            if pattern.search(s["text"]) and s["n"] not in found:
+                found.append(s["n"])
+                break
     return found
 
 
@@ -318,7 +328,7 @@ async def answer_stream(question: str, owner: str, session_key: str,
     answer = "".join(parts).strip()
     history.add(session_key, question, answer)
     # модель не сослалась ни на что (приветствие, «уточните вопрос») — значит, и подтверждения нет
-    cited = _cited(answer, {s["n"] for s in sources})
+    cited = _cited(answer, sources)
     yield {"type": "done", "cited": cited, "lang": lang}
     if prefs.get("suggestions", True) and answer:
         items = await _followups(question, answer, context_text, lang)
