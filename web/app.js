@@ -1278,7 +1278,7 @@ function renderCards(doc) {
           <span class="fc-face fc-back"><b>${esc(card.back)}</b>${card.quote ? `<small>«${esc(card.quote)}»</small>` : ""}</span>
         </span>
       </button>
-      <div class="fc-actions" ${cs.flipped ? "" : "hidden"}>
+      <div class="fc-actions">
         ${locLink(card)}
         <span class="spacer"></span>
         <button type="button" class="btn ghost" id="fcAgain">${L("again")}</button>
@@ -1293,10 +1293,9 @@ function renderCards(doc) {
     cs.flipped = false;
     renderCards(doc);
   };
-  if (cs.flipped) {
-    $("#fcAgain").onclick = () => next(false);
-    $("#fcKnow").onclick = () => next(true);
-  }
+  // кнопки работают всегда — не обязательно переворачивать карточку, если ответ и так знаешь
+  $("#fcAgain").onclick = () => next(false);
+  $("#fcKnow").onclick = () => next(true);
 }
 
 async function startCards(doc) {
