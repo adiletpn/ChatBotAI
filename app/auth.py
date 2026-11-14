@@ -340,7 +340,8 @@ class UserStore:
     def limit(user: dict, kind: str) -> int | None:
         if user.get("plan") == "pro":
             return None  # у Mind Pro дневных лимитов нет
-        return settings.free_daily_questions if kind == "ask" else settings.free_daily_generations
+        limit = settings.free_daily_questions if kind == "ask" else settings.free_daily_generations
+        return limit if limit > 0 else None  # 0 — без лимита (например, на день демонстрации)
 
     def use(self, user: dict, kind: str) -> None:
         """Списывает один запрос из дневного лимита; QuotaError — если лимит исчерпан."""
