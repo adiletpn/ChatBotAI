@@ -17,7 +17,9 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 
 from . import rag
+from .auth import AuthError, limiter
 from .config import settings
+from .guard import is_junk
 from .parsers import UnsupportedFormat
 from .store import store
 
@@ -48,6 +50,9 @@ TEXTS = {
     "no_docs": {"kk": "Құжаттар жоқ. Файл жіберіңіз.", "ru": "Документов нет. Отправьте файл."},
     "cleared": {"kk": "🗑 Барлық құжаттар мен тарих өшірілді.", "ru": "🗑 Все документы и история удалены."},
     "sources": {"kk": "Дереккөздер", "ru": "Источники"},
+    "junk": {"kk": "🤔 Бұл құжат бойынша сұраққа ұқсамайды. Не білгіңіз келетінін жазыңыз — мысалы: «Қандай мерзімдер көрсетілген?»",
+             "ru": "🤔 Похоже, это не вопрос по документу. Напишите, что хотите узнать, — например: «Какие сроки указаны?»"},
+    "too_many": {"kk": "⏳ Сұраулар тым көп — сәл күте тұрыңыз.", "ru": "⏳ Слишком много запросов — подождите немного."},
 }
 
 
@@ -164,6 +169,16 @@ async def on_photo(message: Message):
 
 @dp.message(F.text)
 async def on_question(message: Message):
+    lang = ui_lang(message)
+    # как на сайте: бессмыслица не уходит в модель, частые запросы ограничены — бережём общий ключ API
+    if is_junk(message.text):
+        await message.answer(tr("junk", lang))
+        return
+    try:
+        limiter.hit("ask", owner(message))
+    except AuthError:
+        await message.answer(tr("too_many", lang))
+        return
     await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
     result = await rag.answer(message.text, owner(message), owner(message))
     text = md_to_html(result["text"])
