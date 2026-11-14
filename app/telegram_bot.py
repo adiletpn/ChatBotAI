@@ -1,20 +1,24 @@
 """Telegram-бот Mind AI (aiogram 3). Запускается вместе с сервером, если задан TELEGRAM_BOT_TOKEN.
 
-Каждый чат имеет свой набор документов. Команды:
-  /start — приветствие и инструкция    /docs — список документов
-  /summary — краткое содержание         /clear — удалить документы и историю
+Каждый чат имеет свой набор документов. Управление кнопками:
+  меню внизу — «Документы», «Кратко», «Очистить», «Помощь» (то же, что /docs, /summary, /clear, /start);
+  после загрузки файла — краткое содержание и готовые вопросы кнопками;
+  под каждым ответом — кнопки со следующими вопросами.
 """
 import asyncio
 import html
 import io
 import logging
 import re
+import secrets
+from collections import OrderedDict
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ChatAction, ParseMode
 from aiogram.filters import Command, CommandStart
-from aiogram.types import Message
+from aiogram.types import (CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, Message,
+                           ReplyKeyboardMarkup)
 
 from . import rag
 from .auth import AuthError, limiter
@@ -32,12 +36,12 @@ TEXTS = {
               "1️⃣ Маған PDF, DOCX, PPTX, XLSX, TXT файлын немесе құжаттың фотосын жіберіңіз.\n"
               "2️⃣ Құжат бойынша сұрақ қойыңыз — қазақша, орысша немесе ағылшынша.\n"
               "3️⃣ Мен жауап беремін және дереккөзін (бетін) көрсетемін.\n\n"
-              "/docs — құжаттар тізімі, /summary — қысқаша мазмұны, /clear — тазалау",
+              "Төмендегі батырмалар: 📄 құжаттар, 📝 қысқаша мазмұны, 🗑 тазалау.",
         "ru": "Привет! Я <b>Mind AI</b> — чат-бот, который отвечает на вопросы по вашим документам.\n\n"
               "1️⃣ Отправьте мне файл PDF, DOCX, PPTX, XLSX, TXT или фото документа.\n"
               "2️⃣ Задайте вопрос по документу — на казахском, русском или английском.\n"
               "3️⃣ Я отвечу и укажу источник (страницу).\n\n"
-              "/docs — список документов, /summary — краткое содержание, /clear — очистить",
+              "Кнопки внизу: 📄 документы, 📝 краткое содержание, 🗑 очистить.",
     },
     "processing": {"kk": "⏳ Құжат өңделуде: {name}", "ru": "⏳ Обрабатываю документ: {name}"},
     "ready": {
@@ -53,7 +57,43 @@ TEXTS = {
     "junk": {"kk": "🤔 Бұл құжат бойынша сұраққа ұқсамайды. Не білгіңіз келетінін жазыңыз — мысалы: «Қандай мерзімдер көрсетілген?»",
              "ru": "🤔 Похоже, это не вопрос по документу. Напишите, что хотите узнать, — например: «Какие сроки указаны?»"},
     "too_many": {"kk": "⏳ Сұраулар тым көп — сәл күте тұрыңыз.", "ru": "⏳ Слишком много запросов — подождите немного."},
+    "ask_these": {"kk": "💡 Мынадай сұрақ қоюға болады:", "ru": "💡 Можно спросить:"},
+    "clear_ask": {"kk": "Барлық құжаттар мен тарихты өшіру керек пе?", "ru": "Удалить все документы и историю?"},
+    "yes_clear": {"kk": "✅ Иә, өшіру", "ru": "✅ Да, удалить"},
+    "cancel": {"kk": "Болдырмау", "ru": "Отмена"},
+    "cancelled": {"kk": "Жарайды, ештеңе өшірілмеді.", "ru": "Хорошо, ничего не удалено."},
+    "placeholder": {"kk": "Құжат бойынша сұрақ қойыңыз…", "ru": "Задайте вопрос по документу…"},
 }
+
+# Кнопки меню внизу экрана: текст кнопки → действие
+MENU = {
+    "docs": {"kk": "📄 Құжаттар", "ru": "📄 Документы"},
+    "summary": {"kk": "📝 Қысқаша", "ru": "📝 Кратко"},
+    "clear": {"kk": "🗑 Тазалау", "ru": "🗑 Очистить"},
+    "help": {"kk": "❓ Көмек", "ru": "❓ Помощь"},
+}
+MENU_ACTIONS = {text: action for action, variants in MENU.items() for text in variants.values()}
+
+
+def menu_kb(lang: str) -> ReplyKeyboardMarkup:
+    b = lambda key: KeyboardButton(text=MENU[key][lang])  # noqa: E731
+    return ReplyKeyboardMarkup(keyboard=[[b("docs"), b("summary")], [b("clear"), b("help")]],
+                               resize_keyboard=True, is_persistent=True, input_field_placeholder=tr("placeholder", lang))
+
+
+# В callback_data Telegram помещается только 64 байта — сам текст вопроса храним здесь, в кнопке — его номер
+_questions: OrderedDict[str, str] = OrderedDict()
+
+
+def questions_kb(questions: list[str]) -> InlineKeyboardMarkup | None:
+    rows = []
+    for q in questions[:4]:
+        key = secrets.token_hex(4)
+        _questions[key] = q
+        rows.append([InlineKeyboardButton(text=f"❓ {q}", callback_data=f"q:{key}")])
+    while len(_questions) > 5000:
+        _questions.popitem(last=False)
+    return InlineKeyboardMarkup(inline_keyboard=rows) if rows else None
 
 
 def tr(key: str, lang: str, **kwargs) -> str:
@@ -85,21 +125,26 @@ def md_to_html(text: str) -> str:
     return text
 
 
-async def send_long(message: Message, text: str) -> None:
+async def send_long(message: Message, text: str, reply_markup=None) -> Message | None:
+    """Длинный текст — несколькими сообщениями; кнопки — под последним. Возвращает последнее сообщение."""
+    last = None
     while text:
         part = text[:4000]
         if len(text) > 4000 and "\n" in part:
             part = part[: part.rfind("\n")]
-        try:
-            await message.answer(part)
-        except Exception:  # noqa: BLE001 — если HTML сломался, отправляем как есть
-            await message.answer(re.sub(r"<[^>]+>", "", part), parse_mode=None)
         text = text[len(part):].lstrip()
+        markup = reply_markup if not text else None
+        try:
+            last = await message.answer(part, reply_markup=markup)
+        except Exception:  # noqa: BLE001 — если HTML сломался, отправляем как есть
+            last = await message.answer(re.sub(r"<[^>]+>", "", part), parse_mode=None, reply_markup=markup)
+    return last
 
 
 @dp.message(CommandStart())
 async def cmd_start(message: Message):
-    await message.answer(tr("start", ui_lang(message)))
+    lang = ui_lang(message)
+    await message.answer(tr("start", lang), reply_markup=menu_kb(lang))
 
 
 @dp.message(Command("docs"))
@@ -114,9 +159,22 @@ async def cmd_docs(message: Message):
 
 @dp.message(Command("clear"))
 async def cmd_clear(message: Message):
-    store.delete_owner(owner(message))
-    rag.history.clear(owner(message))
-    await message.answer(tr("cleared", ui_lang(message)))
+    lang = ui_lang(message)
+    kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=tr("yes_clear", lang), callback_data="clear:yes"),
+                                                InlineKeyboardButton(text=tr("cancel", lang), callback_data="clear:no")]])
+    await message.answer(tr("clear_ask", lang), reply_markup=kb)
+
+
+@dp.callback_query(F.data.startswith("clear:"))
+async def on_clear(callback: CallbackQuery):
+    lang = "kk" if (callback.from_user.language_code or "").startswith("kk") else "ru"
+    if callback.data == "clear:yes":
+        store.delete_owner(owner(callback.message))
+        rag.history.clear(owner(callback.message))
+        await callback.message.edit_text(tr("cleared", lang))
+    else:
+        await callback.message.edit_text(tr("cancelled", lang))
+    await callback.answer()
 
 
 @dp.message(Command("summary"))
@@ -129,8 +187,8 @@ async def cmd_summary(message: Message):
     await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
     doc = docs[-1]
     result = await rag.summarize(doc, lang)
-    questions = "\n".join(f"❓ {html.escape(q)}" for q in result.get("questions", []))
-    await send_long(message, f"📄 <b>{html.escape(doc['name'])}</b>\n\n{html.escape(result['summary'])}\n\n{questions}")
+    await send_long(message, f"📄 <b>{html.escape(doc['name'])}</b>\n\n{html.escape(result['summary'])}\n\n{tr('ask_these', lang)}",
+                    reply_markup=questions_kb(result.get("questions", [])))
 
 
 async def _ingest(message: Message, filename: str, file_id: str, size: int | None):
@@ -153,6 +211,15 @@ async def _ingest(message: Message, filename: str, file_id: str, size: int | Non
     ocr = tr("ocr", lang, n=doc["ocr_pages"]) if doc["ocr_pages"] else ""
     await status.edit_text(tr("ready", lang, name=html.escape(doc["name"]), pages=doc["pages"],
                               chunks=doc["chunks"], ocr=ocr))
+    # сразу — о чём документ и готовые вопросы кнопками: не нужно придумывать, что спросить
+    await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
+    try:
+        result = await rag.summarize(doc, lang)
+    except Exception:  # noqa: BLE001 — без резюме бот всё равно работает
+        log.exception("Резюме для Telegram не удалось")
+        return
+    await send_long(message, f"📝 {html.escape(result['summary'])}\n\n{tr('ask_these', lang)}",
+                    reply_markup=questions_kb(result.get("questions", [])))
 
 
 @dp.message(F.document)
@@ -167,11 +234,10 @@ async def on_photo(message: Message):
     await _ingest(message, f"photo_{message.message_id}.jpg", photo.file_id, photo.file_size)
 
 
-@dp.message(F.text)
-async def on_question(message: Message):
-    lang = ui_lang(message)
+async def answer_question(message: Message, question: str, lang: str) -> None:
+    """Ответ с источниками; когда готовы подсказки следующего вопроса — кнопки под ответом."""
     # как на сайте: бессмыслица не уходит в модель, частые запросы ограничены — бережём общий ключ API
-    if is_junk(message.text):
+    if is_junk(question):
         await message.answer(tr("junk", lang))
         return
     try:
@@ -180,16 +246,50 @@ async def on_question(message: Message):
         await message.answer(tr("too_many", lang))
         return
     await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
-    result = await rag.answer(message.text, owner(message), owner(message))
-    text = md_to_html(result["text"])
-    if result["sources"]:
-        lang = result["lang"] if result["lang"] in ("kk", "ru") else "ru"
-        lines = []
-        for s in result["sources"][:5]:
-            loc = f", {s['loc_label']}" if s["loc_label"] else ""
-            lines.append(f"[{s['n']}] {html.escape(s['doc_name'])}{html.escape(loc)}")
-        text += f"\n\n📚 <b>{tr('sources', lang)}:</b>\n" + "\n".join(lines)
-    await send_long(message, text)
+    parts, sources, last = [], [], None
+    async for event in rag.answer_stream(question, owner(message), owner(message), None, {}):
+        if event["type"] == "sources":
+            sources = event["sources"]
+        elif event["type"] == "delta":
+            parts.append(event["text"])
+        elif event["type"] == "done":
+            by_n = {s["n"]: s for s in sources}
+            cited = [by_n[n] for n in event.get("cited", []) if n in by_n]
+            text = md_to_html("".join(parts).strip())
+            if cited:
+                src_lang = event["lang"] if event["lang"] in ("kk", "ru") else "ru"
+                lines = [f"[{s['n']}] {html.escape(s['doc_name'])}{html.escape(', ' + s['loc_label'] if s['loc_label'] else '')}"
+                         for s in cited[:5]]
+                text += f"\n\n📚 <b>{tr('sources', src_lang)}:</b>\n" + "\n".join(lines)
+            last = await send_long(message, text)
+        elif event["type"] == "followups" and last:
+            try:
+                await last.edit_reply_markup(reply_markup=questions_kb(event["items"]))
+            except Exception:  # noqa: BLE001 — без кнопок ответ всё равно на месте
+                log.warning("Не удалось добавить кнопки вопросов")
+
+
+@dp.message(F.text.in_(MENU_ACTIONS))
+async def on_menu(message: Message):
+    action = MENU_ACTIONS[message.text]
+    handler = {"docs": cmd_docs, "summary": cmd_summary, "clear": cmd_clear, "help": cmd_start}[action]
+    await handler(message)
+
+
+@dp.message(F.text)
+async def on_question(message: Message):
+    await answer_question(message, message.text, ui_lang(message))
+
+
+@dp.callback_query(F.data.startswith("q:"))
+async def on_question_button(callback: CallbackQuery):
+    question = _questions.get(callback.data[2:])
+    lang = "kk" if (callback.from_user.language_code or "").startswith("kk") else "ru"
+    await callback.answer()
+    if not question:  # кнопка из очень старого сообщения — бот перезапускался
+        return
+    await callback.message.answer(f"❓ <b>{html.escape(question)}</b>")
+    await answer_question(callback.message, question, lang)
 
 
 async def run_bot():
