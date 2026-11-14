@@ -220,6 +220,9 @@ Object.assign(I18N.en, {"mic_denied": "Allow microphone access (lock icon in the
 Object.assign(I18N.kk, {"cmp_mode_diff": "Айырмашылықтар", "cmp_mode_forgery": "Жалғандыққа тексеру", "cmp_doc1": "1-құжат", "cmp_doc2": "2-құжат", "cmp_orig": "Түпнұсқа", "cmp_checked": "Тексерілетін", "cmp_check": "Тексеру", "fg_hint": "Қайсысы түпнұсқа екенін білмейсіз бе? Бот файлдағы түзету іздері бойынша айтады.", "fg_same": "Мәтін түпнұсқамен сәйкес келеді", "fg_found": "{n} өзгеріс табылды, оның {m} — қауіпті (сома, күн, нөмір)", "fg_risky": "қауіпті", "fg_traces": "Қай файл түпнұсқаға ұқсайды", "fg_likely": "Түпнұсқаға ұқсайды", "fg_edited": "Түзету белгілері бар", "fg_created": "Жасалған", "fg_modified": "Өзгертілген", "fg_program": "Бағдарлама", "fg_swap_hint": "Түпнұсқа — «{name}» болуы мүмкін: түпнұсқа деп белгіленген файлда түзету белгілері көбірек.", "fg_swap": "Орындарын ауыстыру", "fg_unsure": "Қызметтік деректер бойынша түпнұсқаны сенімді анықтау мүмкін болмады", "fg_susp": "Күдікті өзгерістер", "fg_high": "Қауіпті", "fg_note": "Бұл — белгілер, жалғандықтың заңды дәлелі емес.", "ld_traces": "Файлдардағы түзету іздерін тексеремін", "ld_risk": "Нені жалған жасауы мүмкін екенін бағалаймын", "listening": "Тыңдап тұрмын — сөйлеңіз", "speak": "Сөйлеңіз…"});
 Object.assign(I18N.ru, {"cmp_mode_diff": "Отличия", "cmp_mode_forgery": "Проверка на подделку", "cmp_doc1": "Документ 1", "cmp_doc2": "Документ 2", "cmp_orig": "Оригинал", "cmp_checked": "Проверяемый", "cmp_check": "Проверить", "fg_hint": "Не уверены, какой файл оригинал? Бот подскажет по следам правки в файле.", "fg_same": "Текст совпадает с оригиналом", "fg_found": "Найдено изменений: {n}, из них опасных: {m} (суммы, даты, номера)", "fg_risky": "опасных", "fg_traces": "Какой файл похож на оригинал", "fg_likely": "Похож на оригинал", "fg_edited": "Есть признаки правки", "fg_created": "Создан", "fg_modified": "Изменён", "fg_program": "Программа", "fg_swap_hint": "Похоже, оригинал — «{name}»: у файла, отмеченного оригиналом, больше признаков правки.", "fg_swap": "Поменять местами", "fg_unsure": "По служебным данным не удалось уверенно определить оригинал", "fg_susp": "Подозрительные изменения", "fg_high": "Опасно", "fg_note": "Это признаки, а не юридическое доказательство подделки.", "ld_traces": "Проверяю следы правки в файлах", "ld_risk": "Оцениваю, что могли подделать", "listening": "Слушаю — говорите", "speak": "Говорите…"});
 Object.assign(I18N.en, {"cmp_mode_diff": "Differences", "cmp_mode_forgery": "Forgery check", "cmp_doc1": "Document 1", "cmp_doc2": "Document 2", "cmp_orig": "Original", "cmp_checked": "To check", "cmp_check": "Check", "fg_hint": "Not sure which file is the original? The bot will tell from the editing traces in the files.", "fg_same": "The text matches the original", "fg_found": "{n} changes found, {m} of them risky (amounts, dates, numbers)", "fg_risky": "risky", "fg_traces": "Which file looks like the original", "fg_likely": "Looks original", "fg_edited": "Signs of editing", "fg_created": "Created", "fg_modified": "Modified", "fg_program": "Software", "fg_swap_hint": "The original is probably “{name}”: the file marked as original has more signs of editing.", "fg_swap": "Swap", "fg_unsure": "The file metadata is not enough to tell the original with confidence", "fg_susp": "Suspicious changes", "fg_high": "Risky", "fg_note": "These are signs, not legal proof of forgery.", "ld_traces": "Checking editing traces in the files", "ld_risk": "Assessing what could have been forged", "listening": "Listening — speak now", "speak": "Speak…"});
+Object.assign(I18N.kk, {"cmp_diff_docs": "Бұл — әртүрлі құжаттар", "cmp_diff_none": "Мәтіндер өте әртүрлі; салыстыру кестесін құру мүмкін болмады.", "cmp_table": "Тармақтар бойынша салыстыру", "cmp_common": "Ортақ", "cmp_only": "Тек «{name}»", "cmp_show_all": "Барлық түзетулерді көрсету", "cmp_hide_all": "Түзетулерді жасыру"});
+Object.assign(I18N.ru, {"cmp_diff_docs": "Это разные документы", "cmp_diff_none": "Тексты сильно различаются; таблицу сравнения построить не удалось.", "cmp_table": "Сравнение по пунктам", "cmp_common": "Общее", "cmp_only": "Только в «{name}»", "cmp_show_all": "Показать все правки", "cmp_hide_all": "Скрыть правки"});
+Object.assign(I18N.en, {"cmp_diff_docs": "These are different documents", "cmp_diff_none": "The texts differ too much; a comparison table could not be built.", "cmp_table": "Side-by-side comparison", "cmp_common": "In common", "cmp_only": "Only in “{name}”", "cmp_show_all": "Show all edits", "cmp_hide_all": "Hide edits"});
 Object.assign(I18N.kk, {"pro_f": ["«Көру»: PDF беттеріндегі кестелерді, графиктер мен сызбаларды оқиды", "Екі есе көп контекст — үлкен құжаттарды терең талдау", "Күндізгі лимиттерсіз", "Қай беттерді қарағанын көрсетеді", "Жаңа мүмкіндіктерге ерте қолжетімділік"]});
 Object.assign(I18N.ru, {"pro_f": ["«Зрение»: читает таблицы, графики и схемы прямо со страниц PDF", "Вдвое больше контекста — глубокий анализ больших документов", "Без дневных лимитов", "Показывает, какие страницы просмотрел", "Ранний доступ к новым функциям"]});
 Object.assign(I18N.en, {"pro_f": ["“Vision”: reads tables, charts and diagrams right from PDF pages", "Twice the context — deep analysis of large documents", "No daily limits", "Shows which pages it looked at", "Early access to new features"]});
@@ -1096,7 +1099,42 @@ async function runCompare() {
   if (state.view === "compare") renderCompare();
 }
 
+const exportButtons = () => `<div class="cmp-export"><span>${L("export_as")}:</span><button type="button" class="btn ghost" data-fmt="pdf">PDF</button><button type="button" class="btn ghost" data-fmt="docx">Word</button></div>`;
+function bindExport(r) {
+  $("#cmpBody").querySelectorAll("[data-fmt]").forEach((b) => (b.onclick = () =>
+    downloadExport({ format: b.dataset.fmt, kind: "compare", a: r.a.id, b: r.b.id })));
+}
+
+// Разные документы: пословная разница бессмысленна — таблица «что в первом / что во втором»
+function paintDifferent(r) {
+  const t = r.table;
+  const list = (items) => `<ul class="cmp-points">${items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+  if (!t) {
+    $("#cmpBody").innerHTML = `<div class="map-hero"><h3>${L("cmp_diff_docs")}</h3><p>${L("cmp_diff_none")}</p></div>`;
+    return;
+  }
+  $("#cmpBody").innerHTML = `
+    <div class="map-hero">
+      <h3>${L("cmp_diff_docs")}</h3>
+      <p>${esc(t.verdict)}</p>
+      <div class="map-stats cmp-stats"><div><b>${r.stats.similarity}%</b>${L("cmp_similar")}</div></div>
+    </div>
+    <div class="cmp-head"><h4 class="cmp-h">${L("cmp_table")}</h4>${exportButtons()}</div>
+    <div class="cmp-table-wrap"><table class="cmp-table">
+      <thead><tr><th></th><th>${esc(r.a.name)}</th><th>${esc(r.b.name)}</th></tr></thead>
+      <tbody>${t.rows.map((row) => `<tr><th>${esc(row.aspect)}</th><td>${esc(row.a)}</td><td>${esc(row.b)}</td></tr>`).join("")}</tbody>
+    </table></div>
+    <div class="cmp-summary three">
+      ${t.common.length ? `<div class="panel"><h4>${icon("tick")}${L("cmp_common")}</h4>${list(t.common)}</div>` : ""}
+      ${t.only_a.length ? `<div class="panel"><h4>${icon("file")}${L("cmp_only").replace("{name}", esc(r.a.name))}</h4>${list(t.only_a)}</div>` : ""}
+      ${t.only_b.length ? `<div class="panel"><h4>${icon("file")}${L("cmp_only").replace("{name}", esc(r.b.name))}</h4>${list(t.only_b)}</div>` : ""}
+    </div>`;
+  bindExport(r);
+}
+
+// Версии одного документа: сверху — смысл изменений, полный список правок свёрнут
 function paintCompare(r) {
+  if (r.kind === "different") return paintDifferent(r);
   const st = r.stats;
   const list = (items, cls) => items.length ? `<ul class="${cls}">${items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
   const sm = r.summary;
@@ -1104,7 +1142,8 @@ function paintCompare(r) {
   const change = (c) => {
     const loc = esc(c.loc_new || c.loc_old || "");
     const text = c.kind === "changed" ? words(c.words) : c.kind === "added" ? `<ins>${esc(c.new)}</ins>` : `<del>${esc(c.old)}</del>`;
-    return `<div class="cmp-item ${c.kind}"><div class="cmp-tag"><b>${L("cmp_" + c.kind)}</b>${loc ? `<span>${loc}</span>` : ""}</div><div class="cmp-text">${text}</div></div>`;
+    const long = (c.old || "").length + (c.new || "").length > 500;  // длинный кусок — свёрнут, раскрывается по клику
+    return `<div class="cmp-item ${c.kind}"><div class="cmp-tag"><b>${L("cmp_" + c.kind)}</b>${loc ? `<span>${loc}</span>` : ""}</div><div class="cmp-text ${long ? "clamp" : ""}">${text}</div></div>`;
   };
   if (!r.changes.length) {
     $("#cmpBody").innerHTML = `<div class="map-hero"><h3>${icon("check")} ${L("cmp_same")}</h3><p>${esc(r.a.name)} · ${esc(r.b.name)}</p></div>`;
@@ -1125,12 +1164,16 @@ function paintCompare(r) {
       ${sm.points.length ? `<div class="panel"><h4>${icon("spark")}${L("cmp_points")}</h4>${list(sm.points, "cmp-points")}</div>` : ""}
       ${sm.attention.length ? `<div class="panel warn"><h4>${icon("pin")}${L("cmp_attention")}</h4>${list(sm.attention, "cmp-points")}</div>` : ""}
     </div>` : ""}
-    <div class="cmp-head"><h4 class="cmp-h">${L("cmp_all")} · ${st.total}</h4>
-      <div class="cmp-export"><span>${L("export_as")}:</span><button type="button" class="btn ghost" data-fmt="pdf">PDF</button><button type="button" class="btn ghost" data-fmt="docx">Word</button></div></div>
-    <div class="cmp-list">${r.changes.map(change).join("")}</div>
-    ${r.truncated ? `<p class="muted">${L("cmp_trunc")}</p>` : ""}`;
-  $("#cmpBody").querySelectorAll("[data-fmt]").forEach((b) => (b.onclick = () =>
-    downloadExport({ format: b.dataset.fmt, kind: "compare", a: r.a.id, b: r.b.id })));
+    <div class="cmp-head"><button type="button" class="btn ghost" id="cmpToggle">${L("cmp_show_all")} · ${st.total}</button>${exportButtons()}</div>
+    <div class="cmp-list" id="cmpList" hidden>${r.changes.map(change).join("")}
+      ${r.truncated ? `<p class="muted">${L("cmp_trunc")}</p>` : ""}</div>`;
+  $("#cmpToggle").onclick = () => {
+    const box = $("#cmpList");
+    box.hidden = !box.hidden;
+    $("#cmpToggle").textContent = `${L(box.hidden ? "cmp_show_all" : "cmp_hide_all")} · ${st.total}`;
+  };
+  $("#cmpList").onclick = (e) => { const t = e.target.closest(".cmp-text.clamp, .cmp-text.open"); if (t) t.classList.toggle("open"), t.classList.toggle("clamp"); };
+  bindExport(r);
 }
 
 /* ---------- проверка знаний ---------- */

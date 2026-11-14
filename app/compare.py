@@ -132,6 +132,55 @@ def _changes_text(changes: list[dict], budget: int = 12000) -> str:
     return "\n".join(lines)[:budget]
 
 
+DIFFERENT_AT = 50  # совпадение текста ниже этого (%) — это не версии, а разные документы
+
+DIFFERENT_PROMPT = """You compare two DIFFERENT documents (A and B) for a reader who must understand how they differ.
+Respond in {lang_name}. Return ONLY valid JSON:
+{{"verdict": "<one or two sentences: what each document is and the main difference>",
+  "rows": [{{"aspect": "<aspect>", "a": "<what A says, short, with exact numbers/dates>", "b": "<what B says>"}}],
+  "common": ["<what both documents share>"],
+  "only_a": ["<important thing present only in A>"],
+  "only_b": ["<important thing present only in B>"]}}
+Rows: 5-9 aspects that matter for these documents (e.g. purpose/topic, deadlines, participants, requirements,
+evaluation, money, format, contacts). Write "—" if a document says nothing about an aspect.
+Up to 5 items in each list. Use only facts from the texts; do not invent anything.
+Write EVERY cell and item in {lang_name}, translating from the documents' language; keep numbers and names exact.
+In the verdict refer to the documents by their file names, never as "A" and "B"."""
+
+
+def _doc_text(doc: dict, budget: int = 9000) -> str:
+    """Начало и равномерная выборка фрагментов — чтобы модель видела весь документ, а не только первую страницу."""
+    chunks = store.doc_chunks({doc["id"]})
+    text = "\n".join(c["text"] for c in chunks)
+    if len(text) <= budget:
+        return text
+    step = max(1, len(chunks) * 900 // budget + 1)
+    return "\n".join(c["text"] for c in chunks[::step])[:budget]
+
+
+async def _different(doc_a: dict, doc_b: dict, lang: str) -> dict | None:
+    if not settings.llm_enabled:
+        return None
+    try:
+        reply = await llm.complete(
+            DIFFERENT_PROMPT.format(lang_name=LANG_NAMES[lang]),
+            [{"role": "user", "content": f"DOCUMENT A: {doc_a['name']}\n{_doc_text(doc_a)}\n\n"
+                                         f"DOCUMENT B: {doc_b['name']}\n{_doc_text(doc_b)}"}],
+            max_tokens=2500,
+        )
+        start, end = reply.find("{"), reply.rfind("}")
+        data = json.loads(reply[start:end + 1]) if start != -1 and end > start else None
+    except (llm.LLMError, json.JSONDecodeError) as exc:
+        log.warning("Сравнение разных документов не удалось: %s", exc)
+        return None
+    if not data or not data.get("rows"):
+        return None
+    rows = [{"aspect": str(r.get("aspect", "")), "a": str(r.get("a", "—")), "b": str(r.get("b", "—"))}
+            for r in data["rows"] if isinstance(r, dict)][:10]
+    lists = {k: [str(x) for x in data.get(k, [])][:5] for k in ("common", "only_a", "only_b")}
+    return {"verdict": str(data.get("verdict", "")), "rows": rows, **lists}
+
+
 async def compare(doc_a: dict, doc_b: dict, lang: str) -> dict:
     key = (doc_a["id"], doc_b["id"], lang)
     if key in _cache:
@@ -140,6 +189,15 @@ async def compare(doc_a: dict, doc_b: dict, lang: str) -> dict:
     result["a"] = {"id": doc_a["id"], "name": doc_a["name"]}
     result["b"] = {"id": doc_b["id"], "name": doc_b["name"]}
     result["summary"] = None
+    if result["stats"]["similarity"] < DIFFERENT_AT:
+        # разные документы: пословная разница бессмысленна — сравниваем по смыслу, таблицей
+        result["kind"] = "different"
+        result["changes"] = []
+        result["table"] = await _different(doc_a, doc_b, lang)
+        if result["table"] or not settings.llm_enabled:
+            _cache[key] = result
+        return result
+    result["kind"] = "versions"
     if result["changes"] and settings.llm_enabled:
         try:
             reply = await llm.complete(

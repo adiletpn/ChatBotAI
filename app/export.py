@@ -22,6 +22,9 @@ LABELS = {
     "points": {"kk": "Негізгі өзгерістер", "ru": "Главные изменения", "en": "Key changes"},
     "attention": {"kk": "Назар аударыңыз", "ru": "Обратите внимание", "en": "Pay attention"},
     "all": {"kk": "Барлық өзгерістер", "ru": "Все изменения", "en": "All changes"},
+    "common": {"kk": "Ортақ", "ru": "Общее", "en": "In common"},
+    "only_a": {"kk": "Тек «{name}» құжатында", "ru": "Только в «{name}»", "en": "Only in “{name}”"},
+    "only_b": {"kk": "Тек «{name}» құжатында", "ru": "Только в «{name}»", "en": "Only in “{name}”"},
     "added": {"kk": "Қосылды", "ru": "Добавлено", "en": "Added"},
     "removed": {"kk": "Өшірілді", "ru": "Удалено", "en": "Removed"},
     "changed": {"kk": "Өзгерді", "ru": "Изменено", "en": "Changed"},
@@ -124,6 +127,17 @@ def answer_blocks(question: str, answer: str, sources: list[dict], lang: str) ->
 def compare_blocks(result: dict, lang: str) -> tuple[str, list[tuple]]:
     st, sm = result["stats"], result.get("summary")
     blocks = [("p", [(result["a"]["name"], "b"), ("  →  ", ""), (result["b"]["name"], "b")])]
+    table = result.get("table")
+    if result.get("kind") == "different" and table:  # разные документы — таблица по аспектам
+        blocks.append(("p", [(table["verdict"], "")]))
+        blocks.append(("table", [["", result["a"]["name"], result["b"]["name"]]]
+                       + [[r["aspect"], r["a"], r["b"]] for r in table["rows"]]))
+        for key, title in (("common", "common"), ("only_a", "only_a"), ("only_b", "only_b")):
+            if table.get(key):
+                name = {"only_a": result["a"]["name"], "only_b": result["b"]["name"]}.get(key, "")
+                blocks.append(("h2", [(_l(title, lang).format(name=name), "")]))
+                blocks += [("li", [(x, "")]) for x in table[key]]
+        return _l("compare_t", lang), blocks
     if sm:
         blocks.append(("p", [(sm["verdict"], "")]))
     blocks.append(("p", [(f"+{st['added']} {_l('added', lang).lower()}   −{st['removed']} {_l('removed', lang).lower()}   "
