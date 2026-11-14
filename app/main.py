@@ -436,7 +436,7 @@ async def document_quiz(doc_id: str, request: Request, lang: str = "ru", n: int 
 
 
 @app.get("/api/compare")
-async def compare_documents(a: str, b: str, request: Request, lang: str = "ru"):
+async def compare_documents(a: str, b: str, request: Request, lang: str = "ru", mode: str = "diff"):
     """Сравнение двух версий документа: a — старая, b — новая."""
     owner = owner_of(request)
     doc_a, doc_b = store.get(a, owner), store.get(b, owner)
@@ -445,8 +445,12 @@ async def compare_documents(a: str, b: str, request: Request, lang: str = "ru"):
     if a == b:
         raise HTTPException(400, "Выберите два разных документа")
     spend("generate", owner)
-    if (doc_a["id"], doc_b["id"], _lang(lang)) not in compare._cache:  # готовое сравнение — без лимита
+    forgery = mode == "forgery"  # a — оригинал, b — проверяемый файл
+    key = (doc_a["id"], doc_b["id"], _lang(lang)) + (("forgery",) if forgery else ())
+    if key not in compare._cache:  # готовое сравнение — без лимита
         daily(request, "generate")
+    if forgery:
+        return await compare.forgery(doc_a, doc_b, _lang(lang))
     return await compare.compare(doc_a, doc_b, _lang(lang))
 
 

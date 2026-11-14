@@ -865,3 +865,43 @@ a.btn { text-decoration: none; display: inline-block; }
 .set-group.rules { margin-top: 14px; }
 .set-group.rules .lbl b { display: flex; align-items: center; gap: 6px; }
 .set-group.rules .lbl b svg { width: 16px; height: 16px; color: var(--muted); }
+
+/* голосовой ввод: ещё не распознанная окончательно речь — бледная */
+#question.interim { color: var(--muted); transition: color .15s; }
+
+/* ---------- голос: видно, что идёт запись ---------- */
+.composer.listening .input-row { border-color: var(--bad); box-shadow: 0 0 0 4px var(--bad-soft), var(--shadow); }
+.voice-pill { max-width: var(--chat-w); margin: 0 auto 8px; display: flex; align-items: center; gap: 10px; width: fit-content; padding: 6px 14px; border-radius: 99px; background: var(--bad-soft); color: var(--bad); font-size: 13px; font-weight: 600; animation: rise .2s ease both; }
+.voice-pill .bars { display: inline-flex; align-items: center; gap: 3px; height: 14px; }
+.voice-pill .bars i { width: 3px; height: 100%; border-radius: 2px; background: currentColor; animation: eq 0.9s ease-in-out infinite; }
+.voice-pill .bars i:nth-child(2) { animation-delay: .15s; }
+.voice-pill .bars i:nth-child(3) { animation-delay: .3s; }
+.voice-pill .bars i:nth-child(4) { animation-delay: .45s; }
+@keyframes eq { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+
+/* ---------- проверка на подделку ---------- */
+.cmp-hint { margin: 10px 0 0; font-size: 13.5px; }
+.fg-hero.ok::before { background: var(--ok); }
+.fg-hero.warn::before { background: var(--warn); }
+.fg-hero.bad::before { background: var(--bad); }
+.fg-hero h3 { display: flex; align-items: center; gap: 10px; }
+.fg-hero h3 svg { width: 24px; height: 24px; flex: none; }
+.fg-hero.ok h3 svg { color: var(--ok); }
+.fg-hero.bad h3 svg { color: var(--bad); }
+.fg-traces, .panel.warn { margin-bottom: 14px; }
+.traces { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.trace { border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; min-width: 0; background: var(--glass); }
+.trace.likely { border-color: var(--ok); }
+.trace-top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+.trace-top b { font-size: 14px; overflow-wrap: anywhere; }
+.trace-badge { flex: none; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+.trace-badge.ok { background: var(--ok-soft); color: var(--ok); }
+.trace-badge.bad { background: var(--bad-soft); color: var(--bad); }
+.trace-meta { display: grid; gap: 2px; font-size: 12.5px; color: var(--muted); margin: 8px 0; }
+.trace ul { margin: 0; padding-left: 18px; font-size: 13px; display: grid; gap: 4px; }
+.fg-swap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; margin-bottom: 10px; border-radius: 12px; background: var(--warn-soft); font-size: 13.5px; }
+.fg-swap .btn { padding: 5px 12px; font-size: 13px; }
+.fg-note { font-size: 12px; margin: 10px 0 0; }
+.risk-badge { font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 1px 7px; border-radius: 6px; background: var(--bad); color: #fff; }
+.cmp-item.risky { border-left-color: var(--bad); }
+@media (max-width: 720px) { .traces { grid-template-columns: 1fr; } }

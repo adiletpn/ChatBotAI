@@ -214,6 +214,12 @@ Object.assign(I18N.en, {"fix_mistakes": "Fix mistakes", "cards_hard": "Review th
 Object.assign(I18N.kk, {"left_today": "бүгін {n} сұрақ қалды", "junk_1": "Бұл құжат бойынша сұраққа ұқсамайды. Не білгіңіз келетінін жазыңыз — мысалы: «Қандай мерзімдер көрсетілген?» Мұндай хабарламалар лимитті жұмсамайды.", "junk_warn": "Ескерту: мағынасыз сұраулар Mind AI пайдалану ережелерін бұзады. Тағы {left} рет қайталанса — ережеге сәйкес сұрақтарға қолжетімділік 24 сағатқа шектеледі, ал қайталанған бұзушылықтарда аккаунт бұғатталуы мүмкін.", "blocked": "Мағынасыз сұраулар қайталанғандықтан, Mind AI пайдалану ережелеріне сәйкес сұрақтарға қолжетімділік {time} дейін шектелді. Қайталанған бұзушылықтарда аккаунт бұғатталуы мүмкін.", "limit_ask": "Бүгінгі тегін сұрақтар лимиті ({n}) таусылды. Жаңа сұрақтар — ертең 00:00-ден бастап. Mind Pro шектеулерді алып тастайды — жақында.", "limit_gen": "Бүгінгі тегін генерациялар лимиті ({n}: тест, карточка, карта, салыстыру) таусылды. Ертең қайта қолжетімді болады.", "lite_limit": "Күніне {q} сұрақ және {g} генерация (тест, карточка, карта, салыстыру)", "rules_t": "Пайдалану ережелері", "rules": "Жүктелген құжаттар бойынша сұрақ қойыңыз. Мағынасыз және спам-сұраулар үшін алдымен ескерту беріледі, содан кейін сұрақтар 24 сағатқа шектеледі; қайталанған бұзушылықтарда аккаунт бұғатталуы мүмкін."});
 Object.assign(I18N.ru, {"left_today": "осталось {n} вопр. на сегодня", "junk_1": "Похоже, это не вопрос по документу. Напишите, что хотите узнать, — например: «Какие сроки указаны?» Такие сообщения не тратят ваш лимит.", "junk_warn": "Предупреждение: бессмысленные запросы нарушают правила использования Mind AI. Ещё {left} — и в соответствии с правилами доступ к вопросам будет ограничен на 24 часа, а при повторных нарушениях аккаунт может быть заблокирован.", "blocked": "Из-за повторяющихся бессмысленных запросов доступ к вопросам ограничен до {time} в соответствии с правилами использования Mind AI. При повторных нарушениях аккаунт может быть заблокирован.", "limit_ask": "Дневной лимит бесплатных вопросов ({n}) исчерпан. Новые вопросы — завтра с 00:00. Mind Pro снимет ограничения — скоро.", "limit_gen": "Дневной лимит бесплатных генераций ({n}: тест, карточки, карта, сравнение) исчерпан. Снова доступно завтра.", "lite_limit": "{q} вопросов и {g} генераций в день (тест, карточки, карта, сравнение)", "rules_t": "Правила использования", "rules": "Задавайте вопросы по загруженным документам. За бессмысленные и спам-запросы сначала — предупреждение, затем вопросы ограничиваются на 24 часа; при повторных нарушениях аккаунт может быть заблокирован."});
 Object.assign(I18N.en, {"left_today": "{n} questions left today", "junk_1": "That doesn’t look like a question about your documents. Write what you want to know — e.g. “What deadlines are listed?” Messages like this don’t use your limit.", "junk_warn": "Warning: meaningless requests violate the Mind AI terms of use. {left} more — and under the terms, questions will be restricted for 24 hours; repeated violations may lead to the account being blocked.", "blocked": "Because of repeated meaningless requests, questions are restricted until {time} under the Mind AI terms of use. Repeated violations may lead to the account being blocked.", "limit_ask": "Today’s free question limit ({n}) is used up. New questions — tomorrow from 00:00. Mind Pro removes the limits — coming soon.", "limit_gen": "Today’s free generation limit ({n}: quiz, flashcards, map, comparison) is used up. Available again tomorrow.", "lite_limit": "{q} questions and {g} generations per day (quiz, flashcards, map, comparison)", "rules_t": "Terms of use", "rules": "Ask questions about your uploaded documents. Meaningless and spam requests get a warning first, then questions are restricted for 24 hours; repeated violations may lead to the account being blocked."});
+Object.assign(I18N.kk, {"mic_denied": "Микрофонға рұқсат беріңіз (адрес жолындағы құлып белгісі)", "mic_browser": "Бұл браузерде дауыспен енгізу жұмыс істемейді — Google Chrome-да ашыңыз", "mic_none": "Микрофон табылмады", "mic_silence": "Дауыс естілмеді — қайта көріңіз"});
+Object.assign(I18N.ru, {"mic_denied": "Разрешите доступ к микрофону (значок замка в адресной строке)", "mic_browser": "В этом браузере голосовой ввод не работает — откройте сайт в Google Chrome", "mic_none": "Микрофон не найден", "mic_silence": "Не слышу вас — попробуйте ещё раз"});
+Object.assign(I18N.en, {"mic_denied": "Allow microphone access (lock icon in the address bar)", "mic_browser": "Voice input doesn’t work in this browser — open the site in Google Chrome", "mic_none": "No microphone found", "mic_silence": "I can’t hear you — try again"});
+Object.assign(I18N.kk, {"cmp_mode_diff": "Айырмашылықтар", "cmp_mode_forgery": "Жалғандыққа тексеру", "cmp_doc1": "1-құжат", "cmp_doc2": "2-құжат", "cmp_orig": "Түпнұсқа", "cmp_checked": "Тексерілетін", "cmp_check": "Тексеру", "fg_hint": "Қайсысы түпнұсқа екенін білмейсіз бе? Бот файлдағы түзету іздері бойынша айтады.", "fg_same": "Мәтін түпнұсқамен сәйкес келеді", "fg_found": "{n} өзгеріс табылды, оның {m} — қауіпті (сома, күн, нөмір)", "fg_risky": "қауіпті", "fg_traces": "Қай файл түпнұсқаға ұқсайды", "fg_likely": "Түпнұсқаға ұқсайды", "fg_edited": "Түзету белгілері бар", "fg_created": "Жасалған", "fg_modified": "Өзгертілген", "fg_program": "Бағдарлама", "fg_swap_hint": "Түпнұсқа — «{name}» болуы мүмкін: түпнұсқа деп белгіленген файлда түзету белгілері көбірек.", "fg_swap": "Орындарын ауыстыру", "fg_unsure": "Қызметтік деректер бойынша түпнұсқаны сенімді анықтау мүмкін болмады", "fg_susp": "Күдікті өзгерістер", "fg_high": "Қауіпті", "fg_note": "Бұл — белгілер, жалғандықтың заңды дәлелі емес.", "ld_traces": "Файлдардағы түзету іздерін тексеремін", "ld_risk": "Нені жалған жасауы мүмкін екенін бағалаймын", "listening": "Тыңдап тұрмын — сөйлеңіз", "speak": "Сөйлеңіз…"});
+Object.assign(I18N.ru, {"cmp_mode_diff": "Отличия", "cmp_mode_forgery": "Проверка на подделку", "cmp_doc1": "Документ 1", "cmp_doc2": "Документ 2", "cmp_orig": "Оригинал", "cmp_checked": "Проверяемый", "cmp_check": "Проверить", "fg_hint": "Не уверены, какой файл оригинал? Бот подскажет по следам правки в файле.", "fg_same": "Текст совпадает с оригиналом", "fg_found": "Найдено изменений: {n}, из них опасных: {m} (суммы, даты, номера)", "fg_risky": "опасных", "fg_traces": "Какой файл похож на оригинал", "fg_likely": "Похож на оригинал", "fg_edited": "Есть признаки правки", "fg_created": "Создан", "fg_modified": "Изменён", "fg_program": "Программа", "fg_swap_hint": "Похоже, оригинал — «{name}»: у файла, отмеченного оригиналом, больше признаков правки.", "fg_swap": "Поменять местами", "fg_unsure": "По служебным данным не удалось уверенно определить оригинал", "fg_susp": "Подозрительные изменения", "fg_high": "Опасно", "fg_note": "Это признаки, а не юридическое доказательство подделки.", "ld_traces": "Проверяю следы правки в файлах", "ld_risk": "Оцениваю, что могли подделать", "listening": "Слушаю — говорите", "speak": "Говорите…"});
+Object.assign(I18N.en, {"cmp_mode_diff": "Differences", "cmp_mode_forgery": "Forgery check", "cmp_doc1": "Document 1", "cmp_doc2": "Document 2", "cmp_orig": "Original", "cmp_checked": "To check", "cmp_check": "Check", "fg_hint": "Not sure which file is the original? The bot will tell from the editing traces in the files.", "fg_same": "The text matches the original", "fg_found": "{n} changes found, {m} of them risky (amounts, dates, numbers)", "fg_risky": "risky", "fg_traces": "Which file looks like the original", "fg_likely": "Looks original", "fg_edited": "Signs of editing", "fg_created": "Created", "fg_modified": "Modified", "fg_program": "Software", "fg_swap_hint": "The original is probably “{name}”: the file marked as original has more signs of editing.", "fg_swap": "Swap", "fg_unsure": "The file metadata is not enough to tell the original with confidence", "fg_susp": "Suspicious changes", "fg_high": "Risky", "fg_note": "These are signs, not legal proof of forgery.", "ld_traces": "Checking editing traces in the files", "ld_risk": "Assessing what could have been forged", "listening": "Listening — speak now", "speak": "Speak…"});
 Object.assign(I18N.kk, {"pro_f": ["«Көру»: PDF беттеріндегі кестелерді, графиктер мен сызбаларды оқиды", "Екі есе көп контекст — үлкен құжаттарды терең талдау", "Күндізгі лимиттерсіз", "Қай беттерді қарағанын көрсетеді", "Жаңа мүмкіндіктерге ерте қолжетімділік"]});
 Object.assign(I18N.ru, {"pro_f": ["«Зрение»: читает таблицы, графики и схемы прямо со страниц PDF", "Вдвое больше контекста — глубокий анализ больших документов", "Без дневных лимитов", "Показывает, какие страницы просмотрел", "Ранний доступ к новым функциям"]});
 Object.assign(I18N.en, {"pro_f": ["“Vision”: reads tables, charts and diagrams right from PDF pages", "Twice the context — deep analysis of large documents", "No daily limits", "Shows which pages it looked at", "Early access to new features"]});
@@ -228,7 +234,7 @@ const state = {
   view: "chat",
   mapDoc: null,
   mapCache: {},
-  cmpA: null, cmpB: null, cmp: null,
+  cmpA: null, cmpB: null, cmp: null, cmpMode: "diff",
   quizMode: "quiz", cards: null, cardsN: 10,  // режим вкладки «Проверка знаний»: тест или карточки  // сравнение версий: выбранные документы и последний результат
   quizDoc: null,
   quiz: null,
@@ -914,6 +920,7 @@ const STAGES = {
   quiz: ["ld_read", "ld_facts", "ld_questions", "ld_options", "ld_check"],
   cards: ["ld_read", "ld_memo", "ld_cards", "ld_check"],
   compare: ["ld_parse", "ld_match", "ld_words", "ld_weigh"],
+  forgery: ["ld_parse", "ld_traces", "ld_words", "ld_risk"],
 };
 const stagedState = (kind) => `<div class="loading staged" data-kind="${kind}" data-start="${Date.now()}">
   <span class="spinner"></span><div class="staged-body"><div class="staged-t">${L(STAGES[kind][0])}</div><div class="staged-bar"><i></i></div></div></div>`;
@@ -999,6 +1006,12 @@ function paintMap(doc, m) {
 /* ---------- сравнение версий ---------- */
 function renderCompare() {
   const pick = $("#cmpPick"), body = $("#cmpBody");
+  const forgery = state.cmpMode === "forgery";
+  $("#cmpMode").innerHTML = [["diff", L("cmp_mode_diff")], ["forgery", L("cmp_mode_forgery")]].map(([k, label]) =>
+    `<button type="button" data-mode="${k}" class="${state.cmpMode === k ? "active" : ""}">${label}</button>`).join("");
+  $("#cmpMode").querySelectorAll("button").forEach((b) => (b.onclick = () => { state.cmpMode = b.dataset.mode; renderCompare(); }));
+  $("#cmpHint").hidden = !forgery;
+  $("#cmpHint").textContent = L("fg_hint");
   if (state.docs.length < 2) {
     pick.innerHTML = "";
     body.innerHTML = `<button type="button" class="empty-state" data-upload><div class="big">${icon("compare")}</div><b>${L("cmp_need")}</b></button>`;
@@ -1009,27 +1022,72 @@ function renderCompare() {
   if (!has(state.cmpA) || state.cmpA === state.cmpB) state.cmpA = state.docs.find((d) => d.id !== state.cmpB).id;
   const options = (sel) => state.docs.map((d) => `<option value="${d.id}" ${d.id === sel ? "selected" : ""}>${esc(d.name)}</option>`).join("");
   pick.innerHTML = `
-    <label><span>${L("cmp_old")}</span><select id="cmpA">${options(state.cmpA)}</select></label>
+    <label><span>${L(forgery ? "cmp_orig" : "cmp_doc1")}</span><select id="cmpA">${options(state.cmpA)}</select></label>
     <button type="button" class="icon-btn" id="cmpSwap" aria-label="swap">${icon("swap")}</button>
-    <label><span>${L("cmp_new")}</span><select id="cmpB">${options(state.cmpB)}</select></label>
-    <button type="button" class="btn" id="cmpGo">${L("cmp_go")}</button>`;
+    <label><span>${L(forgery ? "cmp_checked" : "cmp_doc2")}</span><select id="cmpB">${options(state.cmpB)}</select></label>
+    <button type="button" class="btn" id="cmpGo">${L(forgery ? "cmp_check" : "cmp_go")}</button>`;
   $("#cmpA").onchange = (e) => { state.cmpA = e.target.value; };
   $("#cmpB").onchange = (e) => { state.cmpB = e.target.value; };
   $("#cmpSwap").onclick = () => { [state.cmpA, state.cmpB] = [state.cmpB, state.cmpA]; renderCompare(); };
   $("#cmpGo").onclick = runCompare;
   const r = state.cmp;
-  if (r && r.a.id === state.cmpA && r.b.id === state.cmpB && r.lang === state.lang) paintCompare(r);
+  const same = r && r.a.id === state.cmpA && r.b.id === state.cmpB && r.lang === state.lang && (r.mode || "diff") === state.cmpMode;
+  if (same && !r.loading) (r.mode === "forgery" ? paintForgery(r) : paintCompare(r));
   else if (!r || !r.loading) body.innerHTML = "";
+}
+
+// Проверка на подделку: что изменено (опасное — первым) и какой файл похож на оригинал
+function paintForgery(r) {
+  const st = r.stats, sm = r.summary;
+  const words = (parts) => parts.map(([op, t]) => op === "eq" ? esc(t) : `<${op}>${esc(t)}</${op}>`).join("");
+  const change = (c) => {
+    const loc = esc(c.loc_new || c.loc_old || "");
+    const text = c.kind === "changed" ? words(c.words) : c.kind === "added" ? `<ins>${esc(c.new)}</ins>` : `<del>${esc(c.old)}</del>`;
+    const risk = c.risk === "high" ? `<span class="risk-badge">${L("fg_high")}</span>` : "";
+    return `<div class="cmp-item ${c.kind} ${c.risk === "high" ? "risky" : ""}"><div class="cmp-tag">${risk}<b>${L("cmp_" + c.kind)}</b>${loc ? `<span>${loc}</span>` : ""}</div><div class="cmp-text">${text}</div></div>`;
+  };
+  const trace = (tr, key) => {
+    const likely = r.likely_original === key;
+    const badge = r.likely_original ? (likely ? `<span class="trace-badge ok">${L("fg_likely")}</span>` : `<span class="trace-badge bad">${L("fg_edited")}</span>`) : "";
+    return `<div class="trace ${likely ? "likely" : ""}">
+      <div class="trace-top"><b>${esc(tr.name)}</b>${badge}</div>
+      <div class="trace-meta"><span>${L("fg_created")}: ${esc(tr.created)}</span><span>${L("fg_modified")}: ${esc(tr.modified)}</span><span>${L("fg_program")}: ${esc(tr.program)}</span></div>
+      <ul>${tr.signals.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>`;
+  };
+  const wrongOrder = r.likely_original === "b";
+  const headline = r.changes.length ? L("fg_found").replace("{n}", st.total).replace("{m}", st.risky) : L("fg_same");
+  $("#cmpBody").innerHTML = `
+    <div class="map-hero fg-hero ${r.changes.length ? (st.risky ? "bad" : "warn") : "ok"}">
+      <h3>${icon(r.changes.length ? "shield" : "check")} ${esc(headline)}</h3>
+      ${sm ? `<p>${esc(sm.verdict)}</p>` : ""}
+      <div class="map-stats cmp-stats">
+        <div class="del"><b>${st.risky}</b>${L("fg_risky")}</div>
+        <div class="chg"><b>${st.total}</b>${L("cmp_all").toLowerCase()}</div>
+        <div><b>${st.similarity}%</b>${L("cmp_similar")}</div>
+      </div>
+    </div>
+    <div class="panel fg-traces">
+      <h4>${icon("eye")}${L("fg_traces")}</h4>
+      ${wrongOrder ? `<div class="fg-swap">${esc(L("fg_swap_hint").replace("{name}", r.b.name))} <button type="button" class="btn ghost" id="fgSwap">${L("fg_swap")}</button></div>` : ""}
+      ${r.likely_original ? "" : `<p class="muted">${L("fg_unsure")}</p>`}
+      <div class="traces">${trace(r.traces[0], "a")}${trace(r.traces[1], "b")}</div>
+      <p class="muted fg-note">${L("fg_note")}</p>
+    </div>
+    ${sm && sm.attention.length ? `<div class="panel warn"><h4>${icon("pin")}${L("fg_susp")}</h4><ul class="cmp-points">${sm.attention.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+    ${r.changes.length ? `<h4 class="cmp-h">${L("cmp_all")} · ${st.total}</h4><div class="cmp-list">${r.changes.map(change).join("")}</div>` : ""}`;
+  const swap = $("#fgSwap");
+  if (swap) swap.onclick = () => { [state.cmpA, state.cmpB] = [state.cmpB, state.cmpA]; renderCompare(); runCompare(); };
 }
 
 async function runCompare() {
   if (state.cmpA === state.cmpB) return toast(L("cmp_pick2"), true);
   const a = state.cmpA, b = state.cmpB, lang = state.lang;
-  state.cmp = { loading: true, a: { id: a }, b: { id: b }, lang };
-  $("#cmpBody").innerHTML = stagedState("compare");
+  const mode = state.cmpMode;
+  state.cmp = { loading: true, a: { id: a }, b: { id: b }, lang, mode };
+  $("#cmpBody").innerHTML = stagedState(mode === "forgery" ? "forgery" : "compare");
   try {
-    const data = await api(`/api/compare?a=${a}&b=${b}&lang=${lang}`);
-    state.cmp = { ...data, lang };
+    const data = await api(`/api/compare?a=${a}&b=${b}&lang=${lang}&mode=${mode}`);
+    state.cmp = { ...data, lang, mode };
   } catch (e) {
     state.cmp = null;
     $("#cmpBody").innerHTML = `<div class="empty-state">${L("error")}: ${esc(e.message)}</div>`;
@@ -1749,26 +1807,76 @@ function setupModelPicker() {
 }
 
 /* ================= voice ================= */
+// Пока идёт запись — поле подсвечено, сверху плашка «Слушаю» с «эквалайзером», в поле подсказка «Говорите…»
+function showListening(on) {
+  const composer = $("#composer"), input = $("#question");
+  composer.classList.toggle("listening", on);
+  let pill = composer.querySelector(".voice-pill");
+  if (on && !pill) {
+    pill = document.createElement("div");
+    pill.className = "voice-pill";
+    pill.innerHTML = `<span class="bars"><i></i><i></i><i></i><i></i></span><span>${L("listening")}</span>`;
+    composer.insertBefore(pill, composer.querySelector(".input-row"));
+  }
+  if (!on && pill) pill.remove();
+  input.placeholder = on ? L("speak") : L("placeholder");
+}
+
+// Голосовой ввод, как у других ИИ: текст появляется в поле прямо во время речи,
+// ещё не распознанная окончательно часть — бледная; запись не обрывается на паузах
 function setupVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) return;
-  const btn = $("#micBtn");
+  const btn = $("#micBtn"), input = $("#question");
   btn.hidden = false;
-  let rec = null;
-  btn.onclick = () => {
-    if (rec) { rec.stop(); return; }
+  let rec = null, base = "", finalText = "", silence = 0, langTry = 0;
+  const langs = () => ({ kk: ["kk-KZ", "ru-RU"], ru: ["ru-RU"], en: ["en-US"] }[state.lang] || ["ru-RU"]);
+  const stop = () => { if (rec) rec.stop(); };
+  const quietTimer = () => { clearTimeout(silence); silence = setTimeout(stop, 3000); };  // 3 с тишины — стоп
+  const start = () => {
     rec = new SR();
-    rec.lang = { kk: "kk-KZ", ru: "ru-RU", en: "en-US" }[state.lang];
+    rec.lang = langs()[Math.min(langTry, langs().length - 1)];
     rec.interimResults = true;
+    rec.continuous = true;
     rec.onresult = (e) => {
-      $("#question").value = Array.from(e.results).map((r) => r[0].transcript).join("");
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const text = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalText += text;
+        else interim += text;
+      }
+      input.value = (base + finalText + interim).replace(/\s+/g, " ").trimStart();
+      input.classList.toggle("interim", !!interim);
       autosize();
+      quietTimer();
     };
-    rec.onend = () => { btn.classList.remove("rec"); rec = null; };
-    rec.onerror = () => { btn.classList.remove("rec"); rec = null; };
+    rec.onerror = (e) => {
+      if (e.error === "language-not-supported" && langTry < langs().length - 1) { langTry += 1; rec.onend = start; return; }
+      const msg = { "not-allowed": "mic_denied", "service-not-allowed": "mic_denied", network: "mic_browser",
+        "audio-capture": "mic_none", "no-speech": "mic_silence" }[e.error];
+      if (msg) toast(L(msg), e.error !== "no-speech");
+    };
+    rec.onend = () => {
+      clearTimeout(silence);
+      showListening(false);
+      btn.classList.remove("rec");
+      input.classList.remove("interim");
+      rec = null;
+      input.focus();
+    };
     btn.classList.add("rec");
+    showListening(true);
     rec.start();
+    quietTimer();
   };
+  btn.onclick = () => {
+    if (rec) return stop();
+    base = input.value.trim() ? input.value.trim() + " " : "";  // уже набранный текст не стираем
+    finalText = "";
+    langTry = 0;
+    start();
+  };
+  $("#composer").addEventListener("submit", stop);
 }
 
 /* ================= init ================= */

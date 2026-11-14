@@ -14,6 +14,9 @@ import logging
 import re
 from collections import OrderedDict
 
+import datetime as dt
+import io
+
 from . import llm
 from .chunker import split_sentences
 from .config import settings
@@ -159,4 +162,150 @@ async def compare(doc_a: dict, doc_b: dict, lang: str) -> dict:
         _cache[key] = result
     while len(_cache) > 50:
         _cache.popitem(last=False)
+    return result
+
+
+# ---------------------------------------------------------------- проверка на подделку
+#
+# По тексту видно, ЧТО изменили; по служебным данным файла — признаки правки: когда файл создан и изменён,
+# в какой программе, сколько раз пересохранялся. Это признаки, а не доказательство подделки.
+
+EDITORS = ("ilovepdf", "smallpdf", "sejda", "pdfescape", "pdf24", "foxit", "nitro", "pdfelement", "wondershare",
+           "pdf-xchange", "pdffiller", "docfly", "pdfcandy", "sodapdf", "pdf2go", "online2pdf")
+RISKY = re.compile(r"\d|₸|\$|€|тг|тенге|теңге|руб|сом|usd|kzt|%", re.I)
+
+SIGNALS = {
+    "edited_after": {"kk": "Жасалғаннан кейін өзгертілген: {a} → {b}", "ru": "Изменён после создания: {a} → {b}",
+                     "en": "Modified after creation: {a} → {b}"},
+    "resaved": {"kk": "Файл {n} рет қайта сақталған (PDF-қа түзетулер қосылған)", "ru": "Файл пересохранялся {n} раз(а) — в PDF дописаны правки",
+                "en": "File was re-saved {n} times — edits appended to the PDF"},
+    "editor": {"kk": "PDF-редакторда өңделген: {x}", "ru": "Обработан в PDF-редакторе: {x}", "en": "Processed in a PDF editor: {x}"},
+    "other_author": {"kk": "Соңғы өзгерткен: {x} (авторы: {y})", "ru": "Последним изменял: {x} (автор: {y})",
+                     "en": "Last modified by {x} (author: {y})"},
+    "earlier": {"kk": "Екінші файлдан ертерек жасалған", "ru": "Создан раньше второго файла", "en": "Created earlier than the other file"},
+    "clean": {"kk": "Түзету белгілері жоқ", "ru": "Признаков правки не найдено", "en": "No signs of editing found"},
+}
+
+
+def _sig(key: str, lang: str, **kw) -> str:
+    return SIGNALS[key][lang].format(**kw)
+
+
+def _pdf_date(value: str) -> dt.datetime | None:
+    m = re.match(r"D:(\d{4})(\d{2})(\d{2})(\d{2})?(\d{2})?(\d{2})?", value or "")
+    if not m:
+        return None
+    parts = [int(x) if x else 0 for x in m.groups()]
+    try:
+        return dt.datetime(*parts)
+    except ValueError:
+        return None
+
+
+def _fmt(d: dt.datetime | None) -> str:
+    return d.strftime("%d.%m.%Y %H:%M") if d else "—"
+
+
+def file_traces(doc: dict, lang: str) -> dict:
+    """Служебные данные файла и признаки правки. score — чем больше, тем вероятнее файл правили."""
+    data = store.file_path(doc).read_bytes()
+    info = {"created": None, "modified": None, "program": "", "resaves": 0}
+    signals, score = [], 0
+    if doc["ext"] == ".pdf":
+        import pymupdf
+
+        with pymupdf.open(stream=data, filetype="pdf") as pdf:
+            meta = pdf.metadata or {}
+        info["created"], info["modified"] = _pdf_date(meta.get("creationDate", "")), _pdf_date(meta.get("modDate", ""))
+        info["program"] = " / ".join(x for x in (meta.get("creator", ""), meta.get("producer", "")) if x)
+        info["resaves"] = max(0, data.count(b"%%EOF") - 1)  # каждое «дописанное» сохранение PDF добавляет %%EOF
+        if info["resaves"]:
+            signals.append(_sig("resaved", lang, n=info["resaves"]))
+            score += 2
+        editor = next((e for e in EDITORS if e in info["program"].lower()), None)
+        if editor:
+            signals.append(_sig("editor", lang, x=info["program"][:60]))
+            score += 2
+    elif doc["ext"] == ".docx":
+        import docx
+
+        core = docx.Document(io.BytesIO(data)).core_properties
+        info["created"], info["modified"] = core.created, core.modified
+        info["program"] = f"Word · ред. {core.revision}" if core.revision else "Word"
+        if core.last_modified_by and core.author and core.last_modified_by != core.author:
+            signals.append(_sig("other_author", lang, x=core.last_modified_by, y=core.author))
+            score += 1
+    created, modified = info["created"], info["modified"]
+    if created and modified:
+        created, modified = created.replace(tzinfo=None), modified.replace(tzinfo=None)
+        if (modified - created).total_seconds() > 120:
+            signals.insert(0, _sig("edited_after", lang, a=_fmt(created), b=_fmt(modified)))
+            score += 2
+    return {"id": doc["id"], "name": doc["name"], "created": _fmt(created), "modified": _fmt(modified),
+            "program": info["program"] or "—", "signals": signals, "score": score, "_created": created}
+
+
+def _risk(change: dict) -> str:
+    """Изменения сумм, дат, номеров и процентов — самые опасные при подделке."""
+    if change["kind"] == "changed":
+        edited = " ".join(t for op, t in change["words"] if op != "eq")
+    else:
+        edited = change.get("new") or change.get("old") or ""
+    return "high" if RISKY.search(edited) else "medium"
+
+
+FORGERY_PROMPT = """You check whether a document was falsified. ORIGINAL is the trusted file, CHECKED may be forged.
+Respond in {lang_name}. Return ONLY valid JSON:
+{{"verdict": "<one sentence: does CHECKED match ORIGINAL, and how serious are the differences>",
+  "suspicious": ["<a change that looks like falsification: amounts, dates, names, numbers, obligations — quote old → new>", "..."]}}
+Up to 6 suspicious items, most dangerous first. Be specific and do not invent anything.
+Refer to the files by their names (never write "ORIGINAL" or "CHECKED")."""
+
+
+async def forgery(original: dict, checked: dict, lang: str) -> dict:
+    """Проверка подлинности: что изменено в проверяемом файле и какой файл больше похож на оригинал."""
+    key = (original["id"], checked["id"], lang, "forgery")
+    if key in _cache:
+        return _cache[key]
+    result = await asyncio.to_thread(diff_docs, original, checked, lang)
+    for change in result["changes"]:
+        change["risk"] = _risk(change)
+    result["changes"].sort(key=lambda c: c["risk"] != "high")  # опасные — первыми
+    result["stats"]["risky"] = sum(c["risk"] == "high" for c in result["changes"])
+    result["a"] = {"id": original["id"], "name": original["name"]}
+    result["b"] = {"id": checked["id"], "name": checked["name"]}
+    result["mode"] = "forgery"
+
+    traces = await asyncio.to_thread(lambda: [file_traces(original, lang), file_traces(checked, lang)])
+    ca, cb = traces[0].pop("_created"), traces[1].pop("_created")
+    if ca and cb and ca != cb:
+        earlier = traces[0] if ca < cb else traces[1]
+        earlier["signals"].append(_sig("earlier", lang))
+        earlier["score"] -= 1
+    for tr in traces:
+        if not tr["signals"]:
+            tr["signals"].append(_sig("clean", lang))
+    # какой файл похож на оригинал: меньше признаков правки; при равенстве — не угадываем
+    diff = traces[0]["score"] - traces[1]["score"]
+    result["traces"] = traces
+    result["likely_original"] = None if diff == 0 else ("a" if diff < 0 else "b")
+
+    result["summary"] = None
+    if result["changes"] and settings.llm_enabled:
+        try:
+            reply = await llm.complete(
+                FORGERY_PROMPT.format(lang_name=LANG_NAMES[lang]),
+                [{"role": "user", "content": f"ORIGINAL: {original['name']}\nCHECKED: {checked['name']}\n\nCHANGES:\n"
+                                             + _changes_text(result["changes"])}],
+                max_tokens=1200,
+            )
+            start, end = reply.find("{"), reply.rfind("}")
+            data = json.loads(reply[start:end + 1]) if start != -1 and end > start else None
+            if data and data.get("verdict"):
+                result["summary"] = {"verdict": str(data["verdict"]), "points": [],
+                                     "attention": [str(p) for p in data.get("suspicious", [])][:6]}
+        except (llm.LLMError, json.JSONDecodeError) as exc:
+            log.warning("Сводка проверки не удалась: %s", exc)
+    if result["summary"] or not (result["changes"] and settings.llm_enabled):
+        _cache[key] = result
     return result
